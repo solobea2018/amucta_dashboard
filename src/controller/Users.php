@@ -67,21 +67,18 @@ HTML;
     }
     public function add()
     {
-        if (!isset($_POST['username'], $_POST['email'], $_POST['full_name'], $_POST['password'], $_POST['recovery_question'], $_POST['recovery_answer'])) {
+        if (!isset($_POST['username'], $_POST['email'], $_POST['full_name'])) {
             http_response_code(400);
             echo "Required fields missing";
-            return;
+            exit();
         }
 
         // Sanitize input
-        $username = trim($_POST['username']);
-        $email = trim($_POST['email']);
-        $full_name = trim($_POST['full_name']);
-        $password = $_POST['password'];
-        $recovery_question = trim($_POST['recovery_question']);
-        $recovery_answer = $_POST['recovery_answer'];
+        $username = htmlspecialchars(trim($_POST['username']), ENT_QUOTES, 'UTF-8');
+        $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+        $full_name = htmlspecialchars(trim($_POST['full_name']), ENT_QUOTES, 'UTF-8');
+        $password = $_POST['phone_number'] ?? "user";
         $phone_number = $_POST['phone_number'] ?? null;
-        $profile_url = $_POST['profile_url'] ?? null;
         $role = $_POST['role'] ?? 'user';
         $active = isset($_POST['active']) ? (bool)$_POST['active'] : true;
         $verified = isset($_POST['verified']) ? (bool)$_POST['verified'] : false;
@@ -92,13 +89,79 @@ HTML;
         if ($db->find_user_by_username($username)) {
             http_response_code(409);
             echo "Username already exists";
-            return;
+            exit();
         }
 
         if ($db->find_user_by_email($email)) {
             http_response_code(409);
             echo "Email already exists";
-            return;
+            exit();
+        }
+
+        // Handle image upload
+        $profile_url = null;
+        if (isset($_FILES['profile_url']) && $_FILES['profile_url']['error'] === UPLOAD_ERR_OK) {
+            $fileTmp = $_FILES['profile_url']['tmp_name'];
+            $fileSize = $_FILES['profile_url']['size'];
+            $fileInfo = getimagesize($fileTmp);
+
+            // Validate file type
+            if ($fileInfo === false) {
+                http_response_code(400);
+                echo "Uploaded file is not a valid image";
+                exit();
+            }
+
+            // Validate size (1MB max)
+            if ($fileSize > 1024 * 1024) {
+                http_response_code(400);
+                echo "Image size must be less than 1MB";
+                exit();
+            }
+
+            // Generate unique safe name (employee name + timestamp)
+            $safeName = preg_replace("/[^a-zA-Z0-9]/", "_", strtolower($full_name));
+            $newFileName = $safeName . "_" . time() . ".webp";
+            $uploadDir = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . "/images/";
+            $uploadPath = $uploadDir . $newFileName;
+
+            // Make sure upload dir exists
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+
+            // Convert to WebP low quality
+            switch ($fileInfo['mime']) {
+                case 'image/jpeg':
+                    $img = imagecreatefromjpeg($fileTmp);
+                    break;
+                case 'image/png':
+                    $img = imagecreatefrompng($fileTmp);
+                    break;
+                case 'image/gif':
+                    $img = imagecreatefromgif($fileTmp);
+                    break;
+                default:
+                    http_response_code(400);
+                    echo "Only JPG, PNG, and GIF are allowed";
+                    exit();
+            }
+
+            if ($img === false) {
+                http_response_code(500);
+                echo "Failed to process image";
+                exit();
+            }
+
+            // Save WebP (low quality 50)
+            if (!imagewebp($img, $uploadPath, 50)) {
+                http_response_code(500);
+                echo "Failed to save image";
+                exit();
+            }
+            imagedestroy($img);
+
+            $profile_url = "/images/" . $newFileName;
         }
 
         // Create new User object
@@ -113,18 +176,15 @@ HTML;
         $user->setVerified($verified);
         $user->setBurned(false);
         $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
-        $user->setRecoveryQuestion($recovery_question);
-        $user->setRecoveryAnswerHash(password_hash($recovery_answer, PASSWORD_DEFAULT));
 
         // Save user in database
         if ($db->save_user($user)) {
-            http_response_code(201);
+            http_response_code(200);
             echo "User created successfully";
         } else {
             http_response_code(500);
             echo "Failed to create user";
         }
     }
-
 
 }

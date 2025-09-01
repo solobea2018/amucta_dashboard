@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -52,6 +53,128 @@ class News
 HTML;
 
         MainLayout::render($content);
+    }
+    public function add()
+    {
+        $auth = new Authentication();
+
+        // Check if user is admin
+        if (!$auth->is_admin()) {
+            echo json_encode(['status' => 'error', 'message' => 'Not authorized']);
+            return;
+        }
+
+        // Get and sanitize inputs
+        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+        $category = isset($_POST['category']) ? trim($_POST['category']) : '';
+        $expire = $_POST['expire'] ?? null;
+        $content = isset($_POST['content']) ? trim($_POST['content']) : '';
+        $user_id = $auth->get_authenticated_user()->getId();
+
+        if ($name === '' || $content === '') {
+            echo json_encode(['status' => 'error', 'message' => 'Title and content are required']);
+            return;
+        }
+
+        // Allow basic HTML in content but prevent scripts
+        /*$allowed_tags = '<p><br><b><i><strong><em><ul><ol><li><a><h1><h2><h3><h4><h5><h6>';
+        $content = strip_tags($content, $allowed_tags);*/
+
+        $content=htmlspecialchars($content);
+
+        // Handle feature image upload
+        $feature_image_path = null;
+        if (!empty($_FILES['feature_image']['name'])) {
+            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/images/news/";
+            if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+            $tmp_name = $_FILES['feature_image']['tmp_name'];
+            $ext = strtolower(pathinfo($_FILES['feature_image']['name'], PATHINFO_EXTENSION));
+
+            // Validate image type
+            if (!in_array($ext, ['jpg','jpeg','png','gif','webp'])) {
+                echo json_encode(['status'=>'error','message'=>'Feature image must be a valid image']);
+                return;
+            }
+
+            // Validate size (<1MB)
+            if ($_FILES['feature_image']['size'] > 1024*1024) {
+                echo json_encode(['status'=>'error','message'=>'Feature image must be less than 1MB']);
+                return;
+            }
+
+            // Convert to webp
+            $image_name = preg_replace('/\s+/', '_', strtolower($name)) . '_' . time() . '.webp';
+            $target_file = $uploadDir . $image_name;
+
+            $image = null;
+            switch ($ext) {
+                case 'jpg':
+                case 'jpeg':
+                    $image = imagecreatefromjpeg($tmp_name);
+                    break;
+                case 'png':
+                    $image = imagecreatefrompng($tmp_name);
+                    break;
+                case 'gif':
+                    $image = imagecreatefromgif($tmp_name);
+                    break;
+                case 'webp':
+                    $image = imagecreatefromwebp($tmp_name);
+                    break;
+            }
+
+            if ($image) {
+                imagewebp($image, $target_file, 40); // low quality
+                imagedestroy($image);
+                $feature_image_path = "/images/news/" . $image_name;
+            }
+        }
+
+        // Handle attachment upload (optional PDF)
+        $attachment_path = null;
+        if (!empty($_FILES['attachment']['name'])) {
+            $attachDir = $_SERVER['DOCUMENT_ROOT'] . "/attachments/news/";
+            if (!is_dir($attachDir)) mkdir($attachDir, 0777, true);
+
+            $tmp_name = $_FILES['attachment']['tmp_name'];
+            $ext = strtolower(pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION));
+
+            if ($ext !== 'pdf') {
+                echo json_encode(['status'=>'error','message'=>'Attachment must be a PDF']);
+                return;
+            }
+
+            if ($_FILES['attachment']['size'] > 5*1024*1024) { // 5MB
+                echo json_encode(['status'=>'error','message'=>'Attachment must be less than 5MB']);
+                return;
+            }
+
+            $attachment_name = preg_replace('/\s+/', '_', strtolower($name)) . '_' . time() . '.pdf';
+            $target_file = $attachDir . $attachment_name;
+            if (move_uploaded_file($tmp_name, $target_file)) {
+                $attachment_path = "/attachments/news/" . $attachment_name;
+            }
+        }
+
+        // Insert into database
+        $db = new Database();
+        $inserted = $db->insert('news', [
+            'name' => $name,
+            'feature_image' => $feature_image_path,
+            'category' => $category,
+            'expire' => $expire,
+            'content' => $content,
+            'attachment' => $attachment_path,
+            'user_id' => $user_id,
+            'created_at' => date("Y-m-d H:i:s")
+        ]);
+
+        if ($inserted) {
+            echo json_encode(['status'=>'success','message'=>'News added successfully']);
+        } else {
+            echo json_encode(['status'=>'error','message'=>'Failed to add news']);
+        }
     }
 
 }

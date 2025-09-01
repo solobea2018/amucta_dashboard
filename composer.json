@@ -12,5 +12,9 @@
             "email": "aw1116sm@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+      "ext-gd": "*",
+      "ext-fileinfo": "*",
+      "ext-mbstring": "*"
+    }
 }

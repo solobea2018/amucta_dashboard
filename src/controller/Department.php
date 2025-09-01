@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -55,6 +56,72 @@ class Department
 HTML;
 
         MainLayout::render($content);
+    }
+    public function add()
+    {
+        $auth = new Authentication();
+
+        // Ensure user is logged in and is admin
+        if (!$auth->is_admin()) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Not authorized to perform this action.'
+            ]);
+            return;
+        }
+
+        // Sanitize inputs
+        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+        $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+        $faculty_id = isset($_POST['faculty_id']) ? intval($_POST['faculty_id']) : null;
+        $user_id = $auth->get_authenticated_user()->getId();
+
+        if ($name === '' || !$faculty_id) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Department name and faculty are required.'
+            ]);
+            return;
+        }
+
+        // Allow basic HTML tags in description but strip scripts
+        /*$allowed_tags = '<p><br><b><i><strong><em><ul><ol><li><a><h1><h2><h3><h4><h5><h6>';
+        $description = strip_tags($description, $allowed_tags);*/
+
+        $description=htmlspecialchars($description);
+
+        $db = new Database();
+
+        // Check for duplicate department in the same faculty
+        $exists = $db->fetch("SELECT id FROM department WHERE name = ? AND faculty_id = ?", [$name, $faculty_id]);
+        if ($exists) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Department with this name already exists in the selected faculty.'
+            ]);
+            return;
+        }
+
+        // Insert into database
+        $inserted = $db->insert("department", [
+            'name' => $name,
+            'description' => $description,
+            'faculty_id' => $faculty_id,
+            'user_id' => $user_id,
+            'created_at' => date("Y-m-d H:i:s")
+        ]);
+
+        if ($inserted) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Department added successfully!'
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to add department. Please try again.'
+            ]);
+        }
     }
 
 }

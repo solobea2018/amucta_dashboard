@@ -450,8 +450,8 @@ class Database
         $username = $user->getUsername();
         $email = $user->getEmail();
         $profileUrl = $user->getProfileUrl();
-        $qn = $user->getRecoveryQuestion();
-        $ans = $user->getRecoveryAnswerHash();
+        $qn = "jkrtr";
+        $ans = "jkj";
         $phoneNumber = $user->getPhoneNumber();
         $password = $user->getPassword();// Ensure this is hashed before calling save_user
         // Bind parameters to the prepared statement using variables
@@ -1125,6 +1125,32 @@ FROM users";
         $types = str_repeat("s", count($values));
         $stmt->bind_param($types, ...$values);
         return $stmt->execute();
+    }
+    public function fetch(string $query, array $params = []): ?array
+    {
+        $stmt = $this->con->prepare($query);
+        if (!$stmt) {
+            error_log("DB Prepare failed: " . $this->con->error);
+            return null;
+        }
+
+        if (!empty($params)) {
+            // Build the types string: all strings ('s')
+            $types = str_repeat('s', count($params));
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $stmt->close();
+            return $row;
+        }
+
+        $stmt->close();
+        return null;
     }
     public function delete($table, $where): bool
     {

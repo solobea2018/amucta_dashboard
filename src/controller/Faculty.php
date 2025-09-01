@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -50,6 +51,68 @@ class Faculty
 HTML;
 
         MainLayout::render($content);
+    }
+    public function add()
+    {
+        $auth = new Authentication();
+
+        // Ensure user is logged in and is admin
+        if (!$auth->is_admin()) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Not authorized to perform this action.'
+            ]);
+            return;
+        }
+
+        // Sanitize and validate inputs
+        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+        $description = isset($_POST['description']) ? trim(htmlspecialchars($_POST['description'])) : '';
+        $user_id = $auth->get_authenticated_user()->getId();
+
+        if ($name === '') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Faculty name is required.'
+            ]);
+            return;
+        }
+
+        // Clean XSS
+        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars($description, ENT_QUOTES, 'UTF-8');
+
+        $db = new Database();
+
+        // Check duplicate faculty name
+        $exists = $db->fetch("SELECT id FROM faculty WHERE name = ?", [$name]);
+        if ($exists) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Faculty with this name already exists.'
+            ]);
+            return;
+        }
+
+        // Insert into database
+        $inserted = $db->insert("faculty", [
+            'name' => $name,
+            'description' => $description,
+            'user_id' => $user_id,
+            'created_at' => date("Y-m-d H:i:s")
+        ]);
+
+        if ($inserted) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Faculty added successfully!'
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Failed to add faculty. Please try again.'
+            ]);
+        }
     }
 
 }

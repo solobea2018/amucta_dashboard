@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -50,6 +51,129 @@ class Level
 HTML;
 
         MainLayout::render($content);
+    }
+    public function add()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        // 1) Auth guard
+        $auth = new Authentication();
+        if (!$auth->is_admin()) {
+            http_response_code(403);
+            echo json_encode(['status' => 'error', 'message' => 'Not authorized']);
+            return;
+        }
+
+        // 2) Method guard
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
+            return;
+        }
+
+        // 3) Collect + sanitize inputs
+        $id          = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+        $name        = trim($_POST['name'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+
+        // Soft sanitize (DB safety comes from prepared statements)
+        $name        = strip_tags($name);
+        $description = strip_tags($description);
+
+        // 4) Validate
+        if ($name === '') {
+            http_response_code(422);
+            echo json_encode(['status' => 'error', 'message' => 'Name is required']);
+            return;
+        }
+        if (mb_strlen($name) > 100) {
+            http_response_code(422);
+            echo json_encode(['status' => 'error', 'message' => 'Name must be at most 100 characters']);
+            return;
+        }
+
+        // 5) DB
+        $db = new Database();
+        $con = $db->getCon(); // match your existing style
+
+        // 6) Prevent duplicate names (case-insensitive)
+        if ($id > 0) {
+            $dupSql = "SELECT id FROM level WHERE LOWER(name) = LOWER(?) AND id <> ? LIMIT 1";
+            if ($dup = $con->prepare($dupSql)) {
+                $dup->bind_param('si', $name, $id);
+                $dup->execute();
+                $dupRes = $dup->get_result();
+                if ($dupRes && $dupRes->num_rows > 0) {
+                    http_response_code(409);
+                    echo json_encode(['status' => 'error', 'message' => 'A level with this name already exists']);
+                    $dup->close();
+                    return;
+                }
+                $dup->close();
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Failed to check duplicates']);
+                return;
+            }
+        } else {
+            $dupSql = "SELECT id FROM level WHERE LOWER(name) = LOWER(?) LIMIT 1";
+            if ($dup = $con->prepare($dupSql)) {
+                $dup->bind_param('s', $name);
+                $dup->execute();
+                $dupRes = $dup->get_result();
+                if ($dupRes && $dupRes->num_rows > 0) {
+                    http_response_code(409);
+                    echo json_encode(['status' => 'error', 'message' => 'A level with this name already exists']);
+                    $dup->close();
+                    return;
+                }
+                $dup->close();
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Failed to check duplicates']);
+                return;
+            }
+        }
+
+        // 7) Insert or Update
+        if ($id > 0) {
+            // Update
+            $sql = "UPDATE level SET name = ?, description = ? WHERE id = ? LIMIT 1";
+            if ($stmt = $con->prepare($sql)) {
+                $stmt->bind_param('ssi', $name, $description, $id);
+                if ($stmt->execute()) {
+                    echo json_encode(['status' => 'success', 'message' => 'Level updated successfully', 'id' => $id]);
+                } else {
+                    http_response_code(500);
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to update level']);
+                }
+                $stmt->close();
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Failed to prepare update']);
+            }
+        } else {
+            // Insert
+            $user_id=$auth->get_authenticated_user()->getId();
+            $sql = "INSERT INTO level (name, description) VALUES (?, ?, ?)";
+            if ($stmt = $con->prepare($sql)) {
+                $stmt->bind_param('ssi', $name, $description,$user_id);
+                if ($stmt->execute()) {
+                    echo json_encode([
+                        'status'  => 'success',
+                        'message' => 'Level added successfully',
+                        'id'      => $stmt->insert_id
+                    ]);
+                } else {
+                    http_response_code(500);
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to add level']);
+                }
+                $stmt->close();
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Failed to prepare insert']);
+            }
+        }
     }
 
 }

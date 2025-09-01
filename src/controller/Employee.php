@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -61,5 +62,112 @@ HTML;
 
         MainLayout::render($content);
     }
+
+    public function add()
+    {
+        $auth = new Authentication();
+        if (!$auth->is_admin()) {
+            echo json_encode(['status' => "error", 'message' => "Not Authorized"]);
+            return;
+        }
+
+        // Sanitize inputs
+        $name          = htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $title         = htmlspecialchars(trim($_POST['title'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $email         = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+        $phone         = htmlspecialchars(trim($_POST['phone'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $qualification = htmlspecialchars(trim($_POST['qualification'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $entry_year    = intval($_POST['entry_year'] ?? 0);
+        $active        = intval($_POST['active'] ?? 1);
+
+        $imagePath = null;
+
+        // Handle image upload securely
+        if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $fileTmp  = $_FILES['image']['tmp_name'];
+            $fileSize = $_FILES['image']['size'];
+
+            // 1. Check file size (max 1MB)
+            if ($fileSize > 1024 * 1024) {
+                echo json_encode(['status' => "error", 'message' => "Image size must be less than 1MB"]);
+                return;
+            }
+
+            // 2. Validate image type
+            $allowedMime = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            $fileMime = mime_content_type($fileTmp);
+
+            if (!in_array($fileMime, $allowedMime)) {
+                echo json_encode(['status' => "error", 'message' => "Only JPG, PNG, GIF, or WEBP images are allowed"]);
+                return;
+            }
+
+            // 3. Generate safe filename (prefix employee name + unique ID)
+            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', strtolower($name));
+            $uniqueId = uniqid();
+            $fileName = $safeName . "_" . $uniqueId . ".webp";
+
+            // 4. Destination folder
+            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/images/employees/";
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $targetFile = $uploadDir . $fileName;
+
+            // 5. Convert to WebP (low quality)
+            switch ($fileMime) {
+                case 'image/jpeg':
+                    $img = imagecreatefromjpeg($fileTmp);
+                    break;
+                case 'image/png':
+                    $img = imagecreatefrompng($fileTmp);
+                    imagepalettetotruecolor($img);
+                    imagealphablending($img, true);
+                    imagesavealpha($img, true);
+                    break;
+                case 'image/gif':
+                    $img = imagecreatefromgif($fileTmp);
+                    break;
+                case 'image/webp':
+                    $img = imagecreatefromwebp($fileTmp);
+                    break;
+                default:
+                    $img = null;
+            }
+
+            if ($img) {
+                imagewebp($img, $targetFile, 40); // 40 = low quality
+                imagedestroy($img);
+                $imagePath = "images/employees/" . $fileName; // relative path for DB
+            } else {
+                echo json_encode(['status' => "error", 'message' => "Failed to process image"]);
+                return;
+            }
+        }
+
+        // Insert into database
+        $db = new Database();
+        $user_id=(new Authentication())->get_authenticated_user()->getId();
+        $employeeData = [
+            'name'          => $name,
+            'title'         => $title,
+            'email'         => $email,
+            'phone'         => $phone,
+            'image'         => $imagePath,
+            'qualification' => $qualification,
+            'entry_year'    => $entry_year,
+            'user_id'    => $user_id,
+            'active'        => $active
+        ];
+
+        if ($db->insert("employees", $employeeData)) {
+            echo json_encode(['status' => "success", 'message' => "Employee added successfully"]);
+        } else {
+            echo json_encode(['status' => "error", 'message' => "Failed to add employee"]);
+        }
+    }
+
+
+
 
 }

@@ -46,6 +46,10 @@ function handleKeyDown(event){
 }
 
 function sendFormSweet(form, event) {
+    var popup = document.getElementById("overlay");
+    if (!(popup===null)) {
+        popup.remove();
+    }
     event.preventDefault();
 
     // Show loading alert
@@ -73,7 +77,10 @@ function sendFormSweet(form, event) {
                     html: xhr.responseText
                 });
                 form.reset();
-            } else {
+            }else if (xhr.status===300 || xhr.status===301){
+                window.location.href=xhr.responseText;
+            }
+            else {
                 Swal.fire({
                     icon: "error",
                     title: "Error",
@@ -252,12 +259,12 @@ function addEmployee() {
       </div>
 
       <div class="form-group">
-        <label for="profile">Profile (URL)</label>
-        <input type="text"
+        <label for="profile">Profile</label>
+        <input type="file"
+               accept="image/*"
                id="profile"
-               name="profile"
-               class="form-control"
-               placeholder="Enter profile picture URL">
+               name="image"
+               class="form-control">
       </div>
 
       <div class="form-group">
@@ -287,16 +294,6 @@ function addEmployee() {
           <option value="0">No</option>
         </select>
       </div>
-
-      <div class="form-group">
-        <label for="user_id">User ID</label>
-        <input type="number"
-               id="user_id"
-               name="user_id"
-               class="form-control"
-               placeholder="Enter user ID">
-      </div>
-
       <div class="form-group">
         <button type="submit" class="btn btn-primary">💾 Save</button>
       </div>
@@ -606,12 +603,12 @@ function addNews() {
       </div>
 
       <div class="form-group">
-        <label for="feature_image">Feature Image URL</label>
-        <input type="text" 
+        <label for="feature_image">Feature Image</label>
+        <input type="file" 
+               accept="image/*"
                id="feature_image" 
                name="feature_image" 
-               class="form-control" 
-               placeholder="Enter feature image URL">
+               class="form-control">
       </div>
 
       <div class="form-group">
@@ -643,7 +640,8 @@ function addNews() {
 
       <div class="form-group">
         <label for="attachment">Attachment URL (if any)</label>
-        <input type="text" 
+        <input type="file" 
+               accept="application/pdf"
                id="attachment" 
                name="attachment" 
                class="form-control" 
@@ -675,22 +673,22 @@ function addAttachment() {
       </div>
 
       <div class="form-group">
-        <label for="file_url">File URL</label>
-        <input type="text" 
+        <label for="file_url">File</label>
+        <input type="file" 
                id="file_url" 
                name="file_url" 
-               class="form-control" 
-               placeholder="Enter file URL or path" 
+               class="form-control"
+               accept="application/pdf"
                required>
       </div>
 
       <div class="form-group">
-        <label for="type">File Type</label>
+        <label for="type">Attachment Type</label>
         <input type="text" 
                id="type" 
                name="type" 
                class="form-control" 
-               placeholder="Enter file type e.g., pdf, docx">
+               placeholder="Enter category">
       </div>
 
       <div class="form-group">
@@ -743,13 +741,13 @@ function addEvent() {
       </div>
 
       <div class="form-group">
-        <label for="feature_image">Feature Image URL</label>
-        <input type="text" id="feature_image" name="feature_image" class="form-control" placeholder="Enter feature image URL">
+        <label for="feature_image">Feature Image</label>
+        <input type="file" accept="image/*" id="feature_image" name="feature_image" class="form-control">
       </div>
 
       <div class="form-group">
-        <label for="attachment">Attachment URL (if any)</label>
-        <input type="text" id="attachment" name="attachment" class="form-control" placeholder="Enter attachment URL">
+        <label for="attachment">Attachment</label>
+        <input type="file" accept="application/pdf" id="attachment" name="attachment" class="form-control" placeholder="Enter attachment">
       </div>
 
       <div class="form-group">
@@ -802,39 +800,8 @@ function addUser() {
       </div>
 
       <div class="form-group">
-        <label for="active">Active</label>
-        <select id="active" name="active" class="form-control">
-          <option value="1" selected>Yes</option>
-          <option value="0">No</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="verified">Verified</label>
-        <select id="verified" name="verified" class="form-control">
-          <option value="1">Yes</option>
-          <option value="0" selected>No</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="profile_url">Profile Image URL</label>
-        <input type="text" id="profile_url" name="profile_url" class="form-control" placeholder="Enter profile image URL">
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
-      </div>
-
-      <div class="form-group">
-        <label for="recovery_question">Recovery Question</label>
-        <input type="text" id="recovery_question" name="recovery_question" class="form-control" placeholder="Enter recovery question" required>
-      </div>
-
-      <div class="form-group">
-        <label for="recovery_answer">Recovery Answer</label>
-        <input type="text" id="recovery_answer" name="recovery_answer" class="form-control" placeholder="Enter recovery answer" required>
+        <label for="profile_url">Profile Image</label>
+        <input type="file" accept="image/*" id="profile_url" name="image" class="form-control">
       </div>
 
       <div class="form-group">
