@@ -1,0 +1,11 @@
+User-agent: *
+
+Disallow: /logout
+Disallow: /account
+Disallow: /google
+Disallow: /api
+Disallow: /oauth2
+Disallow: /home
+Disallow: /admin
+
+Sitemap: https://revcad1.com/sitemap.xml

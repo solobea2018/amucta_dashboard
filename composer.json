@@ -1,0 +1,16 @@
+{
+    "name": "solobea/dashboard",
+    "description": "WEbsite manager for AMUCTA",
+    "autoload": {
+        "psr-4": {
+            "Solobea\\Dashboard\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Daudi mabula",
+            "email": "aw1116sm@gmail.com"
+        }
+    ],
+    "require": {}
+}
