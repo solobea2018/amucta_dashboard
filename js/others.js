@@ -207,3 +207,642 @@ function editContent(id) {
 
     document.body.appendChild(overlay);
 }
+
+function addEmployee() {
+    var employee_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee/add">
+
+      <input type="hidden" name="id" value="">
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text"
+               id="name"
+               name="name"
+               class="form-control"
+               placeholder="Enter full name"
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text"
+               id="title"
+               name="title"
+               class="form-control"
+               placeholder="Enter job title">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email"
+               id="email"
+               name="email"
+               class="form-control"
+               placeholder="Enter email address">
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="text"
+               id="phone"
+               name="phone"
+               class="form-control"
+               placeholder="Enter phone number">
+      </div>
+
+      <div class="form-group">
+        <label for="profile">Profile (URL)</label>
+        <input type="text"
+               id="profile"
+               name="profile"
+               class="form-control"
+               placeholder="Enter profile picture URL">
+      </div>
+
+      <div class="form-group">
+        <label for="qualification">Qualification</label>
+        <textarea id="qualification"
+                  name="qualification"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Enter qualifications"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="entry_year">Entry Year</label>
+        <input type="text"
+               id="entry_year"
+               name="entry_year"
+               class="form-control"
+               placeholder="e.g., 2024">
+      </div>
+
+      <div class="form-group">
+        <label for="active">Active</label>
+        <select id="active"
+                name="active"
+                class="form-control">
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="user_id">User ID</label>
+        <input type="number"
+               id="user_id"
+               name="user_id"
+               class="form-control"
+               placeholder="Enter user ID">
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+    </form>
+    `;
+    popHtml("Add Employee", employee_form);
+}
+function addFaculty() {
+    var faculty_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/faculty/add">
+
+      <input type="hidden" name="id" value="">
+      <input type="hidden" name="user_id" value="">
+
+      <div class="form-group">
+        <label for="name">Faculty Name</label>
+        <input type="text" 
+               id="name" 
+               name="name" 
+               class="form-control" 
+               placeholder="Enter faculty name" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" 
+                  name="description" 
+                  class="form-control" 
+                  rows="4" 
+                  placeholder="Enter description"></textarea>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+    </form>
+    `;
+    popHtml("Add Faculty", faculty_form);
+}
+function addLevel(){
+    var level_form=`
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/level/add">
+
+  <input type="hidden" name="id" value="">
+
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" 
+           id="name" 
+           name="name" 
+           class="form-control" 
+           placeholder="Enter name" 
+           required>
+  </div>
+
+  <div class="form-group">
+    <label for="description">Description</label>
+    <textarea id="description" 
+              name="description" 
+              class="form-control" 
+              rows="4" 
+              placeholder="Enter description"></textarea>
+  </div>
+
+  <div class="form-group">
+  <button type="submit" class="btn btn-primary">💾 Save</button>
+</div>
+</form>
+
+    `;
+    popHtml("Add Level",level_form);
+}
+function addProgram(){
+    var form=  `
+    <form onsubmit="sendFormSweet(this,event)" action="/program/add">
+
+  <input type="hidden" name="id" value="">
+  <input type="hidden" name="user_id" value="{{auth_user_id}}">
+
+  <!-- Program Name -->
+  <div class="form-group">
+    <label>Program Name</label>
+    <input type="text" name="name" class="form-control" required 
+           placeholder="Bachelor of Computer Engineering">
+  </div>
+
+  <!-- Short Name -->
+  <div class="form-group">
+    <label>Short Name</label>
+    <input type="text" name="short_name" class="form-control" required 
+           placeholder="BCE">
+  </div>
+
+  <!-- Intakes -->
+  <div class="form-group">
+    <label>Intakes (per year)</label>
+    <input type="number" name="intakes" min="1" class="form-control" required 
+           placeholder="2">
+  </div>
+
+  <!-- Duration -->
+  <div class="form-group">
+    <label>Duration</label>
+    <input type="text" name="duration" class="form-control" required 
+           placeholder="3 Years">
+  </div>
+
+  <!-- Capacity -->
+  <div class="form-group">
+    <label>Capacity</label>
+    <input type="number" step="0.01" name="capacity" class="form-control" required 
+           placeholder="120">
+  </div>
+
+  <!-- Accreditation Year -->
+  <div class="form-group">
+    <label>Accreditation Year</label>
+    <input type="text" name="accreditation_year" class="form-control" required 
+           placeholder="2024">
+  </div>
+
+  <!-- Faculty -->
+  <div class="form-group">
+    <label>Faculty</label>
+    <select name="faculty_id" class="form-control" required>
+      <option value="">-- Select Faculty --</option>
+      <!-- Fill dynamically -->
+    </select>
+  </div>
+
+  <!-- Department -->
+  <div class="form-group">
+    <label>Department</label>
+    <select name="department_id" class="form-control" required>
+      <option value="">-- Select Department --</option>
+      <!-- Fill dynamically -->
+    </select>
+  </div>
+
+  <!-- Level -->
+  <div class="form-group">
+    <label>Level</label>
+    <select name="level_id" class="form-control" required>
+      <option value="">-- Select Level --</option>
+      <!-- e.g. Certificate, Diploma, Bachelor -->
+    </select>
+  </div>
+
+  <!-- Description -->
+  <div class="form-group">
+    <label>Description</label>
+    <textarea name="description" rows="3" class="form-control" required 
+              placeholder="Brief overview of the program"></textarea>
+  </div>
+
+  <!-- Content -->
+  <div class="form-group">
+    <label>Content</label>
+    <textarea name="content" rows="5" class="form-control" required 
+              placeholder="Detailed program curriculum and info"></textarea>
+  </div>
+
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary">💾 Save</button>
+  </div>
+</form>
+
+
+`;
+    popHtml("Add Program",form);
+}
+function addDepartment() {
+    var dept_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/department/add">
+
+      <input type="hidden" name="id" value="">
+      <input type="hidden" name="user_id" value="">
+
+      <div class="form-group">
+        <label for="name">Department Name</label>
+        <input type="text" 
+               id="name" 
+               name="name" 
+               class="form-control" 
+               placeholder="Enter department name" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" 
+                  name="description" 
+                  class="form-control" 
+                  rows="4" 
+                  placeholder="Enter description"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="faculty_id">Faculty</label>
+        <select id="faculty_id" 
+                name="faculty_id" 
+                class="form-control" 
+                required>
+          <option value="">-- Select Faculty --</option>
+          <!-- dynamically load faculties here -->
+        </select>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+    </form>
+    `;
+    popHtml("Add Department", dept_form);
+}
+function addImage() {
+    var image_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/gallery/add">
+
+      <input type="hidden" name="id" value="">
+      <input type="hidden" name="user_id" value="">
+
+      <div class="form-group">
+        <label for="name">Image Name</label>
+        <input type="text" 
+               id="name" 
+               name="name" 
+               class="form-control" 
+               placeholder="Enter image name" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category" 
+                name="category" 
+                class="form-control" 
+                required>
+          <option value="">-- Select Category --</option>
+          <option value="gallery">Gallery</option>
+          <option value="slides">Slides</option>
+          <option value="news">News</option>
+          <option value="logo">Logo</option>
+          <option value="icon">Icon</option>
+          <option value="profile">Profile</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="url">Image URL</label>
+        <input type="text" 
+               id="url" 
+               name="url" 
+               class="form-control" 
+               placeholder="Enter image URL" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+    </form>
+    `;
+    popHtml("Add Image", image_form);
+}
+
+function popHtml(title, html){
+    document.addEventListener("keydown",handleKeyDown);
+    const overlay = document.createElement("div");
+    overlay.id="overlay";
+    overlay.className = "popup-overlay";
+
+    overlay.innerHTML = `
+    <div class="popup-editor">
+      <div class="popup-header">
+        <span>${title}</span>
+        <button onclick="this.closest('.popup-overlay').remove()">✖</button>
+      </div>
+       
+       <div class="popup-body">
+            ${html}
+        </div> 
+        <div class="popup-footer">
+          
+        </div>
+    </div>
+  `;
+
+    document.body.appendChild(overlay);
+}
+function addNews() {
+    var news_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/news/add">
+
+      <input type="hidden" name="id" value="">
+      <input type="hidden" name="user_id" value="">
+
+      <div class="form-group">
+        <label for="name">News Title</label>
+        <input type="text" 
+               id="name" 
+               name="name" 
+               class="form-control" 
+               placeholder="Enter news title" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="feature_image">Feature Image URL</label>
+        <input type="text" 
+               id="feature_image" 
+               name="feature_image" 
+               class="form-control" 
+               placeholder="Enter feature image URL">
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <input type="text" 
+               id="category" 
+               name="category" 
+               class="form-control" 
+               placeholder="Enter news category">
+      </div>
+      <div class="form-group">
+        <label for="expire">Expire Date</label>
+        <input type="date" 
+               id="expire" 
+               name="expire" 
+               class="form-control" 
+               placeholder="Enter Date">
+      </div>
+
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea id="content" 
+                  name="content" 
+                  class="form-control" 
+                  rows="5" 
+                  placeholder="Enter news content" 
+                  required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="attachment">Attachment URL (if any)</label>
+        <input type="text" 
+               id="attachment" 
+               name="attachment" 
+               class="form-control" 
+               placeholder="Enter attachment URL">
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+    </form>
+    `;
+    popHtml("Add News", news_form);
+}
+function addAttachment() {
+    var attachment_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/attachments/add">
+
+      <input type="hidden" name="id" value="">
+      <input type="hidden" name="user_id" value="">
+
+      <div class="form-group">
+        <label for="name">Attachment Name</label>
+        <input type="text" 
+               id="name" 
+               name="name" 
+               class="form-control" 
+               placeholder="Enter attachment name" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="file_url">File URL</label>
+        <input type="text" 
+               id="file_url" 
+               name="file_url" 
+               class="form-control" 
+               placeholder="Enter file URL or path" 
+               required>
+      </div>
+
+      <div class="form-group">
+        <label for="type">File Type</label>
+        <input type="text" 
+               id="type" 
+               name="type" 
+               class="form-control" 
+               placeholder="Enter file type e.g., pdf, docx">
+      </div>
+
+      <div class="form-group">
+        <label for="related_to">Related To</label>
+        <input type="text" 
+               id="related_to" 
+               name="related_to" 
+               class="form-control" 
+               placeholder="Enter related module e.g., news, program">
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+
+    </form>
+    `;
+    popHtml("Add Attachment", attachment_form);
+}
+function addEvent() {
+    var event_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/events/add">
+
+      <input type="hidden" name="id" value="">
+      <input type="hidden" name="user_id" value="">
+
+      <div class="form-group">
+        <label for="name">Event Name</label>
+        <input type="text" id="name" name="name" class="form-control" placeholder="Enter event name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" class="form-control" rows="4" placeholder="Enter event description"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="start_date">Start Date</label>
+        <input type="date" id="start_date" name="start_date" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="end_date">End Date</label>
+        <input type="date" id="end_date" name="end_date" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" class="form-control" placeholder="Enter event location">
+      </div>
+
+      <div class="form-group">
+        <label for="feature_image">Feature Image URL</label>
+        <input type="text" id="feature_image" name="feature_image" class="form-control" placeholder="Enter feature image URL">
+      </div>
+
+      <div class="form-group">
+        <label for="attachment">Attachment URL (if any)</label>
+        <input type="text" id="attachment" name="attachment" class="form-control" placeholder="Enter attachment URL">
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <input type="text" id="category" name="category" class="form-control" placeholder="Enter event category">
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+
+    </form>
+    `;
+    popHtml("Add Event", event_form);
+}
+function addUser() {
+    var user_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/users/add">
+
+      <input type="hidden" name="id" value="">
+
+      <div class="form-group">
+        <label for="full_name">Full Name</label>
+        <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Enter full name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="Enter email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone_number">Phone Number</label>
+        <input type="text" id="phone_number" name="phone_number" class="form-control" placeholder="Enter phone number">
+      </div>
+
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select id="role" name="role" class="form-control" required>
+          <option value="">-- Select Role --</option>
+          <option value="manager">Manager</option>
+          <option value="admin">Admin</option>
+          <option value="user" selected>User</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="active">Active</label>
+        <select id="active" name="active" class="form-control">
+          <option value="1" selected>Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="verified">Verified</label>
+        <select id="verified" name="verified" class="form-control">
+          <option value="1">Yes</option>
+          <option value="0" selected>No</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="profile_url">Profile Image URL</label>
+        <input type="text" id="profile_url" name="profile_url" class="form-control" placeholder="Enter profile image URL">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" required>
+      </div>
+
+      <div class="form-group">
+        <label for="recovery_question">Recovery Question</label>
+        <input type="text" id="recovery_question" name="recovery_question" class="form-control" placeholder="Enter recovery question" required>
+      </div>
+
+      <div class="form-group">
+        <label for="recovery_answer">Recovery Answer</label>
+        <input type="text" id="recovery_answer" name="recovery_answer" class="form-control" placeholder="Enter recovery answer" required>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+
+    </form>
+    `;
+    popHtml("Add User", user_form);
+}
+

@@ -13,9 +13,15 @@ use Solobea\Go\errors\ErrorReporter;
 class Database
 {
     private $host="localhost";
-    private $user="amuctaac_user";
+
+    /*private $user="amuctaac_user";
     private $db="amuctaac_database";
-    private $pass="@eight8viiiH";
+    private $pass="@eight8viiiH";*/
+
+    private $user="root";
+    private $db="dashboard";
+    private $pass="";
+
     private $con;
 
     /**
@@ -668,6 +674,38 @@ FROM users";
             return false;
         }
     }
+    public function getPasswordByUsername(string $username): ?string
+    {
+        // Prepare the SQL query to fetch only the password
+        $query = "SELECT password FROM users WHERE username = ? LIMIT 1";
+
+        // Initialize and prepare the statement
+        if ($stmt = $this->con->prepare($query)) {
+            // Bind the username parameter to the statement
+            $stmt->bind_param('s', $username);
+
+            // Execute the statement
+            $stmt->execute();
+
+            // Fetch the result
+            $result = $stmt->get_result();
+
+            // Check if a user was found
+            if ($result->num_rows === 1) {
+                $row = $result->fetch_assoc();
+                $stmt->close();
+                return $row['password']; // Return the password
+            } else {
+                $stmt->close();
+                return null; // No user found with that username
+            }
+        } else {
+            // Handle preparation error
+            error_log("Preparation error: " . $this->con->error);
+            return null;
+        }
+    }
+
     public function findUserById(int $id): ?array
     {
         // Prepare the SQL query
