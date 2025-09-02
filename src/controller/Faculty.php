@@ -23,7 +23,7 @@ class Faculty
 <td>{$faculty['description']}</td>
 <td>
 <button class='btn btn-complete' onclick='editFaculty({$faculty['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteFaculty({$faculty['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"faculty\",{$faculty['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewFaculty({$faculty['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";

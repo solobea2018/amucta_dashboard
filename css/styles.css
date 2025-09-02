@@ -1000,7 +1000,7 @@ form div:has(button[type='submit']) {
     cursor:pointer;
     font-size:13px;
 }
-
+.flex-wrap{flex-wrap:wrap !important}
 .btn-primary { background:#4f46e5; color:white; }
 /* Group wrapper */
 .form-group {
@@ -1052,6 +1052,7 @@ form div:has(button[type='submit']) {
     border-radius: 6px;
     cursor: pointer;
     border: 1px solid transparent;
+    margin: 4px;
 }
 
 

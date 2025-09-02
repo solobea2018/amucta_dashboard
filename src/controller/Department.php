@@ -27,8 +27,8 @@ class Department
 <td>{$dept['description']}</td>
 <td>
 <button class='btn btn-complete' onclick='editDepartment({$dept['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteDepartment({$dept['id']})'>Delete <i class='bi bi-trash'></i></button>
-<button class='btn btn-primary' onclick='viewDepartment({$dept['id']})'>View <i class='bi bi-eye'></i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"department\",{$dept['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-primary' onclick='viewDepartment(\"department\",{$dept['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
             }

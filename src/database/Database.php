@@ -5,6 +5,7 @@ use Exception;
 use mysqli;
 use Solobea\Dashboard\model\Contact;
 use Solobea\Dashboard\model\Error;
+use Solobea\Dashboard\model\Program;
 use Solobea\Dashboard\model\User;
 use Solobea\Dashboard\model\Visitor;
 use Solobea\Dashboard\utils\Helper;
@@ -404,6 +405,8 @@ class Database
                         $user->setFullName($row["full_name"]);
                         $user->setUsername($row["username"]);
                         $user->setEmail($row["email"]);
+                        $user->setBurned($row['burned']);
+                        $user->setActive($row['active']);
                         $user->setProfileUrl($row['profile_url']);
                         $user->setPhoneNumber($row['phone_number']);
                         $user->setRole($row['role']);
@@ -705,7 +708,6 @@ FROM users";
             return null;
         }
     }
-
     public function findUserById(int $id): ?array
     {
         // Prepare the SQL query
@@ -1195,6 +1197,68 @@ FROM users";
         }
         $stmt->close();
         return $data;
+    }
+
+    //Program
+    public function save_program(Program $program): bool
+    {
+        $stmt = $this->con->prepare("
+            INSERT INTO programs
+            (name, short_name, intakes, duration, capacity, 
+             accreditation_year, faculty_id, department_id, level_id, 
+             description, content, created_by, created_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $name              = $program->getName();
+        $shortName         = $program->getShortName();
+        $intakes           = $program->getIntakes();
+        $duration          = $program->getDuration();
+        $capacity          = $program->getCapacity();
+        $accreditationYear = $program->getAccreditationYear();
+        $facultyId         = $program->getFacultyId();
+        $departmentId      = $program->getDepartmentId();
+        $levelId           = $program->getLevelId();
+        $description       = $program->getDescription();
+        $content           = $program->getContent();
+        $createdBy         = $program->getCreatedBy();
+        $createdAt         = $program->getCreatedAt();
+
+        // Bind variables
+        $stmt->bind_param(
+            "ssisdiiiissis",
+            $name,
+            $shortName,
+            $intakes,
+            $duration,
+            $capacity,
+            $accreditationYear,
+            $facultyId,
+            $departmentId,
+            $levelId,
+            $description,
+            $content,
+            $createdBy,
+            $createdAt
+        );
+
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+    public function find_program_by_name($name, $faculty_id): bool
+    {
+        $stmt = $this->con->prepare("SELECT id FROM programs WHERE name = ? AND faculty_id = ? LIMIT 1");
+        $stmt->bind_param("si", $name, $faculty_id);
+        $stmt->execute();
+        $stmt->store_result();
+        $exists = $stmt->num_rows > 0;
+        $stmt->close();
+        return $exists;
     }
 
 }

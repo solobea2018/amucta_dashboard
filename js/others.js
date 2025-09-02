@@ -461,8 +461,6 @@ function addProgram(){
     <button type="submit" class="btn btn-primary">💾 Save</button>
   </div>
 </form>
-
-
 `;
     popHtml("Add Program",form);
 }
@@ -587,7 +585,7 @@ function popHtml(title, html){
 }
 function addNews() {
     var news_form = `
-    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/news/add">
+    <form class="form-container" enctype="multipart/form-data" onsubmit="sendFormSweet(this,event)" action="/news/add">
 
       <input type="hidden" name="id" value="">
       <input type="hidden" name="user_id" value="">
@@ -639,13 +637,12 @@ function addNews() {
       </div>
 
       <div class="form-group">
-        <label for="attachment">Attachment URL (if any)</label>
+        <label for="attachment">Attachment (if any)</label>
         <input type="file" 
                accept="application/pdf"
                id="attachment" 
                name="attachment" 
-               class="form-control" 
-               placeholder="Enter attachment URL">
+               class="form-control">
       </div>
 
       <div class="form-group">
@@ -657,7 +654,7 @@ function addNews() {
 }
 function addAttachment() {
     var attachment_form = `
-    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/attachments/add">
+    <form class="form-container" enctype="multipart/form-data" onsubmit="sendFormSweet(this,event)" action="/attachment/add">
 
       <input type="hidden" name="id" value="">
       <input type="hidden" name="user_id" value="">
@@ -710,7 +707,7 @@ function addAttachment() {
 }
 function addEvent() {
     var event_form = `
-    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/events/add">
+    <form class="form-container" enctype="multipart/form-data" onsubmit="sendFormSweet(this,event)" action="/events/add">
 
       <input type="hidden" name="id" value="">
       <input type="hidden" name="user_id" value="">
@@ -765,7 +762,7 @@ function addEvent() {
 }
 function addUser() {
     var user_form = `
-    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/users/add">
+    <form class="form-container" enctype="multipart/form-data" onsubmit="sendFormSweet(this,event)" action="/users/add">
 
       <input type="hidden" name="id" value="">
 
@@ -801,7 +798,7 @@ function addUser() {
 
       <div class="form-group">
         <label for="profile_url">Profile Image</label>
-        <input type="file" accept="image/*" id="profile_url" name="image" class="form-control">
+        <input type="file" accept="image/*" id="profile_url" name="profile_url" class="form-control">
       </div>
 
       <div class="form-group">
@@ -812,4 +809,32 @@ function addUser() {
     `;
     popHtml("Add User", user_form);
 }
+function deleteResource(table, id) {
+    fetch('/api/delete', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            table: table,
+            id: id
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                Swal.fire("Deleted!", data.message, "success").then(() => {
+                    // Refresh the page
+                    location.reload();
+                });
+            } else {
+                Swal.fire("Error!", data.message || "Failed to delete resource", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Delete error:", error);
+            Swal.fire("Error!", "Something went wrong", "error");
+        });
+}
+
 

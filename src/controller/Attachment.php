@@ -17,6 +17,7 @@ class Attachment
         $tr = "";
 
         if (sizeof($attachments) > 0) {
+            $table="attachments";
             foreach ($attachments as $att) {
                 $tr .= "<tr>
 <td>{$att['name']}</td>
@@ -25,7 +26,7 @@ class Attachment
 <td>{$att['related_to']}</td>
 <td>
 <button class='btn btn-complete' onclick='editAttachment({$att['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteAttachment({$att['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"attachments\",{$att['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewAttachment({$att['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
@@ -115,11 +116,11 @@ HTML;
         $db = new Database();
         $inserted = $db->insert('attachments', [
             'name' => $name,
-            'category' => $type,
-            'url' => $file_path,
+            'type' => $type,
+            'file_url' => $file_path,
             'related_to' => $related_to,
             'user_id' => $user_id,
-            'created_up' => date("Y-m-d H:i:s")
+            'created_at' => date("Y-m-d H:i:s")
         ]);
 
         if ($inserted) {

@@ -154,6 +154,12 @@ HTML;
             }
 
             // Save WebP (low quality 50)
+            if (!imageistruecolor($img)) {
+                $trueColor = imagecreatetruecolor(imagesx($img), imagesy($img));
+                imagecopy($trueColor, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
+                imagedestroy($img);
+                $img = $trueColor;
+            }
             if (!imagewebp($img, $uploadPath, 50)) {
                 http_response_code(500);
                 echo "Failed to save image";

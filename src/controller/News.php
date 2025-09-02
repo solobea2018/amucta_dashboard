@@ -24,7 +24,7 @@ class News
 <td>{$news['created_at']}</td>
 <td>
 <button class='btn btn-complete' onclick='editNews({$news['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteNews({$news['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"news\",{$news['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewNews({$news['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
@@ -125,6 +125,12 @@ HTML;
             }
 
             if ($image) {
+                if (!imageistruecolor($image)) {
+                    $trueColor = imagecreatetruecolor(imagesx($image), imagesy($image));
+                    imagecopy($trueColor, $image, 0, 0, 0, 0, imagesx($image), imagesy($image));
+                    imagedestroy($image);
+                    $image = $trueColor;
+                }
                 imagewebp($image, $target_file, 40); // low quality
                 imagedestroy($image);
                 $feature_image_path = "/images/news/" . $image_name;

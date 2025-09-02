@@ -25,7 +25,7 @@ class Events
 <td>{$event['location']}</td>
 <td>
 <button class='btn btn-complete' onclick='editEvent({$event['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteEvent({$event['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"events\",{$event['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewEvent({$event['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
@@ -110,6 +110,12 @@ HTML;
                 default: $src = null;
             }
             if ($src) {
+                if (!imageistruecolor($src)) {
+                    $trueColor = imagecreatetruecolor(imagesx($src), imagesy($src));
+                    imagecopy($trueColor, $src, 0, 0, 0, 0, imagesx($src), imagesy($src));
+                    imagedestroy($src);
+                    $src = $trueColor;
+                }
                 imagewebp($src, $destination, 50); // low quality
                 imagedestroy($src);
                 $feature_image_path = "/images/events/" . $file_name;

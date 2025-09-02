@@ -23,7 +23,7 @@ class Level
 <td>{$level['description']}</td>
 <td>
 <button class='btn btn-complete' onclick='editLevel({$level['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteLevel({$level['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"level\",{$level['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewLevel({$level['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";

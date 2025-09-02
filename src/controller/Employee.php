@@ -28,7 +28,7 @@ class Employee
 <td>" . ($emp['active'] ? 'Yes' : 'No') . "</td>
 <td>
 <button class='btn btn-complete' onclick='editEmployee({$emp['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteEmployee({$emp['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"employee\",{$emp['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewEmployee({$emp['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
@@ -136,6 +136,12 @@ HTML;
             }
 
             if ($img) {
+                if (!imageistruecolor($img)) {
+                    $trueColor = imagecreatetruecolor(imagesx($img), imagesy($img));
+                    imagecopy($trueColor, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
+                    imagedestroy($img);
+                    $img = $trueColor;
+                }
                 imagewebp($img, $targetFile, 40); // 40 = low quality
                 imagedestroy($img);
                 $imagePath = "images/employees/" . $fileName; // relative path for DB
