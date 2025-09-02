@@ -58,7 +58,9 @@ class Users
                 <th>Actions</th>
             </tr>
         </thead>
+        <tbody>       
         $tr
+</tbody>
     </table>
 </div>
 HTML;

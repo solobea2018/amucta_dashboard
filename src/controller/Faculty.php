@@ -18,11 +18,12 @@ class Faculty
 
         if (sizeof($faculties) > 0) {
             foreach ($faculties as $faculty) {
+                $des=html_entity_decode($faculty['description'],ENT_QUOTES,"UTF-8");
                 $tr .= "<tr>
 <td>{$faculty['name']}</td>
-<td>{$faculty['description']}</td>
+<td><textarea name='description'>{$des}</textarea></td>
 <td>
-<button class='btn btn-complete' onclick='editFaculty({$faculty['id']})'>Edit <i class='bi bi-pencil'></i></button>
+<button class='btn btn-complete' onclick='editFaculty({$faculty['id']})'>Update <i class='bi bi-pencil'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"faculty\",{$faculty['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewFaculty({$faculty['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
@@ -45,7 +46,7 @@ class Faculty
                 <th>Actions</th>
             </tr>
         </thead>
-        $tr
+        <tbody>$tr</tbody>
     </table>
 </div>
 HTML;
@@ -112,6 +113,17 @@ HTML;
                 'status' => 'error',
                 'message' => 'Failed to add faculty. Please try again.'
             ]);
+        }
+    }
+
+    public function get()
+    {
+        $db=new Database();
+        $fcts=$db->select("select id,name from faculty where active=1");
+        if (sizeof($fcts)>0){
+            echo json_encode($fcts);
+        }else{
+            echo json_encode(['success'=>false,"message"=>"No data found"]);
         }
     }
 

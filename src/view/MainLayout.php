@@ -49,8 +49,8 @@ HTML;
         return <<<menu
 <div class="flex flex-row flex-wrap">
     <a href="/" class="btn btn-primary"><i class="bi bi-house mx-2"></i>Home</a>
-    <a href="/department/list" class="btn btn-primary"><i class="bi bi-house mx-2"></i>Department</a>
     <a href="/faculty/list" class="btn btn-primary"><i class="bi bi-dash-circle mx-2"></i>Faculty</a>
+    <a href="/department/list" class="btn btn-primary"><i class="bi bi-house mx-2"></i>Department</a>
     <a href="/Level/list" class="btn btn-primary"><i class="bi bi-graph-up mx-2"></i>Level</a>
     <a href="/program/list" class="btn btn-primary"><i class="bi bi-book mx-2"></i>Program</a>
     <a href="/news/list" class="btn btn-primary"><i class="bi bi-newspaper mx-2"></i>News</a>

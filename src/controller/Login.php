@@ -13,6 +13,9 @@ class Login
 {
     public function index()
     {
+        if ((new Authentication())->is_authenticated()){
+            header("Location: /");
+        }
         $content = <<<HTML
 <div class="flex justify-center items-center" style="height:100vh;">
     <form class="form-container" onsubmit="sendFormSweet(this, event)" action="/login/process" method="POST" style="width:350px; padding:20px; border:1px solid #ddd; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); background:#fff;">

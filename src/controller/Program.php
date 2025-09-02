@@ -27,7 +27,7 @@ class program
 </tr>";
             }
         }else{
-            $tr="No programs found";
+            $tr = "<tr><td colspan='3'>No programs found</td></tr>";
         }
         $content=<<<content
 <div class="flex flex-col">
@@ -38,7 +38,7 @@ class program
     <td>Full Name</td>
     <td>Actions</td>
 </thead>
-$tr
+<tbody>$tr</tbody>
 </table>
 <div>
 content;

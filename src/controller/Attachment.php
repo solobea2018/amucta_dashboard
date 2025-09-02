@@ -50,7 +50,7 @@ class Attachment
                 <th>Actions</th>
             </tr>
         </thead>
-        $tr
+        <tbody>$tr</tbody>
     </table>
 </div>
 HTML;
