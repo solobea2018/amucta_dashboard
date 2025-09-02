@@ -159,14 +159,14 @@ HTML;
             'title'         => $title,
             'email'         => $email,
             'phone'         => $phone,
-            'image'         => $imagePath,
+            'profile'         => $imagePath,
             'qualification' => $qualification,
             'entry_year'    => $entry_year,
             'user_id'    => $user_id,
             'active'        => $active
         ];
 
-        if ($db->insert("employees", $employeeData)) {
+        if ($db->insert("employee", $employeeData)) {
             echo json_encode(['status' => "success", 'message' => "Employee added successfully"]);
         } else {
             echo json_encode(['status' => "error", 'message' => "Failed to add employee"]);

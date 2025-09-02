@@ -121,9 +121,9 @@ HTML;
         $db=new Database();
         $fcts=$db->select("select id,name from faculty where active=1");
         if (sizeof($fcts)>0){
-            echo json_encode($fcts);
+            echo json_encode(["status"=>"success","data"=>$fcts]);
         }else{
-            echo json_encode(['success'=>false,"message"=>"No data found"]);
+            echo json_encode(['status'=>"error","message"=>"No data found"]);
         }
     }
 

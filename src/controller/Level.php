@@ -155,7 +155,7 @@ HTML;
         } else {
             // Insert
             $user_id=$auth->get_authenticated_user()->getId();
-            $sql = "INSERT INTO level (name, description) VALUES (?, ?, ?)";
+            $sql = "INSERT INTO level (name, description,user_id) VALUES (?, ?, ?)";
             if ($stmt = $con->prepare($sql)) {
                 $stmt->bind_param('ssi', $name, $description,$user_id);
                 if ($stmt->execute()) {

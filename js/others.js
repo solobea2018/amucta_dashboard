@@ -465,7 +465,13 @@ function addProgram(){
     popHtml("Add Program",form);
 }
 function addDepartment() {
-    var dept_form = `
+    fetch('/faculty/get')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                var fcts=data.data;
+
+                var dept_form = `
     <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/department/add">
 
       <input type="hidden" name="id" value="">
@@ -497,6 +503,7 @@ function addDepartment() {
                 class="form-control" 
                 required>
           <option value="">-- Select Faculty --</option>
+          ${fcts.map(f => `<option value="${f.id}">${f.name}</option>`).join("")}
           <!-- dynamically load faculties here -->
         </select>
       </div>
@@ -506,7 +513,14 @@ function addDepartment() {
       </div>
     </form>
     `;
-    popHtml("Add Department", dept_form);
+                popHtml("Add Department", dept_form);
+            } else {
+                Swal.fire("Error!", data.message || "Something went wrong", "error");
+            }
+        })
+        .catch(error => {
+            Swal.fire("Error!", "Something went wrong", "error");
+        });
 }
 function addImage() {
     var image_form = `
