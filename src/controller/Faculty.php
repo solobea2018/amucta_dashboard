@@ -116,7 +116,7 @@ HTML;
         }
     }
 
-    public function get()
+    public function get_simple()
     {
         $db=new Database();
         $fcts=$db->select("select id,name from faculty where active=1");

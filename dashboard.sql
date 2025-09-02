@@ -55,7 +55,7 @@ CREATE TABLE `attachments` (
   `user_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -64,6 +64,7 @@ CREATE TABLE `attachments` (
 
 LOCK TABLES `attachments` WRITE;
 /*!40000 ALTER TABLE `attachments` DISABLE KEYS */;
+INSERT INTO `attachments` VALUES (2,'trans request form','/attachments/files/trans_request_form_1756846594.pdf','type1','rre',72,'2025-09-02 20:56:34');
 /*!40000 ALTER TABLE `attachments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -140,7 +141,7 @@ CREATE TABLE `department` (
   PRIMARY KEY (`id`),
   KEY `faculty_id` (`faculty_id`),
   CONSTRAINT `department_ibfk_1` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -149,6 +150,7 @@ CREATE TABLE `department` (
 
 LOCK TABLES `department` WRITE;
 /*!40000 ALTER TABLE `department` DISABLE KEYS */;
+INSERT INTO `department` VALUES (1,'Business administration','busines',2,'2025-09-02 19:54:22',72),(2,'Science and Engineering','sciences',2,'2025-09-02 19:54:57',72);
 /*!40000 ALTER TABLE `department` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -172,7 +174,7 @@ CREATE TABLE `employee` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -181,6 +183,7 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
+INSERT INTO `employee` VALUES (1,'Daudi Mabula','ICT Officer','aw1116sm@gmail.com','0629077526','images/employees/daudi_mabula_68b75bbfb8cec.webp','hell','2010',1,'2025-09-02 21:03:59',72),(2,'Jacobo','HR','thobiasjacobo@gmail.com','0612006363','images/employees/jacobo_68b75c11c6262.webp','','2020',1,'2025-09-02 21:05:21',72),(3,'JOHN MAJALIWA SYLIVESTER','Senior Lecturere','sabashedwiga@gmail.com','0625896528','','bn','2090',1,'2025-09-02 21:06:22',72);
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,7 +235,7 @@ CREATE TABLE `events` (
   `user_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,6 +244,7 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
+INSERT INTO `events` VALUES (1,'Event 1','SeSion','2025-09-18','2025-09-20','Amucta','/images/events/Event_1_1756843591.webp','/files/events/Event_1_1756843591.pdf','category1',72,'2025-09-02 20:06:31'),(2,'Event 2','hello','2025-09-05','2025-10-03','Amucta','/images/events/Event_2_1756843628.webp','','catgeory',72,'2025-09-02 20:07:08');
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -268,7 +272,7 @@ CREATE TABLE `faculty` (
 
 LOCK TABLES `faculty` WRITE;
 /*!40000 ALTER TABLE `faculty` DISABLE KEYS */;
-INSERT INTO `faculty` VALUES (2,'Faculty of Education and Social Science','&amp;lt;div class=&amp;quot;mt-2 text-justify&amp;quot;&amp;gt;\r\n&amp;lt;div class=&amp;quot;font-thin italic text-amucta-blue tension-question&amp;quot;&amp;gt;Why studying teacher education?&amp;lt;/div&amp;gt;\r\n&amp;lt;p class=&amp;quot;mt-4&amp;quot;&amp;gt;Education is a broad discipline that includes learning how to teach others and understanding how people learn during different stages of their lives. The focus of what you study will depend on your interests: Is early childhood education a passion, or would you like to teach older learners? Are you interested in lifelong learning, education policy or curriculum design? Whatever your choice, you have a chance to impact the lives of others.&amp;lt;/p&amp;gt;\r\n&amp;lt;p class=&amp;quot;mt-4&amp;quot;&amp;gt;We offer high-quality teaching and thoughtfully developed undergraduate and postgraduate programmes. Further to this, we offer teacher development in diverse subject areas for pre- and in-service teachers. Our research interests are varied, ranging from Business Studies, Literacy and Multilingual Education to Early Childhood Development. Furthermore, the Faculty is committed to promoting our understanding of all aspects of society to improve democracy and the quality of life for a more inclusive society. In addition to its focus on research and teaching, FESS is deeply committed to playing a pivotal role in shaping public discourse and contributing to impactful public policies.&amp;lt;/p&amp;gt;\r\n&amp;lt;/div&amp;gt;',NULL,'2025-09-02 11:32:07',72);
+INSERT INTO `faculty` VALUES (2,'Faculty of Education and Social Science','&amp;lt;div class=&amp;quot;mt-2 text-justify&amp;quot;&amp;gt;\r\n&amp;lt;div class=&amp;quot;font-thin italic text-amucta-blue tension-question&amp;quot;&amp;gt;Why studying teacher education?&amp;lt;/div&amp;gt;\r\n&amp;lt;p class=&amp;quot;mt-4&amp;quot;&amp;gt;Education is a broad discipline that includes learning how to teach others and understanding how people learn during different stages of their lives. The focus of what you study will depend on your interests: Is early childhood education a passion, or would you like to teach older learners? Are you interested in lifelong learning, education policy or curriculum design? Whatever your choice, you have a chance to impact the lives of others.&amp;lt;/p&amp;gt;\r\n&amp;lt;p class=&amp;quot;mt-4&amp;quot;&amp;gt;We offer high-quality teaching and thoughtfully developed undergraduate and postgraduate programmes. Further to this, we offer teacher development in diverse subject areas for pre- and in-service teachers. Our research interests are varied, ranging from Business Studies, Literacy and Multilingual Education to Early Childhood Development. Furthermore, the Faculty is committed to promoting our understanding of all aspects of society to improve democracy and the quality of life for a more inclusive society. In addition to its focus on research and teaching, FESS is deeply committed to playing a pivotal role in shaping public discourse and contributing to impactful public policies.&amp;lt;/p&amp;gt;\r\n&amp;lt;/div&amp;gt;',1,'2025-09-02 11:32:07',72);
 /*!40000 ALTER TABLE `faculty` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -284,10 +288,10 @@ CREATE TABLE `images` (
   `name` varchar(25) DEFAULT NULL,
   `category` enum('gallery','slides','news','logo','icon','profile') DEFAULT NULL,
   `url` text DEFAULT NULL,
-  `created_up` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -296,6 +300,7 @@ CREATE TABLE `images` (
 
 LOCK TABLES `images` WRITE;
 /*!40000 ALTER TABLE `images` DISABLE KEYS */;
+INSERT INTO `images` VALUES (1,'slide1','slides','images/gallery/slides_68b7600d7a24a.webp','2025-09-02 21:22:21',72);
 /*!40000 ALTER TABLE `images` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -311,8 +316,9 @@ CREATE TABLE `level` (
   `name` varchar(100) DEFAULT NULL,
   `description` text DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -321,6 +327,7 @@ CREATE TABLE `level` (
 
 LOCK TABLES `level` WRITE;
 /*!40000 ALTER TABLE `level` DISABLE KEYS */;
+INSERT INTO `level` VALUES (1,'Undergraduate','certificate, diploma and bachelor','2025-09-02 20:00:59',72),(2,'Postgraduate','Masters to Higher','2025-09-02 20:01:20',72);
 /*!40000 ALTER TABLE `level` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -342,7 +349,7 @@ CREATE TABLE `news` (
   `attachment` varchar(255) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -351,6 +358,7 @@ CREATE TABLE `news` (
 
 LOCK TABLES `news` WRITE;
 /*!40000 ALTER TABLE `news` DISABLE KEYS */;
+INSERT INTO `news` VALUES (1,'/images/news/news_1_1756843462.webp','news 1','hello word','2025-09-02 20:04:22','2025-09-11 21:00:00','category1','/attachments/news/news_1_1756843462.pdf',72);
 /*!40000 ALTER TABLE `news` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -381,7 +389,7 @@ CREATE TABLE `program` (
   KEY `faculty_id` (`faculty_id`),
   CONSTRAINT `program_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `department` (`id`),
   CONSTRAINT `program_ibfk_2` FOREIGN KEY (`faculty_id`) REFERENCES `faculty` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -390,6 +398,7 @@ CREATE TABLE `program` (
 
 LOCK TABLES `program` WRITE;
 /*!40000 ALTER TABLE `program` DISABLE KEYS */;
+INSERT INTO `program` VALUES (1,'Bachelor of Arts in Geography, Environment and Natural Resources Management','BAGENARM',1,'3','he','je',1,120,2,2,'2023','2025-09-02 21:59:13',0);
 /*!40000 ALTER TABLE `program` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -408,7 +417,7 @@ CREATE TABLE `user_logins` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_logins_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=173 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=174 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -417,7 +426,7 @@ CREATE TABLE `user_logins` (
 
 LOCK TABLES `user_logins` WRITE;
 /*!40000 ALTER TABLE `user_logins` DISABLE KEYS */;
-INSERT INTO `user_logins` VALUES (172,72,'2025-09-02 09:23:18','::1');
+INSERT INTO `user_logins` VALUES (172,72,'2025-09-02 09:23:18','::1'),(173,72,'2025-09-02 19:53:53','::1');
 /*!40000 ALTER TABLE `user_logins` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -527,4 +536,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-09-02 20:12:52
+-- Dump completed on 2025-09-03  1:01:07

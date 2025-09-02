@@ -144,7 +144,7 @@ HTML;
                 }
                 imagewebp($img, $targetFile, 40); // 40 = low quality
                 imagedestroy($img);
-                $imagePath = "images/employees/" . $fileName; // relative path for DB
+                $imagePath = "/images/employees/" . $fileName; // relative path for DB
             } else {
                 echo json_encode(['status' => "error", 'message' => "Failed to process image"]);
                 return;

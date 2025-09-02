@@ -176,4 +176,15 @@ HTML;
         }
     }
 
+    public function get_simple()
+    {
+        $db=new Database();
+        $fcts=$db->select("select id,name from level");
+        if (sizeof($fcts)>0){
+            echo json_encode(["status"=>"success","data"=>$fcts]);
+        }else{
+            echo json_encode(['status'=>"error","message"=>"No data found"]);
+        }
+    }
+
 }

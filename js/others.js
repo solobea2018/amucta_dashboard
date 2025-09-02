@@ -368,7 +368,17 @@ function addLevel(){
     popHtml("Add Level",level_form);
 }
 function addProgram(){
-    var form=  `
+    Promise.all([
+        fetch("/level/get_simple").then(r => r.json()),
+        fetch("/faculty/get_simple").then(r => r.json()),
+        fetch("/department/get_simple").then(r => r.json())
+    ])
+        .then(([data1, data2, data3]) => {
+            if (data1.status==="success" && data2.status==="success" && data3.status==="success"){
+                const lvs = data1.data;
+                const fcts = data2.data;
+                const dps = data3.data;
+                var form=  `
     <form onsubmit="sendFormSweet(this,event)" action="/program/add">
 
   <input type="hidden" name="id" value="">
@@ -421,7 +431,7 @@ function addProgram(){
     <label>Faculty</label>
     <select name="faculty_id" class="form-control" required>
       <option value="">-- Select Faculty --</option>
-      <!-- Fill dynamically -->
+      ${fcts.map(f => `<option value="${f.id}">${f.name}</option>`).join("")}
     </select>
   </div>
 
@@ -430,7 +440,7 @@ function addProgram(){
     <label>Department</label>
     <select name="department_id" class="form-control" required>
       <option value="">-- Select Department --</option>
-      <!-- Fill dynamically -->
+      ${dps.map(f => `<option value="${f.id}">${f.name}</option>`).join("")}
     </select>
   </div>
 
@@ -439,7 +449,7 @@ function addProgram(){
     <label>Level</label>
     <select name="level_id" class="form-control" required>
       <option value="">-- Select Level --</option>
-      <!-- e.g. Certificate, Diploma, Bachelor -->
+      ${lvs.map(f => `<option value="${f.id}">${f.name}</option>`).join("")}
     </select>
   </div>
 
@@ -462,10 +472,19 @@ function addProgram(){
   </div>
 </form>
 `;
-    popHtml("Add Program",form);
+                popHtml("Add Program",form);
+            }else{
+                Swal.fire("Error!", "Something went wrong", "error");
+            }
+        })
+        .catch(err => {
+            Swal.fire("Error!", "Something went wrong", "error");
+        });
+
+
 }
 function addDepartment() {
-    fetch('/faculty/get')
+    fetch('/faculty/get_simple')
         .then(response => response.json())
         .then(data => {
             if (data.status === "success") {
@@ -524,10 +543,9 @@ function addDepartment() {
 }
 function addImage() {
     var image_form = `
-    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/gallery/add">
+    <form class="form-container" enctype="multipart/form-data" onsubmit="sendFormSweet(this,event)" action="/gallery/add">
 
       <input type="hidden" name="id" value="">
-      <input type="hidden" name="user_id" value="">
 
       <div class="form-group">
         <label for="name">Image Name</label>
@@ -556,12 +574,11 @@ function addImage() {
       </div>
 
       <div class="form-group">
-        <label for="url">Image URL</label>
-        <input type="text" 
-               id="url" 
-               name="url" 
-               class="form-control" 
-               placeholder="Enter image URL" 
+        <label for="image">Image file</label>
+        <input type="file" 
+               id="image" 
+               name="image" 
+               class="form-control"
                required>
       </div>
 

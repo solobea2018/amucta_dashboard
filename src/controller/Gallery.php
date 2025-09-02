@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -53,5 +54,109 @@ HTML;
 
         MainLayout::render($content);
     }
+    public function add()
+    {
+        $auth = new Authentication();
+        if (!$auth->is_admin()) {
+            echo json_encode(['status' => "error", 'message' => "Not Authorized"]);
+            return;
+        }
+
+        // Sanitize inputs
+        $name     = htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $category = htmlspecialchars(trim($_POST['category'] ?? ''), ENT_QUOTES, 'UTF-8');
+
+        $imagePath = null;
+
+        // Handle image upload securely
+        if (!empty($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $fileTmp  = $_FILES['image']['tmp_name'];
+            $fileSize = $_FILES['image']['size'];
+
+            // 1. Check file size (max 2MB)
+            if ($fileSize > 2 * 1024 * 1024) {
+                echo json_encode(['status' => "error", 'message' => "Image size must be less than 2MB"]);
+                return;
+            }
+
+            // 2. Validate image type
+            $allowedMime = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            $fileMime = mime_content_type($fileTmp);
+
+            if (!in_array($fileMime, $allowedMime)) {
+                echo json_encode(['status' => "error", 'message' => "Only JPG, PNG, GIF, or WEBP images are allowed"]);
+                return;
+            }
+
+            // 3. Generate safe filename (prefix category + unique ID)
+            $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', strtolower($category));
+            $uniqueId = uniqid();
+            $fileName = $safeName . "_" . $uniqueId . ".webp";
+
+            // 4. Destination folder
+            $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/images/gallery/";
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            $targetFile = $uploadDir . $fileName;
+
+            // 5. Convert to WebP
+            switch ($fileMime) {
+                case 'image/jpeg':
+                    $img = imagecreatefromjpeg($fileTmp);
+                    break;
+                case 'image/png':
+                    $img = imagecreatefrompng($fileTmp);
+                    imagepalettetotruecolor($img);
+                    imagealphablending($img, true);
+                    imagesavealpha($img, true);
+                    break;
+                case 'image/gif':
+                    $img = imagecreatefromgif($fileTmp);
+                    break;
+                case 'image/webp':
+                    $img = imagecreatefromwebp($fileTmp);
+                    break;
+                default:
+                    $img = null;
+            }
+
+            if ($img) {
+                if (!imageistruecolor($img)) {
+                    $trueColor = imagecreatetruecolor(imagesx($img), imagesy($img));
+                    imagecopy($trueColor, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
+                    imagedestroy($img);
+                    $img = $trueColor;
+                }
+                imagewebp($img, $targetFile, 60); // medium quality for gallery
+                imagedestroy($img);
+                $imagePath = "/images/gallery/" . $fileName; // relative path for DB
+            } else {
+                echo json_encode(['status' => "error", 'message' => "Failed to process image"]);
+                return;
+            }
+        } else {
+            echo json_encode(['status' => "error", 'message' => "Image file is required"]);
+            return;
+        }
+
+        // Insert into database
+        $db = new Database();
+        $user_id = (new Authentication())->get_authenticated_user()->getId();
+        $galleryData = [
+            'name'     => $name,
+            'category' => $category,
+            'url'     => $imagePath,
+            'user_id'  => $user_id,
+            'created_at' => date("Y-m-d H:i:s")
+        ];
+
+        if ($db->insert("images", $galleryData)) {
+            echo json_encode(['status' => "success", 'message' => "Image added successfully"]);
+        } else {
+            echo json_encode(['status' => "error", 'message' => "Failed to add image"]);
+        }
+    }
+
 
 }

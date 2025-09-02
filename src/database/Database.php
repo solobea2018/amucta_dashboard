@@ -1203,10 +1203,10 @@ FROM users";
     public function save_program(Program $program): bool
     {
         $stmt = $this->con->prepare("
-            INSERT INTO programs
+            INSERT INTO program
             (name, short_name, intakes, duration, capacity, 
              accreditation_year, faculty_id, department_id, level_id, 
-             description, content, created_by, created_at) 
+             description, content, user_id, created_at) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
@@ -1252,7 +1252,7 @@ FROM users";
     }
     public function find_program_by_name($name, $faculty_id): bool
     {
-        $stmt = $this->con->prepare("SELECT id FROM programs WHERE name = ? AND faculty_id = ? LIMIT 1");
+        $stmt = $this->con->prepare("SELECT id FROM program WHERE name = ? AND faculty_id = ? LIMIT 1");
         $stmt->bind_param("si", $name, $faculty_id);
         $stmt->execute();
         $stmt->store_result();
