@@ -172,8 +172,4 @@ HTML;
             echo json_encode(['status' => "error", 'message' => "Failed to add employee"]);
         }
     }
-
-
-
-
 }
