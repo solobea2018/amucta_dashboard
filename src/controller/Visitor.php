@@ -16,7 +16,8 @@ class Visitor
 
     public function save()
     {
-
+        $input = json_decode(file_get_contents("php://input"), true);
+        echo json_encode($input);
     }
 
 }
