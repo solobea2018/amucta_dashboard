@@ -16,6 +16,7 @@
       "ext-gd": "*",
       "ext-fileinfo": "*",
       "ext-mbstring": "*",
-      "ext-mysqli": "*"
+      "ext-mysqli": "*",
+      "ext-curl": "*"
     }
 }
