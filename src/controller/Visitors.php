@@ -6,7 +6,7 @@ namespace Solobea\Dashboard\controller;
 
 use Solobea\Dashboard\database\Database;
 
-class Visitor
+class Visitors
 {
     public function list_all()
     {

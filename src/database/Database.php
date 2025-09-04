@@ -15,13 +15,9 @@ class Database
 {
     private $host="localhost";
 
-    /*private $user="amuctaac_user";
-    private $db="amuctaac_database";
-    private $pass="@eight8viiiH";*/
-
-    private $user="root";
+    private $user="amucta_user";
     private $db="dashboard";
-    private $pass="";
+    private $pass="@eight8viiiH";
 
     private $con;
 

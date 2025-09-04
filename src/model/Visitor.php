@@ -17,7 +17,7 @@ class Visitor
     private $visitor_session;
 
     /**
-     * Visitor constructor.
+     * Visitors constructor.
      */
     public function __construct()
     {
