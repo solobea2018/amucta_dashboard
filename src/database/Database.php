@@ -13,7 +13,8 @@ use Solobea\Go\errors\ErrorReporter;
 
 class Database
 {
-    private $host="localhost";
+    //private $host="localhost";
+    private $host="data.tetea.store";
 
     private $user="amucta_user";
     private $db="dashboard";
@@ -1194,6 +1195,17 @@ FROM users";
         $stmt->close();
         return $data;
     }
+    public function selectOne($sql): ?array
+    {
+        $result = $this->con->query($sql);
+
+        if ($result && $result->num_rows > 0) {
+            return $result->fetch_assoc(); // return first row as array
+        }
+
+        return null; // no result
+    }
+
 
     //Program
     public function save_program(Program $program): bool

@@ -7,6 +7,7 @@ namespace Solobea\Dashboard\controller;
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\model\Visitor;
+use Solobea\Dashboard\view\MainLayout;
 use Solobea\Go\errors\ErrorReporter;
 
 class Visitors
@@ -18,15 +19,9 @@ class Visitors
     public function __construct()
     {
         header("Access-Control-Allow-Origin: *");
-
-// Allow common methods
         header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-
-// Allow headers Angular sends (especially Content-Type)
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-
-// Always return JSON
-        header("Content-Type: application/json; charset=UTF-8");
+        //header("Content-Type: application/json; charset=UTF-8");
     }
 
     public function list_all()
@@ -37,6 +32,7 @@ class Visitors
 
     public function save()
     {
+        header("Content-Type: application/json");
         $input = json_decode(file_get_contents("php://input"), true);
         $ip=$this->getIPAddress();
         $currentUrl = $input['url'];
@@ -119,5 +115,144 @@ class Visitors
         }
         return $ip;
     }
+    public function dashboard()
+    {
+        $db = new Database();
+
+        // Total visitors
+        $totalVisitors = $db->selectOne("SELECT COUNT(*) as total FROM visitors")['total'] ?? 0;
+
+        // Registered vs Guest
+        $registered = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE is_registered = 1")['total'] ?? 0;
+        $guests = $totalVisitors - $registered;
+
+        // IP Type
+        $ipv4 = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE ip_type = 'IPv4'")['total'] ?? 0;
+        $ipv6 = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE ip_type = 'IPv6'")['total'] ?? 0;
+
+        // Top countries
+        $topCountries = $db->select("SELECT country, COUNT(*) as total FROM visitors 
+                                WHERE country IS NOT NULL AND country <> '' 
+                                GROUP BY country 
+                                ORDER BY total DESC LIMIT 5");
+
+        // Top visited URLs
+        $topUrls = $db->select("SELECT url, COUNT(*) as total FROM visitors 
+                            WHERE url IS NOT NULL AND url <> '' 
+                            GROUP BY url 
+                            ORDER BY total DESC LIMIT 5");
+
+        // Prepare country list
+        $countryList = "";
+        foreach ($topCountries as $c) {
+            $countryList .= "<li>{$c['country']} - {$c['total']} visits</li>";
+        }
+        if (!$countryList) $countryList = "<li>No data</li>";
+
+        // Prepare URL list
+        $urlList = "";
+        foreach ($topUrls as $u) {
+            $urlList .= "<li>{$u['url']} - {$u['total']} hits</li>";
+        }
+        if (!$urlList) $urlList = "<li>No data</li>";
+
+        $content = <<<HTML
+<div class="dashboard grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+
+    <!-- Overview Cards -->
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold">Total Visitors</h3>
+        <p class="text-3xl text-blue-600">$totalVisitors</p>
+    </div>
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold">Registered Users</h3>
+        <p class="text-3xl text-green-600">$registered</p>
+        <span class="text-sm text-gray-500">Guests: $guests</span>
+    </div>
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold">IP Type</h3>
+        <p>IPv4: $ipv4</p>
+        <p>IPv6: $ipv6</p>
+    </div>
+
+    <!-- Top Countries -->
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold mb-2">Top Countries</h3>
+        <ul class="list-disc pl-6">
+            $countryList
+        </ul>
+    </div>
+
+    <!-- Top URLs -->
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold mb-2">Most Visited Pages</h3>
+        <ul class="list-disc pl-6">
+            $urlList
+        </ul>
+    </div>
+
+</div>
+HTML;
+        $head='<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>';
+
+        MainLayout::render($content,$head,"Visitors");
+    }
+
+    public function data()
+    {
+        $db = new Database();
+
+        // All-time
+        $totalVisitors = $db->selectOne("SELECT COUNT(*) as total FROM visitors")['total'] ?? 0;
+
+        // Today
+        $todayVisitors = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE DATE(date) = CURDATE()")['total'] ?? 0;
+
+        // This week (Monday–Sunday)
+        $weekVisitors = $db->selectOne("SELECT COUNT(*) as total FROM visitors 
+                                    WHERE YEARWEEK(date, 1) = YEARWEEK(CURDATE(), 1)")['total'] ?? 0;
+
+        // Registered vs Guest
+        $registered = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE is_registered = 1")['total'] ?? 0;
+        $guests = $totalVisitors - $registered;
+
+        // IP Type
+        $ipv4 = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE ip_type = 'IPv4'")['total'] ?? 0;
+        $ipv6 = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE ip_type = 'IPv6'")['total'] ?? 0;
+
+        // Top countries
+        $topCountries = $db->select("SELECT country, COUNT(*) as total FROM visitors 
+                                WHERE country IS NOT NULL AND country <> '' 
+                                GROUP BY country 
+                                ORDER BY total DESC LIMIT 5");
+
+        // Top visited URLs
+        $topUrls = $db->select("SELECT url, COUNT(*) as total FROM visitors 
+                            WHERE url IS NOT NULL AND url <> '' 
+                            GROUP BY url 
+                            ORDER BY total DESC LIMIT 5");
+
+        // Build JSON
+        $response = [
+            "totals" => [
+                "all_time" => $totalVisitors,
+                "today" => $todayVisitors,
+                "this_week" => $weekVisitors,
+            ],
+            "registered" => $registered,
+            "guests" => $guests,
+            "ip" => [
+                "ipv4" => $ipv4,
+                "ipv6" => $ipv6,
+            ],
+            "top_countries" => $topCountries,
+            "top_urls" => $topUrls
+        ];
+
+        header('Content-Type: application/json');
+        echo json_encode($response);
+    }
+
+
 
 }
