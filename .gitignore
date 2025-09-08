@@ -2,4 +2,5 @@ vendor/
 .idea/
 attachments/
 files/
+assets/
 composer.lock
