@@ -214,6 +214,84 @@ function editContent(id) {
 
     document.body.appendChild(overlay);
 }
+function viewEmployee(id) {
+    fetch(`/employee/get_employee/${id}`)
+        .then((res) => res.json())
+        .then((res) => {
+                if (!res) {
+                    alert("Employee not found!");
+                    return;
+                }
+                console.log(res)
+                if (res.status!=="success"){
+
+                    Swal.fire("Error","Unknown server error","error");
+                    return;
+                }
+                var emp=res.data;
+                const overlay = document.createElement("div");
+                overlay.className = "popup-overlay";
+
+                overlay.innerHTML = `
+        <div class="popup-editor">
+          <div class="popup-header">
+            <span>Employee Details</span>
+            <button onclick="this.closest('.popup-overlay').remove()">✖</button>
+          </div>
+
+          <div class="popup-body">
+            <div class="bg-white shadow-md rounded-xl p-6 text-sm text-gray-800 space-y-3">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><span class="font-semibold text-gray-600">Name:</span> ${emp.name}</div>
+                <div><span class="font-semibold text-gray-600">Title:</span> ${emp.title || "-"}</div>
+                
+                <div><span class="font-semibold text-gray-600">Email:</span> 
+                  <a href="mailto:${emp.email}" class="text-blue-600 hover:underline">${emp.email || "-"}</a>
+                </div>
+                <div><span class="font-semibold text-gray-600">Phone:</span> 
+                  <a href="tel:${emp.phone}" class="text-blue-600 hover:underline">${emp.phone || "-"}</a>
+                </div>
+                
+                <div><span class="font-semibold text-gray-600">Qualification:</span> ${emp.qualification || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Entry Year:</span> ${emp.entry_year || "-"}</div>
+                
+                <div><span class="font-semibold text-gray-600">Department ID:</span> ${emp.department_id || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Branch:</span> ${emp.branch || "-"}</div>
+                
+                <div><span class="font-semibold text-gray-600">Active Role:</span> ${emp.role_title || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Role Start Date:</span> ${emp.start_date || "-"}</div>
+                
+              <div><span class="font-semibold text-gray-600">CV:</span> 
+                  ${emp.cv_url
+                                ? `<a href="${emp.cv_url}" target="_blank" class="text-green-600 font-medium hover:underline">📄 Download CV</a>`
+                                : "N/A"}
+                </div>
+            </div>
+
+  <div class="pt-4 border-t">
+    <span class="font-semibold text-gray-600 block mb-2">Profile:</span>
+    ${emp.profile
+                    ? `<img src="${emp.profile}" alt="Profile" class="rounded-lg shadow max-w-[150px]">`
+                    : `<span class="text-gray-500">No image</span>`}
+  </div>
+</div>
+          </div>
+
+          <div class="popup-footer">
+            <button onclick="this.closest('.popup-overlay').remove()" class="cursor-pointer">Close</button>
+          </div>
+        </div>
+      `;
+
+                document.body.appendChild(overlay);
+            })
+
+        .catch(err=>{
+            console.error("Error loading employee:", err);
+            alert("Could not load employee details.");
+    });
+}
+
 
 function addEmployee() {
     var employee_form = `
@@ -736,6 +814,30 @@ function addAttachment() {
     `;
     popHtml("Add Attachment", attachment_form);
 }
+function addRole() {
+    var role_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee-role/add">
+
+      <input type="hidden" name="id" value="">
+      <input type="hidden" name="user_id" value="">
+
+      <div class="form-group">
+        <label for="name">Role Name</label>
+        <input type="text" 
+               id="name" 
+               name="name" 
+               class="form-control" 
+               placeholder="Enter attachment name" 
+               required>
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+
+    </form>
+    `;
+    popHtml("Add Role", role_form);
+}
 function addEvent() {
     var event_form = `
     <form class="form-container" enctype="multipart/form-data" onsubmit="sendFormSweet(this,event)" action="/events/add">
@@ -867,5 +969,34 @@ function deleteResource(table, id) {
             Swal.fire("Error!", "Something went wrong", "error");
         });
 }
+function updateResource(table, id, data) {
+    fetch('/api/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            table: table,
+            id: id,
+            data: data
+        })
+    })
+        .then(response => response.json())
+        .then(dataResponse => {
+            if (dataResponse.status === "success") {
+                Swal.fire("Updated!", dataResponse.message, "success").then(() => {
+                    // Refresh the page
+                    location.reload();
+                });
+            } else {
+                Swal.fire("Error!", dataResponse.message || "Failed to update resource", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Update error:", error);
+            Swal.fire("Error!", "Something went wrong", "error");
+        });
+}
+
 
 

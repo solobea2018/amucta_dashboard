@@ -1093,6 +1093,9 @@ button:hover {
 .btn-delete {
     background-color: #e74c3c;
 }
+.grid { display: grid; grid-template-columns: repeat(1, minmax(0,1fr)); }
+@media (min-width:768px){ .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.gap-0{gap:0 !important}.gap-1{gap:.25rem !important}.gap-2{gap:.5rem !important}.gap-3{gap:1rem !important}.gap-4{gap:1.5rem !important}.gap-5{gap:3rem !important}
 .btn-danger {
     background-color: #e74c3c;
 }

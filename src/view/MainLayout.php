@@ -56,10 +56,13 @@ HTML;
     <a href="/news/list" class="btn btn-primary"><i class="bi bi-newspaper mx-2"></i>News</a>
     <a href="/events/list" class="btn btn-primary"><i class="bi bi-calendar-event mx-2"></i>Events</a>
     <a href="/attachment/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Attachments</a>
+    <a href="/employee-role/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Employee Role</a>
     <a href="/employee/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Employee</a>
     <a href="/users/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Users</a>
     <a href="/gallery/list" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Gallery</a>
+    <a href="/visitors/dashboard" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Visitors</a>
     <a href="/login" class="btn btn-primary"><i class="bi bi-arrow-bar-left mx-2"></i>Login</a>
+    <a href="/logout" class="btn btn-primary"><i class="bi bi-arrow-bar-left mx-2"></i>Logout</a>
 </div> 
 menu;
 

@@ -20,8 +20,9 @@ $path = $_SERVER['PATH_INFO']??"";
 $path_array = explode("/", trim($path, "/")); // Trim extra slashes
 
 if (!empty($path_array[0])) {
-    $page = ucfirst(strtolower($path_array[0]));
-    $full_path = "Solobea\\Dashboard\\controller\\" . $page; // Remove leading backslash
+    $raw = strtolower($path_array[0]);               // "employee-role"
+    $page = str_replace(' ', '', ucwords(str_replace('-', ' ', $raw)));
+    $full_path = "Solobea\\Dashboard\\controller\\" . $page;
     $method=lcfirst($path_array[1]??"");
     $params=[];
     if (sizeof($path_array)>2){

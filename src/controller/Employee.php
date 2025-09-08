@@ -4,8 +4,10 @@
 namespace Solobea\Dashboard\controller;
 
 
+use http\Params;
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
+use Solobea\Dashboard\utils\Resource;
 use Solobea\Dashboard\view\MainLayout;
 
 class Employee
@@ -25,10 +27,11 @@ class Employee
 <td>{$emp['phone']}</td>
 <td>{$emp['qualification']}</td>
 <td>{$emp['entry_year']}</td>
-<td>" . ($emp['active'] ? 'Yes' : 'No') . "</td>
+<td><a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" . ($emp['active'] ? 'Yes' : 'No') . "</a></td>
 <td>
 <button class='btn btn-complete' onclick='editEmployee({$emp['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteResource(\"employee\",{$emp['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-mark-read' onclick='addEmployeeRole({$emp['id']})'>Role<i class='bi bi-pencil'></i></button>
+<button class='btn btn-danger hidden' onclick='deleteResource(\"employee\",{$emp['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewEmployee({$emp['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
@@ -61,6 +64,80 @@ class Employee
 HTML;
 
         MainLayout::render($content);
+    }
+
+    public function active($params)
+    {
+        $auth = new Authentication();
+        if (!$auth->is_admin()) {
+            echo Resource::getErrorPage("Not authorized");
+            return;
+        }
+        if (isset($params) && !empty($params)) {
+            try {
+                $id = intval($params[0]);
+                $db = new Database();
+
+                // Get current active value
+                $row = $db->select("SELECT active FROM employee WHERE id = {$id} LIMIT 1");
+                if (!$row) {
+                    echo Resource::getErrorPage("Employee not found");
+                    return;
+                }
+
+                $current = intval($row[0]['active']);
+                $new = $current === 1 ? 0 : 1;
+
+                // Update with toggled value
+                if ($db->update("employee", ["active" => $new], ["id" => $id])) {
+                    echo Resource::getSuccessPage("Employee status updated successfully!");
+                } else {
+                    echo Resource::getErrorPage("Failed to update employee status");
+                }
+            } catch (\Exception $exception) {
+                echo Resource::getErrorPage($exception->getMessage());
+            }
+        } else {
+            echo Resource::getErrorPage("Invalid Request");
+        }
+    }
+
+    public function get_employee($params)
+    {
+        if (isset($params) && !empty($params)) {
+            try {
+                $id = intval($params[0]);
+                $db = new Database();
+
+                // Fetch employee by ID
+                $employee = $db->select("SELECT e.*,er.role_title, er.start_date FROM employee e left join employee_role er on e.id = er.employee_id WHERE e.id = {$id} and e.active=1 LIMIT 1");
+
+                if ($employee && count($employee) > 0) {
+                    // Return JSON response
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        "status" => "success",
+                        "data" => $employee[0]
+                    ]);
+                } else {
+                    // Employee not found
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Employee not found"
+                    ]);
+                }
+            } catch (\Exception $exception) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => $exception->getMessage()
+                ]);
+            }
+        } else {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Invalid Request"
+            ]);
+        }
     }
 
     public function add()
