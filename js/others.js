@@ -268,12 +268,12 @@ function viewEmployee(id) {
                 </div>
             </div>
 
-  <div class="pt-4 border-t">
-    <span class="font-semibold text-gray-600 block mb-2">Profile:</span>
-    ${emp.profile
-                    ? `<img src="${emp.profile}" alt="Profile" class="rounded-lg shadow max-w-[150px]">`
-                    : `<span class="text-gray-500">No image</span>`}
-  </div>
+            <div class="pt-4 border-t">
+            <span class="font-semibold text-gray-600 block mb-2">Profile:</span>
+            ${emp.profile
+                            ? `<img src="${emp.profile}" width="50px" height="50px" alt="Profile" class="rounded-lg shadow">`
+                            : `<span class="text-gray-500">No image</span>`}
+            </div>
 </div>
           </div>
 
