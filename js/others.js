@@ -229,6 +229,7 @@ function viewEmployee(id) {
                     return;
                 }
                 var emp=res.data;
+                var roles=res.roles;
                 const overlay = document.createElement("div");
                 overlay.className = "popup-overlay";
 
@@ -258,8 +259,23 @@ function viewEmployee(id) {
                 <div><span class="font-semibold text-gray-600">Department ID:</span> ${emp.department_id || "-"}</div>
                 <div><span class="font-semibold text-gray-600">Branch:</span> ${emp.branch || "-"}</div>
                 
-                <div><span class="font-semibold text-gray-600">Active Role:</span> ${emp.role_title || "-"}</div>
-                <div><span class="font-semibold text-gray-600">Role Start Date:</span> ${emp.start_date || "-"}</div>
+                <div class="mt-3">
+                  <span class="font-semibold text-gray-600">Roles:</span>
+                  <div class="ml-4 space-y-1">
+                    ${roles.map(r => `
+                      <div class="flex items-center gap-3">
+                        <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-sm font-medium">
+                          ${r.role_name}
+                        </span>
+                        <span class="text-gray-500 text-sm">(${r.start_date || "-"})</span>
+                        <span class="text-sm ${r.active === 1 ? "text-green-600 font-semibold" : "text-red-500"}">
+                          ${r.active === 1 ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+
                 
               <div><span class="font-semibold text-gray-600">CV:</span> 
                   ${emp.cv_url
