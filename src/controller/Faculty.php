@@ -119,7 +119,7 @@ HTML;
     public function get_simple()
     {
         $db=new Database();
-        $fcts=$db->select("select id,name from faculty where active=1");
+        $fcts=$db->select("select id,name from faculty where active=1 order by name");
         if (sizeof($fcts)>0){
             echo json_encode(["status"=>"success","data"=>$fcts]);
         }else{
@@ -133,6 +133,6 @@ HTML;
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
-        echo json_encode((new Database())->select("select * from faculty"));
+        echo json_encode((new Database())->select("select * from faculty order by name"));
     }
 }

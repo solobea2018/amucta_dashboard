@@ -12,7 +12,7 @@ class EmployeeRole
 {
     public function list()
     {
-        $query = "SELECT * FROM role_group";
+        $query = "SELECT * FROM role_group order by name";
         $attachments = (new Database())->select($query);
         $tr = "";
 
@@ -96,5 +96,15 @@ HTML;
         header("Content-Type: application/json");
         echo json_encode((new Database())->select("select * from role_group"));
     }
-
+    public function roles()
+    {
+        header("Content-Type: application/json");
+        $db=new Database();
+        $fcts=$db->select("select id,name from role_group order by name");
+        if (sizeof($fcts)>0){
+            echo json_encode(["status"=>"success","data"=>$fcts]);
+        }else{
+            echo json_encode(['status'=>"error","message"=>"No data found"]);
+        }
+    }
 }

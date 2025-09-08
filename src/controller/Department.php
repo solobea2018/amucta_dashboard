@@ -14,7 +14,7 @@ class Department
     {
         $query = "SELECT d.*, f.name as faculty_name 
               FROM department d 
-              LEFT JOIN faculty f ON d.faculty_id = f.id";
+              LEFT JOIN faculty f ON d.faculty_id = f.id order by category,name";
         $departments = (new Database())->select($query);
         $tr = "";
 
@@ -22,9 +22,8 @@ class Department
             foreach ($departments as $dept) {
                 $facultyName = $dept['faculty_name'] ?? 'N/A';
                 $tr .= "<tr>
-<td>{$dept['name']}</td>
+<td>{$dept['name']} <span class='text-blue-500'><b>({$dept['category']})</b></span></td>
 <td>{$facultyName}</td>
-<td>{$dept['description']}</td>
 <td>
 <button class='btn btn-complete' onclick='editDepartment({$dept['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"department\",{$dept['id']})'>Delete <i class='bi bi-trash'></i></button>
@@ -39,14 +38,13 @@ class Department
         $content = <<<HTML
 <div class="flex flex-col">
     <div class="w-full">
-        <button class="btn btn-complete" onclick="addDepartment()">Add Department</button>
+        <button class="btn btn-complete" onclick="addDepartment()">Add Department/Unit</button>
     </div>
     <table class="solobea-table">
         <thead>
             <tr>
                 <th>Department Name</th>
-                <th>Faculty</th>
-                <th>Description</th>
+                <th>Faculty</th>              
                 <th>Actions</th>
             </tr>
         </thead>
@@ -73,6 +71,7 @@ HTML;
         // Sanitize inputs
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
         $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+        $category = isset($_POST['category']) ? trim($_POST['category']) : '';
         $faculty_id = isset($_POST['faculty_id']) ? intval($_POST['faculty_id']) : null;
         $user_id = $auth->get_authenticated_user()->getId();
 
@@ -106,6 +105,7 @@ HTML;
         $inserted = $db->insert("department", [
             'name' => $name,
             'description' => $description,
+            'category'=> $category,
             'faculty_id' => $faculty_id,
             'user_id' => $user_id,
             'created_at' => date("Y-m-d H:i:s")
@@ -126,8 +126,31 @@ HTML;
 
     public function get_simple()
     {
+        header("Content-Type: application/json");
         $db=new Database();
-        $fcts=$db->select("select id,name from department");
+        $fcts=$db->select("select id,name from department where category='department' order by name");
+        if (sizeof($fcts)>0){
+            echo json_encode(["status"=>"success","data"=>$fcts]);
+        }else{
+            echo json_encode(['status'=>"error","message"=>"No data found"]);
+        }
+    }
+    public function departments()
+    {
+        header("Content-Type: application/json");
+        $db=new Database();
+        $fcts=$db->select("select id,name from department where category='department' order by name");
+        if (sizeof($fcts)>0){
+            echo json_encode(["status"=>"success","data"=>$fcts]);
+        }else{
+            echo json_encode(['status'=>"error","message"=>"No data found"]);
+        }
+    }
+    public function units()
+    {
+        header("Content-Type: application/json");
+        $db=new Database();
+        $fcts=$db->select("select id,name from department where category='unit' order by name");
         if (sizeof($fcts)>0){
             echo json_encode(["status"=>"success","data"=>$fcts]);
         }else{
@@ -141,7 +164,7 @@ HTML;
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
-        echo json_encode((new Database())->select("select * from department"));
+        echo json_encode((new Database())->select("select * from department order by name"));
     }
 
 }

@@ -4,7 +4,6 @@
 namespace Solobea\Dashboard\controller;
 
 
-use http\Params;
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\utils\Resource;
@@ -14,7 +13,7 @@ class Employee
 {
     public function list()
     {
-        $query = "SELECT * FROM employee";
+        $query = "SELECT * FROM employee order by name";
         $employees = (new Database())->select($query);
         $tr = "";
 
@@ -23,21 +22,18 @@ class Employee
                 $tr .= "<tr>
 <td>{$emp['name']}</td>
 <td>{$emp['title']}</td>
-<td>{$emp['email']}</td>
 <td>{$emp['phone']}</td>
-<td>{$emp['qualification']}</td>
-<td>{$emp['entry_year']}</td>
 <td><a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" . ($emp['active'] ? 'Yes' : 'No') . "</a></td>
 <td>
 <button class='btn btn-complete' onclick='editEmployee({$emp['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-mark-read' onclick='addEmployeeRole({$emp['id']})'>Role<i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger hidden' onclick='deleteResource(\"employee\",{$emp['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-danger hidden' onclick='deleteResourcet(\"employee\",{$emp['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewEmployee({$emp['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
             }
         } else {
-            $tr = "<tr><td colspan='8'>No employees found</td></tr>";
+            $tr = "<tr><td colspan='5'>No employees found</td></tr>";
         }
 
         $content = <<<HTML
@@ -49,11 +45,8 @@ class Employee
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Title</th>
-                <th>Email</th>
+                <th>Title</th>               
                 <th>Phone</th>
-                <th>Qualification</th>
-                <th>Entry Year</th>
                 <th>Active</th>
                 <th>Actions</th>
             </tr>
@@ -110,7 +103,7 @@ HTML;
                 $db = new Database();
 
                 // Fetch employee by ID
-                $employee = $db->select("SELECT e.*,er.role_title, er.start_date FROM employee e left join employee_role er on e.id = er.employee_id WHERE e.id = {$id} and e.active=1 LIMIT 1");
+                $employee = $db->select("SELECT * FROM employee WHERE id = {$id} LIMIT 1");
 
                 if ($employee && count($employee) > 0) {
                     // Return JSON response
@@ -249,6 +242,53 @@ HTML;
             echo json_encode(['status' => "error", 'message' => "Failed to add employee"]);
         }
     }
+    public function add_role()
+    {
+        $auth = new Authentication();
+        if (!$auth->is_admin()) {
+            echo json_encode(['status' => "error", 'message' => "Not Authorized"]);
+            return;
+        }
+
+        // Sanitize inputs
+        $employee_id    = intval($_POST['employee_id'] ?? 0);
+        $role_id        = intval($_POST['role_title'] ?? 0);
+        $title        = intval($_POST['role_name'] ?? 0);
+        $unit_id        = intval($_POST['unit'] ?? 0);
+        $department_id  = intval($_POST['department_id'] ?? 0);
+        $start_date     = htmlspecialchars(trim($_POST['start_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $end_date       = htmlspecialchars(trim($_POST['end_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $active         = intval($_POST['active'] ?? 1);
+
+        // Validate required fields
+        if (!$employee_id || !$role_id || !$start_date) {
+            echo json_encode(['status' => "error", 'message' => "Employee, Role, and Start Date are required"]);
+            return;
+        }
+
+        // Prepare data for insertion
+        $db = new Database();
+        $user_id = $auth->get_authenticated_user()->getId();
+        $roleData = [
+            'employee_id'   => $employee_id,
+            'role_name'    => $title,
+            'role_group_id'       => $role_id,
+            'unit_id'       => $unit_id ?: null,
+            'department_id' => $department_id ?: null,
+            'start_date'    => $start_date,
+            'end_date'      => $end_date ?: null,
+            'user_id'       => $user_id,
+            'active'        => $active
+        ];
+
+        // Insert into employee_role table
+        if ($db->insert("employee_role", $roleData)) {
+            echo json_encode(['status' => "success", 'message' => "Role added successfully"]);
+        } else {
+            echo json_encode(['status' => "error", 'message' => "Failed to add role"]);
+        }
+    }
+
     public function get()
     {
         header("Access-Control-Allow-Origin: *");
@@ -256,6 +296,6 @@ HTML;
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
-        echo json_encode((new Database())->select("select * from employee"));
+        echo json_encode((new Database())->select("select * from employee order by name"));
     }
 }

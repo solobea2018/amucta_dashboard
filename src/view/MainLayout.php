@@ -50,7 +50,7 @@ HTML;
 <div class="flex flex-row flex-wrap">
     <a href="/" class="btn btn-primary"><i class="bi bi-house mx-2"></i>Home</a>
     <a href="/faculty/list" class="btn btn-primary"><i class="bi bi-dash-circle mx-2"></i>Faculty</a>
-    <a href="/department/list" class="btn btn-primary"><i class="bi bi-house mx-2"></i>Department</a>
+    <a href="/department/list" class="btn btn-primary"><i class="bi bi-house mx-2"></i>Department/Unit</a>
     <a href="/Level/list" class="btn btn-primary"><i class="bi bi-graph-up mx-2"></i>Level</a>
     <a href="/program/list" class="btn btn-primary"><i class="bi bi-book mx-2"></i>Program</a>
     <a href="/news/list" class="btn btn-primary"><i class="bi bi-newspaper mx-2"></i>News</a>
@@ -58,6 +58,7 @@ HTML;
     <a href="/attachment/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Attachments</a>
     <a href="/employee-role/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Employee Role</a>
     <a href="/employee/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Employee</a>
+    <a href="/employee-research/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Employee Research</a>
     <a href="/users/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Users</a>
     <a href="/gallery/list" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Gallery</a>
     <a href="/visitors/dashboard" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Visitors</a>

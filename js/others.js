@@ -291,8 +291,6 @@ function viewEmployee(id) {
             alert("Could not load employee details.");
     });
 }
-
-
 function addEmployee() {
     var employee_form = `
     <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee/add">
@@ -597,11 +595,21 @@ function addDepartment() {
         <label for="faculty_id">Faculty</label>
         <select id="faculty_id" 
                 name="faculty_id" 
-                class="form-control" 
-                required>
+                class="form-control">
           <option value="">-- Select Faculty --</option>
           ${fcts.map(f => `<option value="${f.id}">${f.name}</option>`).join("")}
           <!-- dynamically load faculties here -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category" 
+                name="category" 
+                class="form-control" 
+                required>
+          <option value="">-- Select Category --</option>
+          <option value="department">Department</option>
+          <option value="unit">Unit</option>
         </select>
       </div>
 
@@ -610,7 +618,7 @@ function addDepartment() {
       </div>
     </form>
     `;
-                popHtml("Add Department", dept_form);
+                popHtml("Add Department/Unit", dept_form);
             } else {
                 Swal.fire("Error!", data.message || "Something went wrong", "error");
             }
@@ -943,32 +951,45 @@ function addUser() {
     popHtml("Add User", user_form);
 }
 function deleteResource(table, id) {
-    fetch('/api/delete', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            table: table,
-            id: id
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                Swal.fire("Deleted!", data.message, "success").then(() => {
-                    // Refresh the page
-                    location.reload();
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "This action cannot be undone!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/api/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    table: table,
+                    id: id
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        Swal.fire("Deleted!", data.message, "success").then(() => {
+                            location.reload(); // Refresh page after deletion
+                        });
+                    } else {
+                        Swal.fire("Error!", data.message || "Failed to delete resource", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Delete error:", error);
+                    Swal.fire("Error!", "Something went wrong", "error");
                 });
-            } else {
-                Swal.fire("Error!", data.message || "Failed to delete resource", "error");
-            }
-        })
-        .catch(error => {
-            console.error("Delete error:", error);
-            Swal.fire("Error!", "Something went wrong", "error");
-        });
+        }
+    });
 }
+
 function updateResource(table, id, data) {
     fetch('/api/update', {
         method: 'POST',
@@ -997,6 +1018,224 @@ function updateResource(table, id, data) {
             Swal.fire("Error!", "Something went wrong", "error");
         });
 }
+function addEmployeeRole(empId) {
+    Promise.all([
+        fetch("/employee-role/roles").then(r => r.json()),
+        fetch("/department/departments").then(r => r.json()),
+        fetch("/department/units").then(r => r.json())
+    ])
+        .then(([rolesData, deptsData, unitsData]) => {
+            if (rolesData.status === "success" && deptsData.status === "success" && unitsData.status === "success") {
+                const roles = rolesData.data;
+                const departments = deptsData.data;
+                const units = unitsData.data;
+
+                const form = `
+<form onsubmit="sendFormSweet(this,event)" action="/employee/add_role">
+
+  <input type="hidden" name="employee_id" value="${empId}">
+  <input type="hidden" name="id" value="">
+
+  <!-- Role Title -->
+    <div class="form-group">
+        <label for="role_name">Role Name</label>
+        <input type="text" id="role_name" name="role_name" class="form-control" placeholder="Enter name" required>
+      </div>
+    <div class="form-group">
+    <label>Role Group</label>
+    <select name="role_title" class="form-control" required>
+      <option value="">-- Select group --</option>
+      ${roles.map(r => `<option value="${r.id}">${r.name}</option>`).join("")}
+    </select>
+  </div>
+
+  <!-- Unit -->
+  <div class="form-group">
+    <label>Unit</label>
+    <select name="unit" class="form-control">
+      <option value="">-- Select Unit --</option>
+      ${units.map(u => `<option value="${u.id}">${u.name}</option>`).join("")}
+    </select>
+  </div>
+
+  <!-- Department -->
+  <div class="form-group">
+    <label>Department</label>
+    <select name="department_id" class="form-control">
+      <option value="">-- Select Department --</option>
+      ${departments.map(d => `<option value="${d.id}">${d.name}</option>`).join("")}
+    </select>
+  </div>
+
+  <!-- Start Date -->
+  <div class="form-group">
+    <label>Start Date</label>
+    <input type="date" name="start_date" class="form-control" required>
+  </div>
+
+  <!-- End Date -->
+  <div class="form-group">
+    <label>End Date</label>
+    <input type="date" name="end_date" class="form-control">
+  </div>
+
+  <!-- Active -->
+  <div class="form-group">
+    <label>Active</label>
+    <select name="active" class="form-control" required>
+      <option value="1" selected>Yes</option>
+      <option value="0">No</option>
+    </select>
+  </div>
+
+  <div class="form-group mt-3">
+    <button type="submit" class="btn btn-primary">💾 Save</button>
+  </div>
+</form>
+`;
+                popHtml("Add Employee Role", form);
+            } else {
+                Swal.fire("Error!", "Failed to load roles, departments, or units", "error");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire("Error!", "Something went wrong", "error");
+        });
+}
+function viewResearch(id) {
+    fetch(`/employee-research/get_research/${id}`)
+        .then(res => res.json())
+        .then(res => {
+            if (!res || res.status !== "success") {
+                Swal.fire("Error", res?.message || "Unknown server error", "error");
+                return;
+            }
+
+            var r = res.data;
+            const overlay = document.createElement("div");
+            overlay.className = "popup-overlay";
+
+            overlay.innerHTML = `
+        <div class="popup-editor">
+          <div class="popup-header">
+            <span>Research Details</span>
+            <button onclick="this.closest('.popup-overlay').remove()">✖</button>
+          </div>
+
+          <div class="popup-body">
+            <div class="bg-white shadow-md rounded-xl p-6 text-sm text-gray-800 space-y-3">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><span class="font-semibold text-gray-600">Employee:</span> ${r.employee_name || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Title:</span> ${r.title || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Type:</span> ${r.type || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Start Date:</span> ${r.start_date || "-"}</div>
+                <div><span class="font-semibold text-gray-600">End Date:</span> ${r.end_date || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Link:</span> ${r.link ? `<a href="${r.link}" target="_blank" class="text-blue-600 hover:underline">View</a>` : "-"}</div>
+                <div><span class="font-semibold text-gray-600">Description:</span> ${r.description || "-"}</div>
+                <div><span class="font-semibold text-gray-600">File:</span> ${r.file_path ? `<a href="${r.file_path}" target="_blank" class="text-green-600 hover:underline">Download</a>` : "-"}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="popup-footer">
+            <button onclick="this.closest('.popup-overlay').remove()" class="cursor-pointer">Close</button>
+          </div>
+        </div>
+      `;
+            document.body.appendChild(overlay);
+        })
+        .catch(err => {
+            console.error("Error loading research:", err);
+            alert("Could not load research details.");
+        });
+}
+
+function addResearch() {
+    var research_form = `
+    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee-research/add">
+      <input type="hidden" name="id" value="">
+
+      <div class="form-group">
+        <label for="employee_id">Employee</label>
+        <select id="employee_id" name="employee_id" class="form-control" required>
+          <option value="">-- Select Employee --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" class="form-control" placeholder="Enter title" required>
+      </div>
+
+      <div class="form-group">
+        <label for="type">Type</label>
+        <select id="type" name="type" class="form-control" required>
+          <option value="research">Research</option>
+          <option value="publication">Publication</option>
+          <option value="project">Project</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" class="form-control" rows="3" placeholder="Enter description"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="start_date">Start Date</label>
+        <input type="date" id="start_date" name="start_date" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="end_date">End Date</label>
+        <input type="date" id="end_date" name="end_date" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="link">Link</label>
+        <input type="url" id="link" name="link" class="form-control" placeholder="Optional link">
+      </div>
+
+      <div class="form-group">
+        <label for="file">File</label>
+        <input type="file" id="file" name="file" class="form-control" accept=".pdf,.doc,.docx">
+      </div>
+
+      <div class="form-group">
+        <label for="active">Active</label>
+        <select id="active" name="active" class="form-control">
+          <option value="1">Yes</option>
+          <option value="0">No</option>
+        </select>
+      </div>
+
+      <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+      </div>
+    </form>
+    `;
+    popHtml("Add Research / Publication / Project", research_form);
+
+    // Load employee options dynamically
+    fetch('/employee/get')
+        .then(res => res.json())
+        .then(res => {
+            if (res && Array.isArray(res)) {
+                const select = document.querySelector("#employee_id");
+                res.forEach(emp => {
+                    const option = document.createElement("option");
+                    option.value = emp.id;
+                    option.textContent = emp.name;
+                    select.appendChild(option);
+                });
+            }
+        })
+        .catch(err => console.error("Error loading employees:", err));
+}
+
+
+
 
 
 

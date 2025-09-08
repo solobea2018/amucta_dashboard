@@ -11,7 +11,7 @@ class program
 {
     public function list()
     {
-        $query="select * from program";
+        $query="select * from program order by level_id,department_id";
         $programs=(new Database())->select($query);
         $tr="";
         if (sizeof($programs)>0){
