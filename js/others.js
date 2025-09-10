@@ -231,6 +231,7 @@ function viewEmployee(id) {
                 var emp=res.data;
                 var roles=res.roles;
                 const overlay = document.createElement("div");
+                overlay.id = "overlay";
                 overlay.className = "popup-overlay";
 
                 overlay.innerHTML = `
@@ -268,7 +269,7 @@ function viewEmployee(id) {
                           ${r.role_name}
                         </span>
                         <span class="text-gray-500 text-sm">(${r.start_date || "-"})</span>
-                        <span class="text-sm ${r.active === 1 ? "text-green-600 font-semibold" : "text-red-500"}">
+                        <span onclick="updateEmpRole(${r.id},${r.active})" class="text-sm cursor-pointer ${r.active === 1 ? "text-green-600 font-semibold" : "text-red-500"}">
                           ${r.active === 1 ? "Active" : "Inactive"}
                         </span>
                       </div>
@@ -977,6 +978,10 @@ function deleteResource(table, id) {
         confirmButtonText: 'Yes, delete it!',
         cancelButtonText: 'Cancel'
     }).then((result) => {
+        var popup = document.getElementById("overlay");
+        if (!(popup===null)) {
+            popup.remove();
+        }
         if (result.isConfirmed) {
             fetch('/api/delete', {
                 method: 'POST',
@@ -1004,6 +1009,14 @@ function deleteResource(table, id) {
                 });
         }
     });
+}
+function updateEmpRole(id,active){
+    var popup = document.getElementById("overlay");
+    if (!(popup===null)) {
+        popup.remove();
+    }
+    var status=active===1?0:1;
+    updateResource('employee_role',id,{active:status})
 }
 
 function updateResource(table, id, data) {
