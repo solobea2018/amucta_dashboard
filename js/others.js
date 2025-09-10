@@ -106,7 +106,6 @@ function copyToClipboard(text) {
         alert("Copied!");
     });
 }
-
 function previewHtml(content) {
     // Create overlay
     document.addEventListener("keydown",handleKeyDown)
@@ -692,7 +691,6 @@ function addImage() {
     `;
     popHtml("Add Image", image_form);
 }
-
 function popHtml(title, html){
     document.addEventListener("keydown",handleKeyDown);
     const overlay = document.createElement("div");
@@ -1018,7 +1016,6 @@ function updateEmpRole(id,active){
     var status=active===1?0:1;
     updateResource('employee_role',id,{active:status})
 }
-
 function updateResource(table, id, data) {
     fetch('/api/update', {
         method: 'POST',
@@ -1179,7 +1176,6 @@ function viewResearch(id) {
             alert("Could not load research details.");
         });
 }
-
 function addResearch() {
     var research_form = `
     <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee-research/add">
