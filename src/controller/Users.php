@@ -18,7 +18,7 @@ class Users
 
         if (sizeof($users) > 0) {
             foreach ($users as $user) {
-                $profile = $user['profile_url'] ? "<img src='{$user['profile_url']}' style='width:50px;height:50px;border-radius:50%;object-fit:cover;'>" : "-";
+                $profile = $user['profile_url'] ? "<img src='{$user['profile_url']}' style='width:50px;height:50px;border-radius:50%;object-fit:cover;' alt='profile'>" : "-";
                 $tr .= "<tr>
 <td>{$user['full_name']}</td>
 <td>{$user['username']}</td>

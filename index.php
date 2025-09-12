@@ -18,7 +18,7 @@ require_once "vendor/autoload.php";
 
 $path = $_SERVER['PATH_INFO']??"";
 $path_array = explode("/", trim($path, "/")); // Trim extra slashes
-
+print_r($path_array);
 if (!empty($path_array[0])) {
     $raw = strtolower($path_array[0]);               // "employee-role"
     $page = str_replace(' ', '', ucwords(str_replace('-', ' ', $raw)));
@@ -43,7 +43,7 @@ if (!empty($path_array[0])) {
             $controller->index();
         } else{
             //http_response_code(404);
-            echo Resource::getErrorPage("Page not found this path ".$method);
+            echo Resource::getErrorPage("Page not found ".$method);
         }
     } else {
         //http_response_code(404);
