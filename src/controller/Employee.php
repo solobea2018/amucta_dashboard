@@ -145,7 +145,6 @@ HTML;
 
 </style>
 style;
-
     }
     public function profile($params)
     {

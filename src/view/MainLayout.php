@@ -4,6 +4,9 @@
 namespace Solobea\Dashboard\view;
 
 
+use Solobea\Dashboard\database\Database;
+use Solobea\Dashboard\utils\Helper;
+
 class MainLayout
 {
     public static function render2($content,$header=null,$title=null)
@@ -47,6 +50,34 @@ HTML;
     public static function render($content,$header=null,$title=null)
     {
         $org_name="Amucta";
+        $db=new Database();
+        $roles=$db->select("SELECT * FROM role_group order by name");
+        $stf="";
+        if (sizeof($roles)>0){
+            foreach ($roles as $role) {
+                $name=Helper::slugify($role['name']);
+                $id=$role['id'];
+                $stf.="<li><a href=\"/staff/amucta/{$name}/$id\">{$role['name']}</a></li>";
+            }
+        }
+        $deps=$db->select("SELECT id,name FROM department where category='department' order by name");
+        $dp="";
+        if (sizeof($deps)>0){
+            foreach ($deps as $dep) {
+                $name=Helper::slugify($dep['name']);
+                $id=$dep['id'];
+                $dp.="<li><a href=\"/departments/{$name}/{$id}\">{$dep['name']}</a></li>";
+            }
+        }
+        $fcts=$db->select("SELECT id,name FROM faculty where active=1 order by name");
+        $ft="";
+        if (sizeof($fcts)>0){
+            foreach ($fcts as $dep) {
+                $name=Helper::slugify($dep['name']);
+                $id=$dep['id'];
+                $ft.="<li><a href=\"/faculties/{$name}/{$id}\">{$dep['name']}</a></li>";
+            }
+        }
         $title=$title??"AMUCTA - Archbishop Mihayo University College of Tabora";
         $org_logo="/logo.png";
         $title=$title??$org_name;
@@ -56,9 +87,17 @@ HTML;
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>$title</title>
-  <script type="text/javascript" src="/js/main.js"></script>
-  <link rel="stylesheet" href="/css/styles.css"/>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/css/sweetalert2.css">
+    <link rel="stylesheet" href="/css/toastify.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="/js/main.js" type="text/javascript"></script>
+    <script src="/js/others.js" type="text/javascript"></script>
+    <script src="/js/sweetalert2.js" type="text/javascript"></script>
+    <script src="/js/toastify.js" type="text/javascript"></script>
+    <title>$title</title>
+    <script type="text/javascript" src="/js/main.js"></script>
   <link rel="icon" href="$org_logo">
   $header
 </head>
@@ -112,18 +151,13 @@ HTML;
         <li class="dropdown-container">
           <a href="/faculties" class="mobile-main-link">Faculties</a>
           <ul class="submenu">
-            <li><a href="/faculties/business">Faculty of Business</a></li>
-            <li><a href="/faculties/arts">Faculty of Arts</a></li>
-            <li><a href="/faculties/science">Faculty of Science</a></li>
+            {$ft}
           </ul>
         </li>
         <li class="dropdown-container">
           <a href="/departments" class="mobile-main-link">Departments</a>
           <ul class="submenu">
-            <li><a href="/departments/accounting">Accounting & Finance</a></li>
-            <li><a href="/departments/human-resources">Human Resource Management</a></li>
-            <li><a href="/departments/entrepreneurship">Entrepreneurship</a></li>
-            <li><a href="/departments/project-management">Project Management</a></li>
+            {$dp}
           </ul>
         </li>
         <li><a href="/research" class="mobile-main-link">Research</a></li>
@@ -140,9 +174,7 @@ HTML;
         <li class="dropdown-container">
           <a href="/staff" class="mobile-main-link">Staff Area</a>
           <ul class="submenu">
-            <li><a href="/staff/directory">Staff Directory</a></li>
-            <li><a href="/staff/email">Email Access</a></li>
-            <li><a href="/staff/hr">HR Resources</a></li>
+            $stf
           </ul>
         </li>
       </ul>
