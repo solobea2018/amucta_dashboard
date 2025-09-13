@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>In Memoriam — Dr Gabriel Koboli</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#071025;
+      --accent:#8fd3ff; --accent-2:#7b61ff;
+      --muted:#b6c2cf; --glass: rgba(255,255,255,0.06);
+      --maxw:1100px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; min-height:100vh; background: radial-gradient(1200px 600px at 10% 10%, rgba(123,97,255,0.08), transparent), linear-gradient(180deg,#081226 0%, #051021 60%); color:#e6eef8; display:flex; align-items:center; justify-content:center; padding:40px; overflow:hidden}
+    .wrap{width:100%; max-width:var(--maxw); background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:18px; padding:28px; box-shadow: 0 10px 40px rgba(2,6,23,0.7); position:relative; overflow:hidden}
+
+    .hero{height:420px; border-radius:12px; overflow:hidden; position:relative; display:grid; grid-template-columns: 1fr 420px; gap:24px; align-items:center}
+
+    .bg-slot{position:relative; height:100%; border-radius:12px; overflow:hidden; display:flex; align-items:center; justify-content:center; padding:30px;}
+    .bg-slot .overlay{position:absolute; inset:0; backdrop-filter: blur(4px);}
+    .bg-image{position:absolute; inset:0; background-size:cover; background-position:center; transform:scale(1.05); transition:transform 1s ease;}
+    .bg-slot:hover .bg-image{transform:scale(1.08)}
+
+    h1{font-size:34px; margin:0 0 8px 0; letter-spacing:0.6px}
+    p.lead{margin:0 0 16px 0; color:var(--muted)}
+
+    .portrait-card{background:var(--glass); border-radius:12px; padding:18px; text-align:center; box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);}
+    .portrait{width:200px; height:200px; border-radius:50%; margin:0 auto 12px; position:relative; overflow:visible; animation: floatY 4s ease-in-out infinite;}
+    .portrait img{width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; border:6px solid rgba(255,255,255,0.06);}
+
+    .name{font-weight:700; margin-bottom:4px}
+    .meta{font-size:13px; color:var(--muted)}
+
+    .svg-layer{position:absolute; inset:0; pointer-events:none}
+
+    .pulse-ring{position:absolute; left:50%; transform:translateX(-50%); top:32%; width:260px; height:260px; border-radius:50%; z-index:2}
+
+    footer{margin-top:18px; text-align:center; font-size:13px; color:var(--muted)}
+
+    @media (max-width:920px){
+      .hero{grid-template-columns:1fr; height:auto}
+      .portrait-card{order:2}
+    }
+
+    .underline{display:inline-block; height:6px; width:120px; border-radius:6px; margin-left:8px; vertical-align:middle; background: linear-gradient(90deg,var(--accent),var(--accent-2)); animation: slide 3s linear infinite}
+    @keyframes slide{0%{background-position:0% 0%}100%{background-position:200% 0%}}
+
+    .portrait::after{content:""; position:absolute; inset:0; border-radius:50%; box-shadow: 0 0 40px rgba(123,97,255,0.2); opacity:0.9; pointer-events:none}
+
+    .fade-up{animation:fadeUp .9s ease both}
+    @keyframes fadeUp{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)}}
+
+    /* floating animation */
+    @keyframes floatY{0%{transform:translateY(0)}50%{transform:translateY(-12px)}100%{transform:translateY(0)}}
+
+    /* stars animation */
+    .star{position:absolute; width:3px; height:3px; background:#fff; border-radius:50%; opacity:0.8; animation: twinkle 4s infinite ease-in-out;}
+    @keyframes twinkle{0%,100%{opacity:0.1}50%{opacity:1}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <svg class="svg-layer" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0%" stop-color="#8fd3ff" stop-opacity="0.08"/>
+        <stop offset="100%" stop-color="#7b61ff" stop-opacity="0.06"/>
+      </linearGradient>
+    </defs>
+    <path id="wave" d="M0 320 C200 240 400 400 600 320 C800 240 1000 400 1200 320 L1200 600 L0 600 Z" fill="url(#g1)">
+      <animate attributeName="d" dur="8s" repeatCount="indefinite" values="M0 320 C200 240 400 400 600 320 C800 240 1000 400 1200 320 L1200 600 L0 600 Z; M0 300 C200 360 400 220 600 300 C800 380 1000 260 1200 300 L1200 600 L0 600 Z; M0 320 C200 240 400 400 600 320 C800 240 1000 400 1200 320 L1200 600 L0 600 Z"/>
+    </path>
+  </svg>
+
+  <!-- Animated stars -->
+  <div class="star" style="top:20%; left:10%; animation-delay:0s"></div>
+  <div class="star" style="top:40%; left:30%; animation-delay:1s"></div>
+  <div class="star" style="top:60%; left:70%; animation-delay:2s"></div>
+  <div class="star" style="top:80%; left:50%; animation-delay:3s"></div>
+
+  <div class="hero">
+    <div class="bg-slot">
+      <div class="bg-image" style="background-image: url('koboli.png');"></div>
+      <div class="overlay"></div>
+
+      <div style="position:relative; z-index:4; max-width:720px; text-align:left;">
+        <h1 class="fade-up">In Memoriam — Dr Gabriel Koboli <span class="underline"></span></h1>
+        <p class="lead fade-up">A dedicated member of our staff, remembered for leadership, mentorship and a lasting positive impact on the community.</p>
+
+        <div class="fade-up" style="margin-top:14px">
+          <blockquote style="margin:0; padding:12px 14px; background:rgba(255,255,255,0.02); border-left:4px solid rgba(143,211,255,0.14); border-radius:8px; color:var(--muted)">"A life of service — the work continues in those he taught and inspired."</blockquote>
+        </div>
+      </div>
+
+      <div class="pulse-ring" style="pointer-events:none">
+        <svg viewBox="0 0 260 260" width="260" height="260">
+          <defs>
+            <radialGradient id="rg" cx="50%" cy="40%">
+              <stop offset="0%" stop-color="#8fd3ff" stop-opacity="0.12"/>
+              <stop offset="70%" stop-color="#7b61ff" stop-opacity="0.06"/>
+              <stop offset="100%" stop-color="#071025" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="130" cy="130" r="78" fill="url(#rg)"></circle>
+          <g transform="translate(0,0)">
+            <circle cx="130" cy="130" r="88" fill="none" stroke="#7b61ff" stroke-opacity="0.06" stroke-width="2">
+              <animate attributeName="stroke-opacity" values="0.02;0.18;0.02" dur="3.6s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="88;96;88" dur="3.6s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="portrait-card fade-up">
+      <div class="portrait">
+        <img src="koboli.png" alt="Portrait of Dr Gabriel Koboli"/>
+      </div>
+      <div class="name">Dr Gabriel Koboli</div>
+      <div class="meta">Staff Member • Beloved Mentor</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

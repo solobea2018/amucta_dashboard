@@ -18,8 +18,7 @@ require_once "vendor/autoload.php";
 
 $path = $_SERVER['PATH_INFO']??"";
 $path_array = explode("/", trim($path, "/")); // Trim extra slashes
-print_r($path_array);
-if (!empty($path_array[0])) {
+if (!empty($path_array) && $path_array[0]!="") {
     $raw = strtolower($path_array[0]);               // "employee-role"
     $page = str_replace(' ', '', ucwords(str_replace('-', ' ', $raw)));
     $full_path = "Solobea\\Dashboard\\controller\\" . $page;

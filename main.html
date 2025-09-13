@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMUCTA - Archbishop Mihayo University College of Tabora</title>
+    <style>
+        /* CSS Styles - Enhanced Responsive Design with Hover and Click Submenus */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        /* Header and Branding - Fixed Top */
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); /* Blue gradient inspired by university branding for professionalism */
+            color: white;
+            padding: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            background-color: rgba(34, 197, 94, 0.1); /* Subtle green tint for accent */
+            padding: 0.5rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fbbf24; /* Gold/yellow accent for branding, common in Tanzanian universities */
+            text-decoration: none;
+        }
+
+        /* Improved Navigation Menu with Submenus on Hover/Click */
+        nav {
+            flex-grow: 1;
+            margin-left: 2rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .nav-menu > li {
+            position: relative;
+            margin-left: 2rem;
+        }
+
+        .nav-menu > li > a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            display: block;
+            font-weight: 500;
+        }
+
+        .nav-menu > li > a:hover {
+            background-color: #fbbf24;
+            color: #1e3a8a;
+            transform: translateY(-2px);
+        }
+
+        /* Submenu/Dropdown - Open on Hover for Desktop */
+        .submenu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #1e3a8a;
+            min-width: 220px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            border-radius: 5px;
+            z-index: 1001;
+            list-style: none;
+        }
+
+        .nav-menu > li:hover .submenu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .submenu li {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .submenu li:last-child {
+            border-bottom: none;
+        }
+
+        .submenu a {
+            color: white;
+            padding: 0.8rem 1.5rem;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .submenu a:hover {
+            background-color: #fbbf24;
+            color: #1e3a8a;
+        }
+
+        /* Mobile Menu Button with Rotation */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu-btn.active {
+            transform: rotate(90deg); /* Rotate on active/open state */
+        }
+
+        /* Mobile Menu */
+        .mobile-nav {
+            display: none;
+            width: 100%;
+            background-color: #1e3a8a;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1001;
+        }
+
+        .mobile-nav.active {
+            display: block;
+        }
+
+        .mobile-nav .nav-menu {
+            flex-direction: column;
+            padding: 1rem 0;
+        }
+
+        .mobile-nav .nav-menu > li {
+            margin: 0;
+            width: 100%;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mobile-nav .nav-menu > li > a {
+            padding: 1rem 2rem;
+        }
+
+        /* Mobile Submenu - Open on Click */
+        .mobile-nav .submenu {
+            position: static;
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+            box-shadow: none;
+            background-color: rgba(30, 58, 138, 0.9);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .mobile-nav .nav-menu > li.active .submenu {
+            max-height: 300px; /* Adjust based on content */
+        }
+
+        .mobile-nav .submenu li {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Main Content Area - Placeholder for Dynamic Content */
+        main {
+            margin-top: 140px; /* Account for header */
+            min-height: 80vh;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .main-content h1 {
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        /* Enhanced Footer */
+        footer {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            margin-top: 3rem;
+        }
+
+        .footer-top {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #fbbf24;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: #fbbf24;
+        }
+
+        .footer-bottom {
+            background-color: rgba(0,0,0,0.2);
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design - Mobile First */
+        @media (max-width: 768px) {
+            .header-top {
+                display: none;
+            }
+
+            .header-container {
+                padding: 1rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .logo {
+                margin-bottom: 1rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+            }
+
+            .nav-menu {
+                display: none; /* Hide desktop menu on mobile */
+            }
+
+            main {
+                margin-top: 200px;
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .main-content h1 {
+                font-size: 2rem;
+            }
+
+            .footer-top {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+
+        /* Tablet (769px to 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .header-container {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-menu > li {
+                margin-left: 1.5rem;
+            }
+
+            main {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Large Screens (1025px+) */
+        @media (min-width: 1025px) {
+            .header-container {
+                padding: 1rem 3rem;
+            }
+
+            .nav-menu > li {
+                margin-left: 3rem;
+            }
+
+            main {
+                padding: 3rem;
+            }
+
+            .main-content {
+                padding: 3rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .main-content {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+<!-- Header with Enhanced Branding and Improved Menu -->
+<header>
+    <div class="header-top">
+        <small>Welcome to AMUCTA | Archbishop Mihayo University College of Tabora</small>
+    </div>
+    <div class="header-container">
+        <a href="#home" class="logo">AMUCTA</a>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+        <nav>
+            <ul class="nav-menu" id="desktopMenu">
+                <li><a href="#home">Home</a></li>
+                <li class="dropdown-container">
+                    <a href="#about">About Us</a>
+                    <ul class="submenu">
+                        <li><a href="#vision-mission">Vision & Mission</a></li>
+                        <li><a href="#history">History</a></li>
+                        <li><a href="#governance">Governance</a></li>
+                        <li><a href="#leadership">Leadership</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown-container">
+                    <a href="#admissions">Admissions</a>
+                    <ul class="submenu">
+                        <li><a href="#apply">How to Apply</a></li>
+                        <li><a href="#requirements">Entry Requirements</a></li>
+                        <li><a href="#fees">Fees & Funding</a></li>
+                        <li><a href="#deadlines">Application Deadlines</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown-container">
+                    <a href="#programmes">Academic Programmes</a>
+                    <ul class="submenu">
+                        <li><a href="#undergraduate">Undergraduate</a></li>
+                        <li><a href="#postgraduate">Postgraduate</a></li>
+                        <li><a href="#certificates">Certificates & Diplomas</a></li>
+                        <li><a href="#short-courses">Short Courses</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown-container">
+                    <a href="#faculties">Faculties & Schools</a>
+                    <ul class="submenu">
+                        <li><a href="#business">Faculty of Business</a></li>
+                        <li><a href="#arts">Faculty of Arts</a></li>
+                        <li><a href="#science">Faculty of Science</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown-container">
+                    <a href="#departments">Departments</a>
+                    <ul class="submenu">
+                        <li><a href="#accounting">Accounting & Finance</a></li>
+                        <li><a href="#human-resources">Human Resource Management</a></li>
+                        <li><a href="#entrepreneurship">Entrepreneurship</a></li>
+                        <li><a href="#project-management">Project Management</a></li>
+                    </ul>
+                </li>
+                <li><a href="#research">Research & Innovation</a></li>
+                <li><a href="#library">Library & Resources</a></li>
+                <li class="dropdown-container">
+                    <a href="#news-events">News & Events</a>
+                    <ul class="submenu">
+                        <li><a href="#news">Latest News</a></li>
+                        <li><a href="#events">Upcoming Events</a></li>
+                        <li><a href="#calendar">Academic Calendar</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown-container">
+                    <a href="#student-life">Student Life</a>
+                    <ul class="submenu">
+                        <li><a href="#portal">Student Portal</a></li>
+                        <li><a href="#services">Student Services</a></li>
+                        <li><a href="#accommodation">Accommodation</a></li>
+                        <li><a href="#clubs">Clubs & Societies</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown-container">
+                    <a href="#staff">Staff Area</a>
+                    <ul class="submenu">
+                        <li><a href="#directory">Staff Directory</a></li>
+                        <li><a href="#email">Email Access</a></li>
+                        <li><a href="#hr">HR Resources</a></li>
+                    </ul>
+                </li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <ul class="nav-menu" id="mobileMenu">
+            <li><a href="#home">Home</a></li>
+            <li class="dropdown-container">
+                <a href="#about" class="mobile-main-link">About Us</a>
+                <ul class="submenu">
+                    <li><a href="#vision-mission">Vision & Mission</a></li>
+                    <li><a href="#history">History</a></li>
+                    <li><a href="#governance">Governance</a></li>
+                    <li><a href="#leadership">Leadership</a></li>
+                </ul>
+            </li>
+            <li class="dropdown-container">
+                <a href="#admissions" class="mobile-main-link">Admissions</a>
+                <ul class="submenu">
+                    <li><a href="#apply">How to Apply</a></li>
+                    <li><a href="#requirements">Entry Requirements</a></li>
+                    <li><a href="#fees">Fees & Funding</a></li>
+                    <li><a href="#deadlines">Application Deadlines</a></li>
+                </ul>
+            </li>
+            <li class="dropdown-container">
+                <a href="#programmes" class="mobile-main-link">Academic Programmes</a>
+                <ul class="submenu">
+                    <li><a href="#undergraduate">Undergraduate</a></li>
+                    <li><a href="#postgraduate">Postgraduate</a></li>
+                    <li><a href="#certificates">Certificates & Diplomas</a></li>
+                    <li><a href="#short-courses">Short Courses</a></li>
+                </ul>
+            </li>
+            <li class="dropdown-container">
+                <a href="#faculties" class="mobile-main-link">Faculties & Schools</a>
+                <ul class="submenu">
+                    <li><a href="#business">Faculty of Business</a></li>
+                    <li><a href="#arts">Faculty of Arts</a></li>
+                    <li><a href="#science">Faculty of Science</a></li>
+                </ul>
+            </li>
+            <li class="dropdown-container">
+                <a href="#departments" class="mobile-main-link">Departments</a>
+                <ul class="submenu">
+                    <li><a href="#accounting">Accounting & Finance</a></li>
+                    <li><a href="#human-resources">Human Resource Management</a></li>
+                    <li><a href="#entrepreneurship">Entrepreneurship</a></li>
+                    <li><a href="#project-management">Project Management</a></li>
+                </ul>
+            </li>
+            <li><a href="#research">Research & Innovation</a></li>
+            <li><a href="#library">Library & Resources</a></li>
+            <li class="dropdown-container">
+                <a href="#news-events" class="mobile-main-link">News & Events</a>
+                <ul class="submenu">
+                    <li><a href="#news">Latest News</a></li>
+                    <li><a href="#events">Upcoming Events</a></li>
+                    <li><a href="#calendar">Academic Calendar</a></li>
+                </ul>
+            </li>
+            <li class="dropdown-container">
+                <a href="#student-life" class="mobile-main-link">Student Life</a>
+                <ul class="submenu">
+                    <li><a href="#portal">Student Portal</a></li>
+                    <li><a href="#services">Student Services</a></li>
+                    <li><a href="#accommodation">Accommodation</a></li>
+                    <li><a href="#clubs">Clubs & Societies</a></li>
+                </ul>
+            </li>
+            <li class="dropdown-container">
+                <a href="#staff" class="mobile-main-link">Staff Area</a>
+                <ul class="submenu">
+                    <li><a href="#directory">Staff Directory</a></li>
+                    <li><a href="#email">Email Access</a></li>
+                    <li><a href="#hr">HR Resources</a></li>
+                </ul>
+            </li>
+            <li><a href="#contact">Contact Us</a></li>
+        </ul>
+    </div>
+</header>
+
+<!-- Main Content Area - Placeholder for Dynamic Content -->
+<main>
+    <div class="main-content">
+        <h1>Welcome to AMUCTA</h1>
+        <p>This main area is optimized for dynamic content, similar to Angular-based sites. Submenus open on hover for desktop and on click for mobile with rotating hamburger icon.</p>
+        <!-- Dynamic content loaded here via JS -->
+    </div>
+</main>
+
+<!-- Enhanced Footer -->
+<footer>
+    <div class="footer-top">
+        <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#programmes">Programmes</a></li>
+                <li><a href="#admissions">Admissions</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Academic</h3>
+            <ul>
+                <li><a href="#faculties">Faculties</a></li>
+                <li><a href="#departments">Departments</a></li>
+                <li><a href="#library">Library</a></li>
+                <li><a href="#research">Research</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Support</h3>
+            <ul>
+                <li><a href="#student-portal">Student Portal</a></li>
+                <li><a href="#staff-directory">Staff Directory</a></li>
+                <li><a href="#privacy">Privacy Policy</a></li>
+                <li><a href="#accessibility">Accessibility</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>Contact Info</h3>
+            <ul>
+                <li>Tabora, Tanzania</li>
+                <li>Phone: +255 123 456 789</li>
+                <li>Email: info@amucta.ac.tz</li>
+                <li><a href="#social">Follow Us</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 AMUCTA - Archbishop Mihayo University College of Tabora. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- JavaScript for Enhanced Interactivity: Hover, Click, Rotation -->
+<script>
+    // Mobile Menu Toggle with Rotation
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    mobileBtn.addEventListener('click', function() {
+        mobileNav.classList.toggle('active');
+        this.classList.toggle('active'); // Rotate icon
+    });
+
+    // Mobile Submenu Toggle on Click
+    const mobileMainLinks = mobileMenu.querySelectorAll('.mobile-main-link');
+    mobileMainLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const parentLi = this.parentElement;
+            parentLi.classList.toggle('active');
+            // Load dynamic content if needed
+            const target = this.getAttribute('href').substring(1);
+            loadDynamicContent(target);
+        });
+    });
+
+    // Desktop Hover is handled by CSS
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('header')) {
+            mobileNav.classList.remove('active');
+            mobileBtn.classList.remove('active');
+            // Close all submenus
+            document.querySelectorAll('.mobile-nav .dropdown-container').forEach(li => li.classList.remove('active'));
+        }
+    });
+
+    // Dynamic content loading
+    function loadDynamicContent(target) {
+        const mainContent = document.querySelector('.main-content');
+        let title = target.charAt(0).toUpperCase() + target.slice(1).replace(/-/g, ' ');
+        mainContent.innerHTML = `
+                <h1>${title}</h1>
+                <p>Dynamic content for ${title} at AMUCTA has been loaded. This mimics Angular routing for university sections.</p>
+            `;
+    }
+
+    // Desktop links
+    document.addEventListener('DOMContentLoaded', function() {
+        const desktopLinks = document.querySelectorAll('#desktopMenu a[href^="#"]');
+        desktopLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = this.getAttribute('href').substring(1);
+                loadDynamicContent(target);
+            });
+        });
+    });
+</script>
+</body>
+</html>
