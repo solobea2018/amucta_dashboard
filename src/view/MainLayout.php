@@ -50,7 +50,6 @@ HTML;
         $title=$title??"AMUCTA - Archbishop Mihayo University College of Tabora";
         $org_logo="/logo.png";
         $title=$title??$org_name;
-        $menu =self::menu();
         $layout=<<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -67,81 +66,83 @@ HTML;
 <!-- Header with Enhanced Branding and Improved Menu -->
 <header id="header">
   <div class="header-top">
-    <a href="#contact">Contact Us</a>
-    <a href="#contact">Staff Portal</a>
-    <a href="#contact">Online Application</a>
-    <a href="#contact">Alumni</a>
+    <a href="/contact">Contact Us</a>
+    <a href="https://amucta.ac.tz:2096">Emails</a>
+    <a href="/staff">Staff Portal</a>
+    <a href="https://oas.amucta.ac.tz">Online Application</a>
+    <a href="https://oas.amucta.ac.tz">SIMS</a>
+    <a href="/alumni">Alumni</a>
   </div>
   <div class="header-container">
-    <a href="#home" class="logo"><img src="/logo.png" alt="AMUCTA Logo"></a>
+    <a href="/" class="logo"><img src="/logo.png" alt="AMUCTA Logo"></a>
     <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     <a href="/" class="logo-caption">AMUCTA</a>
     <span class="logo-caption">⋮</span>
     <nav class="navigation-container" id="navigation-container">
       <div class="flex flex-row justify-end w-full"><span class="menu-close" id="menu-close">✖</span></div>
       <ul class="nav-menu" id="navigation">
-        <li><a href="#home" class="mobile-main-link">Home</a></li>
+        <li><a href="/" class="mobile-main-link">Home</a></li>
         <li class="dropdown-container">
-          <a href="#about" class="mobile-main-link">About Us</a>
+          <a href="/about" class="mobile-main-link">About Us</a>
           <ul class="submenu">
-            <li><a href="#vision-mission">Vision & Mission</a></li>
-            <li><a href="#history">History</a></li>
-            <li><a href="#governance">Governance</a></li>
-            <li><a href="#leadership">Leadership</a></li>
+            <li><a href="/about/mission">Vision & Mission</a></li>
+            <li><a href="/about/history">History</a></li>
+            <li><a href="/about/governance">Governance</a></li>
+            <li><a href="/about/leadership">Leadership</a></li>
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="#admissions" class="mobile-main-link">Admissions</a>
+          <a href="/admissions" class="mobile-main-link">Admissions</a>
           <ul class="submenu">
-            <li><a href="#apply">How to Apply</a></li>
-            <li><a href="#requirements">Entry Requirements</a></li>
-            <li><a href="#fees">Fees & Funding</a></li>
-            <li><a href="#deadlines">Application Deadlines</a></li>
+            <li><a href="/admissions/apply">How to Apply</a></li>
+            <li><a href="/admissions/requirements">Entry Requirements</a></li>
+            <li><a href="/admissions/fees">Fees & Funding</a></li>
+            <li><a href="/admissions/deadlines">Application Deadlines</a></li>
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="#programmes" class="mobile-main-link">Academics</a>
+          <a href="/programmes" class="mobile-main-link">Academics</a>
           <ul class="submenu">
-            <li><a href="#undergraduate">Undergraduate</a></li>
-            <li><a href="#postgraduate">Postgraduate</a></li>
-            <li><a href="#certificates">Certificates & Diplomas</a></li>
-            <li><a href="#short-courses">Short Courses</a></li>
+            <li><a href="/programmes/undergraduate">Undergraduate</a></li>
+            <li><a href="/programmes/postgraduate">Postgraduate</a></li>
+            <li><a href="/programmes/certificates">Certificates & Diplomas</a></li>
+            <li><a href="/programmes/short_courses">Short Courses</a></li>
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="#faculties" class="mobile-main-link">Faculties</a>
+          <a href="/faculties" class="mobile-main-link">Faculties</a>
           <ul class="submenu">
-            <li><a href="#business">Faculty of Business</a></li>
-            <li><a href="#arts">Faculty of Arts</a></li>
-            <li><a href="#science">Faculty of Science</a></li>
+            <li><a href="/faculties/business">Faculty of Business</a></li>
+            <li><a href="/faculties/arts">Faculty of Arts</a></li>
+            <li><a href="/faculties/science">Faculty of Science</a></li>
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="#departments" class="mobile-main-link">Departments</a>
+          <a href="/departments" class="mobile-main-link">Departments</a>
           <ul class="submenu">
-            <li><a href="#accounting">Accounting & Finance</a></li>
-            <li><a href="#human-resources">Human Resource Management</a></li>
-            <li><a href="#entrepreneurship">Entrepreneurship</a></li>
-            <li><a href="#project-management">Project Management</a></li>
+            <li><a href="/departments/accounting">Accounting & Finance</a></li>
+            <li><a href="/departments/human-resources">Human Resource Management</a></li>
+            <li><a href="/departments/entrepreneurship">Entrepreneurship</a></li>
+            <li><a href="/departments/project-management">Project Management</a></li>
           </ul>
         </li>
-        <li><a href="#research" class="mobile-main-link">Research</a></li>
-        <li><a href="#library" class="mobile-main-link">Library & Resources</a></li>
+        <li><a href="/research" class="mobile-main-link">Research</a></li>
+        <li><a href="/library" class="mobile-main-link">Library & Resources</a></li>
         <li class="dropdown-container">
-          <a href="#student-life" class="mobile-main-link">Student Life</a>
+          <a href="/student-life" class="mobile-main-link">Student Life</a>
           <ul class="submenu">
-            <li><a href="#portal">Student Portal</a></li>
-            <li><a href="#services">Student Services</a></li>
-            <li><a href="#accommodation">Accommodation</a></li>
-            <li><a href="#clubs">Clubs & Societies</a></li>
+            <li><a href="/student-life/portal">Student Portal</a></li>
+            <li><a href="/student-life/services">Student Services</a></li>
+            <li><a href="/student-life/accommodation">Accommodation</a></li>
+            <li><a href="/student-life/clubs">Clubs & Societies</a></li>
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="#staff" class="mobile-main-link">Staff Area</a>
+          <a href="/staff" class="mobile-main-link">Staff Area</a>
           <ul class="submenu">
-            <li><a href="#directory">Staff Directory</a></li>
-            <li><a href="#email">Email Access</a></li>
-            <li><a href="#hr">HR Resources</a></li>
+            <li><a href="/staff/directory">Staff Directory</a></li>
+            <li><a href="/staff/email">Email Access</a></li>
+            <li><a href="/staff/hr">HR Resources</a></li>
           </ul>
         </li>
       </ul>
