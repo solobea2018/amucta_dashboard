@@ -30,6 +30,7 @@ class MainLayout
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/css/sweetalert2.css">
+    <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="/css/toastify.css">
     <link rel="icon" href="$org_logo">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -81,6 +82,7 @@ HTML;
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/css/sweetalert2.css">
     <link rel="stylesheet" href="/css/toastify.css">
+    <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="/js/others.js" type="text/javascript"></script>
     <script src="/js/sweetalert2.js" type="text/javascript"></script>
@@ -202,6 +204,27 @@ HTML;
     </div>
   </div>
 </footer>
+<!-- Floating Chat Icon and Window -->
+<div id="chatbot-container">
+  <div id="chat-window" class="chat-closed">
+    <div class="chat-header">
+      <span>💬 AMUCTA Chatbot</span>
+      <button id="chat-close-btn">&times;</button>
+    </div>
+    <div class="chat-body">
+      <div class="chat-message bot">Hello 👋, how can I help you today?</div>
+    </div>
+    <div class="chat-footer">
+      <input type="text" id="chat-input" placeholder="Type your message..." />
+      <button id="chat-send-btn">Send</button>
+    </div>
+  </div>
+
+  <div id="chat-icon">
+    <i class="bi bi-chat-dots-fill"></i>
+  </div>
+</div>
+
 </body>
 </html>
 HTML;

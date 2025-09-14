@@ -3,7 +3,7 @@ function goto(url) {
         window.location.href = url
     }
 }
-(function() {
+function chatbot() {
     // Only show once per session
     if (sessionStorage.getItem('chatPopupShown')) return;
 
@@ -191,7 +191,7 @@ function goto(url) {
 
     }, delay);
 
-})();
+}
 
 (function() {
     // Only run if not already shown in this session
@@ -320,6 +320,43 @@ function goto(url) {
     document.head.appendChild(style);
 
 })();
+document.addEventListener("DOMContentLoaded", () => {
+    const chatWindow = document.getElementById("chat-window");
+    const chatIcon = document.getElementById("chat-icon");
+    const closeBtn = document.getElementById("chat-close-btn");
+    const input = document.getElementById("chat-input");
+    const sendBtn = document.getElementById("chat-send-btn");
+    const chatBody = document.querySelector(".chat-body");
+
+    // Toggle chat window
+    chatIcon.addEventListener("click", () => {
+        chatWindow.classList.toggle("chat-closed");
+    });
+    closeBtn.addEventListener("click", () => {
+        chatWindow.classList.add("chat-closed");
+    });
+
+    // Send message
+    sendBtn.addEventListener("click", () => {
+        const msg = input.value.trim();
+        if (!msg) return;
+        const userMsg = document.createElement("div");
+        userMsg.className = "chat-message user";
+        userMsg.textContent = msg;
+        chatBody.appendChild(userMsg);
+        input.value = "";
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // Bot reply (dummy)
+        setTimeout(() => {
+            const botMsg = document.createElement("div");
+            botMsg.className = "chat-message bot";
+            botMsg.textContent = "Thanks for your message 🙏";
+            chatBody.appendChild(botMsg);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }, 1000);
+    });
+});
 
 window.addEventListener('scroll', function() {
     const header = document.getElementById('header');
