@@ -15,13 +15,15 @@ class MainLayout
         $org_logo="/images/logo.png";
         $title=$title??$org_name;
         $menu =self::menu();
-        $layout=<<<HTML
+        $layout = <<<HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{$title}</title>    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+    	name="viewport"
+    	content="width=device-width, initial-scale=1.0">   
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/css/sweetalert2.css">
@@ -66,7 +68,7 @@ HTML;
             foreach ($deps as $dep) {
                 $name=Helper::slugify($dep['name']);
                 $id=$dep['id'];
-                $dp.="<li><a href=\"/departments/{$name}/{$id}\">{$dep['name']}</a></li>";
+                $dp.="<li><a href=\"/departments/department/{$name}/{$id}\">{$dep['name']}</a></li>";
             }
         }
         $fcts=$db->select("SELECT id,name FROM faculty where active=1 order by name");
@@ -75,7 +77,7 @@ HTML;
             foreach ($fcts as $dep) {
                 $name=Helper::slugify($dep['name']);
                 $id=$dep['id'];
-                $ft.="<li><a href=\"/faculties/{$name}/{$id}\">{$dep['name']}</a></li>";
+                $ft.="<li><a href=\"/faculties/faculty/{$name}/{$id}\">{$dep['name']}</a></li>";
             }
         }
         $title=$title??"AMUCTA - Archbishop Mihayo University College of Tabora";
@@ -124,7 +126,7 @@ HTML;
         <li class="dropdown-container">
           <a href="/about" class="mobile-main-link">About Us</a>
           <ul class="submenu">
-            <li><a href="/about/mission">Vision & Mission</a></li>
+            <li><a href="/about/mission">Vision &amp; Mission</a></li>
             <li><a href="/about/history">History</a></li>
             <li><a href="/about/governance">Governance</a></li>
             <li><a href="/about/leadership">Leadership</a></li>
@@ -135,7 +137,7 @@ HTML;
           <ul class="submenu">
             <li><a href="/admissions/apply">How to Apply</a></li>
             <li><a href="/admissions/requirements">Entry Requirements</a></li>
-            <li><a href="/admissions/fees">Fees & Funding</a></li>
+            <li><a href="/admissions/fees">Fees &amp; Funding</a></li>
             <li><a href="/admissions/deadlines">Application Deadlines</a></li>
           </ul>
         </li>
@@ -144,7 +146,7 @@ HTML;
           <ul class="submenu">
             <li><a href="/programmes/undergraduate">Undergraduate</a></li>
             <li><a href="/programmes/postgraduate">Postgraduate</a></li>
-            <li><a href="/programmes/certificates">Certificates & Diplomas</a></li>
+            <li><a href="/programmes/certificates">Certificates &amp; Diplomas</a></li>
             <li><a href="/programmes/short_courses">Short Courses</a></li>
           </ul>
         </li>
@@ -161,14 +163,14 @@ HTML;
           </ul>
         </li>
         <li><a href="/research" class="mobile-main-link">Research</a></li>
-        <li><a href="/library" class="mobile-main-link">Library & Resources</a></li>
+        <li><a href="/library" class="mobile-main-link">Library &amp; Resources</a></li>
         <li class="dropdown-container">
           <a href="/student-life" class="mobile-main-link">Student Life</a>
           <ul class="submenu">
             <li><a href="/student-life/portal">Student Portal</a></li>
             <li><a href="/student-life/services">Student Services</a></li>
             <li><a href="/student-life/accommodation">Accommodation</a></li>
-            <li><a href="/student-life/clubs">Clubs & Societies</a></li>
+            <li><a href="/student-life/clubs">Clubs &amp; Societies</a></li>
           </ul>
         </li>
         <li class="dropdown-container">
@@ -185,7 +187,7 @@ HTML;
 <!-- Main Content Area - Placeholder for Dynamic Content -->
 <main>
   <div class="main-content">
-    $content
+    {$content}
   </div>
 </main>
 

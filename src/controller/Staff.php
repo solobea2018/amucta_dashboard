@@ -37,7 +37,7 @@ class Staff
             SELECT e.*, er.role_name, er.start_date, er.end_date, er.active 
             FROM employee e 
             JOIN employee_role er ON e.id = er.employee_id 
-            WHERE er.id={$id} 
+            WHERE er.role_group_id={$id} 
             ORDER BY e.name
         ");
 
@@ -67,7 +67,7 @@ class Staff
                     <div class='employee-info'>
                         <h3>{$emp['name']}</h3>
                         <p class='title'>{$emp['title']}</p>
-                        <p class='role'>{$emp['role_name']} ({$emp['start_date']} - {$emp['end_date']})</p>
+                        <p class='role'>{$emp['role_name']} since {$emp['start_date']}</p>
                         {$activeStatus}
                         <a href='/profile/profile/{$emp['id']}' class='view-profile'>View Profile</a>
                     </div>
@@ -97,7 +97,7 @@ class Staff
         }
         .employee-card .profile-pic {
             height: 180px;
-            background: var(--amucta-green);
+            background: var(--amucta-blue);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -113,7 +113,7 @@ class Staff
         }
         .employee-info h3 {
             margin: 10px 0 5px;
-            color: var(--amucta-green);
+            color: var(--amucta-dark);
         }
         .employee-info .title {
             font-size: 14px;
@@ -148,7 +148,7 @@ class Staff
             padding: 8px 15px;
             border-radius: 6px;
             text-decoration: none;
-            background: var(--amucta-green);
+            background: var(--amucta-blue);
             color: #fff;
             transition: background 0.3s ease;
         }
