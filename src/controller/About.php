@@ -10,6 +10,11 @@ class About
     {
 
     }
+
+    public function about()
+    {
+        
+    }
     public function mission()
     {
 

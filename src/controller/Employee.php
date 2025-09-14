@@ -11,6 +11,12 @@ use Solobea\Dashboard\view\MainLayout;
 
 class Employee
 {
+    public static function getCount()
+    {
+        $db=new Database();
+        return $db->selectOne("Select count(*) as count from employee")['count'];
+    }
+
     public function list()
     {
         $query = "SELECT * FROM employee order by name";

@@ -7,6 +7,24 @@ namespace Solobea\Dashboard\model;
 class Contact
 {
     private $full_name;
+    private $title;
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title): void
+    {
+        $this->title = $title;
+    }
+
 
     /**
      * @return mixed

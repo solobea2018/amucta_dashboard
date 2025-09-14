@@ -965,6 +965,119 @@ function addUser() {
     `;
     popHtml("Add User", user_form);
 }
+function addAlumni() {
+    var alumni_form = `
+    <form class="form-container" enctype="multipart/form-data" onsubmit="sendFormSweet(this,event)" action="/alumni/save">
+
+      <input type="hidden" name="id" value="">
+
+      <div class="form-group">
+        <label for="full_name">Full Name</label>
+        <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Enter full name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-control" placeholder="Enter email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="text" id="phone" name="phone" class="form-control" placeholder="Enter phone number">
+      </div>
+
+      <div class="form-group">
+        <label for="graduation_year">Graduation Year</label>
+        <input type="number" id="graduation_year" name="graduation_year" class="form-control" placeholder="e.g. 2022">
+      </div>
+
+      <div class="form-group">
+        <label for="course">Course Studied</label>
+        <input type="text" id="course" name="course" class="form-control" placeholder="Enter your course/program">
+      </div>
+
+      <div class="form-group">
+        <label for="employment_status">Employment Status</label>
+        <select id="employment_status" name="employment_status" class="form-control">
+          <option value="">-- Select Status --</option>
+          <option value="employed">Employed</option>
+          <option value="self-employed">Self-Employed</option>
+          <option value="student">Student</option>
+          <option value="unemployed">Unemployed</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message / Current Status</label>
+        <textarea id="message" name="message" class="form-control" placeholder="Share your current status or achievements..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-success">🎓 Register</button>
+      </div>
+
+    </form>
+    `;
+    popHtml("Alumni Registration", alumni_form);
+}
+function filterAlumni() {
+    let input = document.getElementById("alumniSearch").value.toLowerCase();
+    let cards = document.getElementsByClassName("alumni-card");
+
+    Array.from(cards).forEach(card => {
+        let name = card.querySelector(".alumni-name").innerText.toLowerCase();
+        let course = card.innerHTML.toLowerCase(); // includes course text
+        card.style.display = (name.includes(input) || course.includes(input)) ? "block" : "none";
+    });
+}
+
+function editAlumni(id) {
+    fetch(`/alumni/get/${id}`)
+        .then(r => r.json())
+        .then(data => {
+            let alumni=data.data;
+            let form = `
+            <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/alumni/update">
+                <input type="hidden" name="id" value="${alumni.id}">
+                
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" name="full_name" value="${alumni.full_name}" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" value="${alumni.email}" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" name="phone" value="${alumni.phone}" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="course">Course</label>
+                    <input type="text" name="course" value="${alumni.course}" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="graduation_year">Graduation Year</label>
+                    <input type="number" name="graduation_year" value="${alumni.graduation_year}" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="employment_status">Employment Status</label>
+                    <input type="text" name="employment_status" value="${alumni.employment_status}" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                </div>
+            </form>`;
+
+            popHtml("Edit Alumni", form);
+        });
+}
 function deleteResource(table, id) {
     Swal.fire({
         title: 'Are you sure?',

@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -11,8 +12,74 @@ class Staff
 {
     public function index()
     {
-        
+        $auth=new Authentication();
+        if (!$auth->is_authenticated()) {
+            header("Location: /login"); // Redirect to login page
+            exit;
+        }
+
+        // Optional: fetch staff info from DB
+        $staff = $auth->get_authenticated_user();
+
+        // Self-contained HTML for dashboard
+        $content = <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard - AMUCTA</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/css/toastify.css">
+    <link rel="icon" href="/logo.png">
+    <script src="/js/main.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+        .dashboard-container { max-width: 1200px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; }
+        .dashboard-header h1 { color: var(--amucta-green); }
+        .dashboard-welcome { margin-top: 20px; font-size: 1.2em; }
+        .dashboard-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
+        .card { padding: 20px; background: #f0f8ff; border-left: 5px solid var(--amucta-green); border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .card h2 { margin: 0 0 10px 0; color: #1D4ED8; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container animate__animated animate__fadeIn">
+        <div class="dashboard-header">
+            <h1>Staff Dashboard</h1>
+            <a href="/logout" style="text-decoration:none; color:red;">Logout</a>
+        </div>
+        <div class="dashboard-welcome">
+            Welcome, <strong>{$staff->getFullName()}</strong>!
+        </div>
+        <div class="dashboard-cards">
+            <div class="card">
+                <h2>Profile</h2>
+                <p>View and update your profile information.</p>
+            </div>
+            <div class="card">
+                <h2>Messages</h2>
+                <p>Check unread messages or notifications.</p>
+            </div>
+            <div class="card">
+                <h2>Tasks</h2>
+                <p>See your assigned tasks and deadlines.</p>
+            </div>
+            <div class="card">
+                <h2>Reports</h2>
+                <p>Access staff reports and statistics.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+HTML;
+
+        echo $content;
     }
+
 
     public function amucta1($params)
     {

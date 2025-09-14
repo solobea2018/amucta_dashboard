@@ -253,6 +253,58 @@ HTML;
         echo json_encode($response);
     }
 
+    public static function dataArray(): array
+    {
+        $db = new Database();
+
+        // All-time
+        $totalVisitors = $db->selectOne("SELECT COUNT(*) as total FROM visitors")['total'] ?? 0;
+
+        // Today
+        $todayVisitors = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE DATE(date) = CURDATE()")['total'] ?? 0;
+
+        // This week (Monday–Sunday)
+        $weekVisitors = $db->selectOne("SELECT COUNT(*) as total FROM visitors 
+                                    WHERE YEARWEEK(date, 1) = YEARWEEK(CURDATE(), 1)")['total'] ?? 0;
+
+        // Registered vs Guest
+        $registered = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE is_registered = 1")['total'] ?? 0;
+        $guests = $totalVisitors - $registered;
+
+        // IP Type
+        $ipv4 = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE ip_type = 'IPv4'")['total'] ?? 0;
+        $ipv6 = $db->selectOne("SELECT COUNT(*) as total FROM visitors WHERE ip_type = 'IPv6'")['total'] ?? 0;
+
+        // Top countries
+        $topCountries = $db->select("SELECT country, COUNT(*) as total FROM visitors 
+                                WHERE country IS NOT NULL AND country <> '' 
+                                GROUP BY country 
+                                ORDER BY total DESC LIMIT 5");
+
+        // Top visited URLs
+        $topUrls = $db->select("SELECT url, COUNT(*) as total FROM visitors 
+                            WHERE url IS NOT NULL AND url <> '' 
+                            GROUP BY url 
+                            ORDER BY total DESC LIMIT 5");
+
+        // Build JSON
+        return [
+            "totals" => [
+                "all_time" => $totalVisitors,
+                "today" => $todayVisitors,
+                "this_week" => $weekVisitors,
+            ],
+            "registered" => $registered,
+            "guests" => $guests,
+            "ip" => [
+                "ipv4" => $ipv4,
+                "ipv6" => $ipv6,
+            ],
+            "top_countries" => $topCountries,
+            "top_urls" => $topUrls
+        ];
+    }
+
 
 
 }

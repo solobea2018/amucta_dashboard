@@ -7,7 +7,7 @@ namespace Solobea\Dashboard\controller;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
-class program
+class Program
 {
     public function list()
     {
@@ -109,6 +109,12 @@ content;
             http_response_code(500);
             echo "Failed to create program";
         }
+    }
+
+    public static function getCount()
+    {
+        $db=new Database();
+        return $db->selectOne("Select count(*) as count from program")['count'];
     }
     public function get()
     {

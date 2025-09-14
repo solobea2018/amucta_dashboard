@@ -3,7 +3,9 @@ namespace Solobea\Dashboard\database;
 use DateTime;
 use Exception;
 use mysqli;
+use Solobea\Dashboard\model\Alumni;
 use Solobea\Dashboard\model\Contact;
+use Solobea\Dashboard\model\Donation;
 use Solobea\Dashboard\model\Error;
 use Solobea\Dashboard\model\Program;
 use Solobea\Dashboard\model\User;
@@ -13,8 +15,8 @@ use Solobea\Go\errors\ErrorReporter;
 
 class Database
 {
-    private $host="localhost";
-    //private $host="data.tetea.store";
+    //private $host="localhost";
+    private $host="data.tetea.store";
 
     private $user="amucta_user";
     private $db="dashboard";
@@ -176,16 +178,17 @@ class Database
     public function save_contact(Contact $contact): bool
     {
         $stmt = $this->con->stmt_init();
-        $query = "INSERT INTO contacts (full_name,email,message) value (?,?,?)";
+        $query = "INSERT INTO contacts (full_name,title,email,message) value (?,?,?,?)";
 
         if ($stmt->prepare($query)) {
             // Correctly assigning values from the Error object
             $full_name = $contact->getFullName();
             $message = $contact->getMessage();
             $email = $contact->getEmail();
+            $title = $contact->getTitle();
 
             // Bind parameters
-            $stmt->bind_param("sss", $full_name,$email, $message);
+            $stmt->bind_param("ssss", $full_name,$title,$email, $message);
 
             // Execute statement and check for success
             $success = $stmt->execute();
@@ -199,6 +202,7 @@ class Database
             return false;
         }
     }
+
     public function getContacts($status = null): array
     {
         $stmt = $this->con->stmt_init();
@@ -1267,6 +1271,92 @@ FROM users";
         $exists = $stmt->num_rows > 0;
         $stmt->close();
         return $exists;
+    }
+
+
+    public function save_alumni(Alumni $alumni): bool
+    {
+        $stmt = $this->con->stmt_init();
+        $query = "INSERT INTO alumni (full_name, email, phone, graduation_year, course, employment_status, message) 
+              VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        if ($stmt->prepare($query)) {
+            // Get values from Alumni object
+            $full_name        = $alumni->getFullName();
+            $email            = $alumni->getEmail();
+            $phone            = $alumni->getPhone();
+            $graduation_year  = $alumni->getGraduationYear();
+            $course           = $alumni->getCourse();
+            $employment       = $alumni->getEmploymentStatus();
+            $message          = $alumni->getMessage();
+
+            // Bind parameters
+            $stmt->bind_param(
+                "sssisss",
+                $full_name,
+                $email,
+                $phone,
+                $graduation_year,
+                $course,
+                $employment,
+                $message
+            );
+
+            // Execute statement and check success
+            $success = $stmt->execute();
+
+            // Clean up
+            $stmt->close();
+
+            return $success;
+        } else {
+            // Handle preparation failure
+            return false;
+        }
+    }
+    public function get_alumni(): array
+    {
+        $query = "SELECT id, full_name, email, phone, graduation_year, course, employment_status, message, create_date 
+              FROM alumni ORDER BY create_date DESC";
+
+        $result = $this->con->query($query);
+
+        $alumniList = [];
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $alumniList[] = $row;
+            }
+        }
+
+        return $alumniList;
+    }
+    public function save_donation(Donation $donation): bool
+    {
+        $stmt = $this->con->stmt_init();
+        $query = "INSERT INTO donations (full_name,email,phone,amount,method,transaction_id) VALUES (?,?,?,?,?,?)";
+
+        if ($stmt->prepare($query)) {
+            $fullName = $donation->getFullName();
+            $email = $donation->getEmail();
+            $amount = $donation->getAmount();
+            $phone = $donation->getPhone();
+            $method = $donation->getMethod();
+            $transactionId = $donation->getTransactionId();
+            $stmt->bind_param(
+                "sssiss",
+                $fullName,
+                $email,
+                $phone,
+                $amount,
+                $method,
+                $transactionId
+            );
+
+            $success = $stmt->execute();
+            $stmt->close();
+            return $success;
+        }
+        return false;
     }
 
 }

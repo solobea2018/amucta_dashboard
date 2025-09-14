@@ -68,7 +68,7 @@ HTML;
 
         // Sanitize and validate inputs
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $description = $_POST['description'] ?? '';
+        $description = isset($_POST['description']) ? trim($_POST['description']) : '';
         $user_id = $auth->get_authenticated_user()->getId();
 
         if ($name === '') {
@@ -81,7 +81,7 @@ HTML;
 
         // Clean XSS
         $name = htmlspecialchars($name);
-        $description = htmlspecialchars($description);
+        $description=htmlspecialchars($description);
 
         $db = new Database();
 
