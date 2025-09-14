@@ -4,6 +4,196 @@ function goto(url) {
     }
 }
 (function() {
+    // Only show once per session
+    if (sessionStorage.getItem('chatPopupShown')) return;
+
+    // Delay popup 5–15 seconds
+    const delay = Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
+    setTimeout(() => {
+
+        // --- CREATE CHAT INVITE POPUP ---
+        const chatPopup = document.createElement('div');
+        chatPopup.id = 'chat-popup';
+        chatPopup.style.position = 'fixed';
+        chatPopup.style.bottom = '20px';
+        chatPopup.style.right = '20px';
+        chatPopup.style.width = '300px';
+        chatPopup.style.background = '#10b981';
+        chatPopup.style.color = 'white';
+        chatPopup.style.borderRadius = '12px';
+        chatPopup.style.boxShadow = '0 8px 20px rgba(0,0,0,0.3)';
+        chatPopup.style.padding = '15px';
+        chatPopup.style.zIndex = '9999';
+        chatPopup.style.textAlign = 'center';
+        chatPopup.style.fontFamily = 'Arial, sans-serif';
+
+        // Close button
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '✖';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '5px';
+        closeBtn.style.right = '10px';
+        closeBtn.style.border = 'none';
+        closeBtn.style.background = 'transparent';
+        closeBtn.style.fontSize = '1.2rem';
+        closeBtn.style.color = 'white';
+        closeBtn.style.cursor = 'pointer';
+        closeBtn.addEventListener('click', () => chatPopup.remove());
+        chatPopup.appendChild(closeBtn);
+
+        // Message
+        const msg = document.createElement('p');
+        msg.innerText = 'Hi! Want to chat with AMUCTA support?';
+        msg.style.margin = '10px 0';
+        msg.style.fontWeight = 'bold';
+        chatPopup.appendChild(msg);
+
+        // Accept button
+        const acceptBtn = document.createElement('button');
+        acceptBtn.innerText = 'Start Chat 💬';
+        acceptBtn.style.background = 'white';
+        acceptBtn.style.color = '#10b981';
+        acceptBtn.style.border = 'none';
+        acceptBtn.style.padding = '10px 20px';
+        acceptBtn.style.borderRadius = '8px';
+        acceptBtn.style.cursor = 'pointer';
+        acceptBtn.style.fontWeight = 'bold';
+        acceptBtn.addEventListener('mouseover', () => acceptBtn.style.background = '#f0f0f0');
+        acceptBtn.addEventListener('mouseout', () => acceptBtn.style.background = 'white');
+        chatPopup.appendChild(acceptBtn);
+
+        document.body.appendChild(chatPopup);
+        sessionStorage.setItem('chatPopupShown', 'true');
+
+        // --- CHAT WINDOW ---
+        const chatWindow = document.createElement('div');
+        chatWindow.id = 'chat-window';
+        chatWindow.style.position = 'fixed';
+        chatWindow.style.bottom = '80px';
+        chatWindow.style.right = '20px';
+        chatWindow.style.width = '350px';
+        chatWindow.style.height = '400px';
+        chatWindow.style.background = 'white';
+        chatWindow.style.borderRadius = '12px';
+        chatWindow.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+        chatWindow.style.display = 'none';
+        chatWindow.style.flexDirection = 'column';
+        chatWindow.style.overflow = 'hidden';
+        chatWindow.style.zIndex = '9999';
+
+        // Chat header
+        const header = document.createElement('div');
+        header.style.background = '#10b981';
+        header.style.color = 'white';
+        header.style.padding = '10px';
+        header.style.fontWeight = 'bold';
+        header.style.display = 'flex';
+        header.style.justifyContent = 'space-between';
+        header.style.alignItems = 'center';
+        header.innerHTML = 'AMUCTA Chat <span style="cursor:pointer;" id="close-chat">✖</span>';
+        chatWindow.appendChild(header);
+
+        // Chat messages container
+        const messages = document.createElement('div');
+        messages.style.flex = '1';
+        messages.style.padding = '10px';
+        messages.style.overflowY = 'auto';
+        messages.style.fontSize = '0.95rem';
+        messages.style.color = '#374151';
+        chatWindow.appendChild(messages);
+
+        // Input area
+        const inputContainer = document.createElement('div');
+        inputContainer.style.display = 'flex';
+        inputContainer.style.borderTop = '1px solid #ddd';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = 'Type your message...';
+        input.style.flex = '1';
+        input.style.padding = '10px';
+        input.style.border = 'none';
+        input.style.outline = 'none';
+
+        const sendBtn = document.createElement('button');
+        sendBtn.innerText = 'Send';
+        sendBtn.style.background = '#10b981';
+        sendBtn.style.color = 'white';
+        sendBtn.style.border = 'none';
+        sendBtn.style.padding = '0 15px';
+        sendBtn.style.cursor = 'pointer';
+
+        sendBtn.addEventListener('click', () => {
+            if (!input.value.trim()) return;
+            const userMsg = document.createElement('div');
+            userMsg.innerText = input.value;
+            userMsg.style.textAlign = 'right';
+            userMsg.style.margin = '5px 0';
+            userMsg.style.fontWeight = 'bold';
+            messages.appendChild(userMsg);
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            // Simple bot reply
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.innerText = 'Thanks for reaching out! We will contact you soon.';
+                botMsg.style.textAlign = 'left';
+                botMsg.style.margin = '5px 0';
+                botMsg.style.color = '#10b981';
+                messages.appendChild(botMsg);
+                messages.scrollTop = messages.scrollHeight;
+            }, 800);
+        });
+
+        inputContainer.appendChild(input);
+        inputContainer.appendChild(sendBtn);
+        chatWindow.appendChild(inputContainer);
+        document.body.appendChild(chatWindow);
+
+        // Event listeners
+        acceptBtn.addEventListener('click', () => {
+            chatPopup.remove();
+            chatWindow.style.display = 'flex';
+        });
+
+        document.getElementById('close-chat').addEventListener('click', () => {
+            chatWindow.style.display = 'none';
+            createFloatingIcon();
+        });
+
+        // Floating chat icon when minimized
+        function createFloatingIcon() {
+            if (document.getElementById('chat-icon')) return;
+            const icon = document.createElement('div');
+            icon.id = 'chat-icon';
+            icon.style.position = 'fixed';
+            icon.style.bottom = '20px';
+            icon.style.right = '20px';
+            icon.style.background = '#10b981';
+            icon.style.width = '60px';
+            icon.style.height = '60px';
+            icon.style.borderRadius = '50%';
+            icon.style.display = 'flex';
+            icon.style.justifyContent = 'center';
+            icon.style.alignItems = 'center';
+            icon.style.color = 'white';
+            icon.style.fontSize = '1.8rem';
+            icon.style.cursor = 'pointer';
+            icon.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+            icon.innerHTML = '<i class="bi bi-chat"></i>'; // Bootstrap icon
+            icon.addEventListener('click', () => {
+                chatWindow.style.display = 'flex';
+                icon.remove();
+            });
+            document.body.appendChild(icon);
+        }
+
+    }, delay);
+
+})();
+
+(function() {
     // Only run if not already shown in this session
     if (sessionStorage.getItem('donationPopupShown')) return;
 
