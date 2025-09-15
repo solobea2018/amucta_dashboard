@@ -260,4 +260,13 @@ HTML;
         MainLayout::render($content, $head, $title);
     }
 
+    public function search()
+    {
+        if (isset($_POST['course'])){
+            $program_id=intval($_POST['course']);
+                $params[]=$program_id;
+                $this->detail($params);
+        }
+    }
+
 }

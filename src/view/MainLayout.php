@@ -26,6 +26,7 @@ class MainLayout
         $today=$visitorStats['totals']['today'];
         $week=$visitorStats['totals']['this_week'];
         $loc="";
+        $csrf_token=self::generateCsrfToken();
         foreach ($visitorStats['top_countries'] as $lo){
             $country=$lo['country'];
             $total=$lo['total'];
@@ -159,7 +160,7 @@ class MainLayout
 
     <div class="footer-bottom">
       <a href="#" class="footer-logo">AMUCTA</a>
-      <p class="copyright">Copyright &copy; 2010 - {date('Y')} - Archbishop Mihayo University College of Tabora (AMUCTA)</p>
+      <p class="copyright">Copyright &copy; 2010 - 2024 - Archbishop Mihayo University College of Tabora (AMUCTA)</p>
     </div>
   </div>
 </footer>
@@ -167,16 +168,17 @@ class MainLayout
 <div id="chatbot-container" class="no-print">
   <div id="chat-window" class="chat-closed">
     <div class="chat-header">
-      <span>💬 AMUCTA Chatbot</span>
+      <span>💬 Niulize Mimi</span>
       <button id="chat-close-btn">&times;</button>
     </div>
     <div class="chat-body">
       <div class="chat-message bot">Hello 👋, how can I help you today?</div>
     </div>
-    <div class="chat-footer">
+    <form class="chat-footer">
+      <input type="hidden" name="csrf" value="$csrf_token">
       <input type="text" id="chat-input" placeholder="Type your message..." />
       <button id="chat-send-btn">Send</button>
-    </div>
+    </form>
   </div>
 
   <div id="chat-icon">
@@ -334,5 +336,15 @@ menu;
   </div>
 header;
 
+    }
+    private static function generateCsrfToken(): string
+    {
+        // Generate a random token
+        $token = bin2hex(random_bytes(32)); // 32 bytes = 64 hex characters
+        // Save it into session
+        $_SESSION['csrf_token'] = $token;
+        // Optional: store token generation time
+        $_SESSION['csrf_token_time'] = time();
+        return $token;
     }
 }
