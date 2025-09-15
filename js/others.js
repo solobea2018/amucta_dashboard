@@ -558,6 +558,16 @@ function addProgram(){
     <textarea name="content" rows="5" class="form-control" required 
               placeholder="Detailed program curriculum and info"></textarea>
   </div>
+  <div class="form-group">
+    <label>Entry Requirements</label>
+    <textarea name="requirements" rows="5" class="form-control" 
+              placeholder="Detailed entry qualifications"></textarea>
+  </div>
+  <div class="form-group">
+    <label>Fee structure</label>
+    <textarea name="fees" rows="5" class="form-control" 
+              placeholder="Detailed Fee structure"></textarea>
+  </div>
 
   <div class="form-group">
     <button type="submit" class="btn btn-primary">💾 Save</button>

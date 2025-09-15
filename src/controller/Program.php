@@ -72,8 +72,10 @@ content;
         $faculty_id = (int) $_POST['faculty_id'];
         $department_id = (int) $_POST['department_id'];
         $level_id = (int) $_POST['level_id'];
-        $description = htmlspecialchars(trim($_POST['description']), ENT_QUOTES, 'UTF-8');
-        $content = htmlspecialchars(trim($_POST['content']), ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars(trim($_POST['description']??""));
+        $content = htmlspecialchars(trim($_POST['content']??""));
+        $fees = htmlspecialchars(trim($_POST['fees']??""));
+        $requirements = htmlspecialchars(trim($_POST['requirements']??""));
         $user_id = (int) $_POST['user_id'];
 
         $db = new Database();
@@ -98,6 +100,8 @@ content;
         $program->setLevelId($level_id);
         $program->setDescription($description);
         $program->setContent($content);
+        $program->setFees($fees);
+        $program->setRequirements($requirements);
         $program->setCreatedBy($user_id);
         $program->setCreatedAt(date('Y-m-d H:i:s'));
 

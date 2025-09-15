@@ -8,7 +8,7 @@ use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\model\Visitor;
 use Solobea\Dashboard\view\MainLayout;
-use Solobea\Go\errors\ErrorReporter;
+use Solobea\Dashboard\utils\ErrorReporter;
 
 class Visitors
 {

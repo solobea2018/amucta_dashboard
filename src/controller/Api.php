@@ -6,7 +6,7 @@ namespace Solobea\Dashboard\controller;
 
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
-use Solobea\Go\errors\ErrorReporter;
+use Solobea\Dashboard\utils\ErrorReporter;
 
 class Api
 {

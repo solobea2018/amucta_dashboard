@@ -3,7 +3,7 @@
 namespace Solobea\Dashboard\authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\model\User;
-use Solobea\Go\errors\ErrorReporter;
+use Solobea\Dashboard\utils\ErrorReporter;
 
 class Authentication
 {

@@ -11,12 +11,12 @@ use Solobea\Dashboard\model\Program;
 use Solobea\Dashboard\model\User;
 use Solobea\Dashboard\model\Visitor;
 use Solobea\Dashboard\utils\Helper;
-use Solobea\Go\errors\ErrorReporter;
+use Solobea\Dashboard\utils\ErrorReporter;
 
 class Database
 {
-    private $host="localhost";
-    //private $host="data.tetea.store";
+    //private $host="localhost";
+    private $host="data.tetea.store";
 
     private $user="amucta_user";
     private $db="dashboard";
@@ -1218,8 +1218,8 @@ FROM users";
             INSERT INTO program
             (name, short_name, intakes, duration, capacity, 
              accreditation_year, faculty_id, department_id, level_id, 
-             description, content, user_id, created_at) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             description, content, user_id, created_at,entry_requirements,fees) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
         ");
 
         if (!$stmt) {
@@ -1238,11 +1238,13 @@ FROM users";
         $description       = $program->getDescription();
         $content           = $program->getContent();
         $createdBy         = $program->getCreatedBy();
+        $req         = $program->getRequirements();
         $createdAt         = $program->getCreatedAt();
+        $fee         = $program->getFees();
 
         // Bind variables
         $stmt->bind_param(
-            "ssisdiiiissis",
+            "ssisdiiiississs",
             $name,
             $shortName,
             $intakes,
@@ -1255,7 +1257,9 @@ FROM users";
             $description,
             $content,
             $createdBy,
-            $createdAt
+            $createdAt,
+            $req,
+            $fee
         );
 
         $result = $stmt->execute();

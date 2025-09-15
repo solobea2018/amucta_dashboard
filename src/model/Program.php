@@ -17,6 +17,40 @@ class Program
     private $level_id;
     private $description;
     private $content;
+    private $fees;
+    private $requirements;
+
+    /**
+     * @return mixed
+     */
+    public function getFees()
+    {
+        return $this->fees;
+    }
+
+    /**
+     * @param mixed $fees
+     */
+    public function setFees($fees): void
+    {
+        $this->fees = $fees;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRequirements()
+    {
+        return $this->requirements;
+    }
+
+    /**
+     * @param mixed $requirements
+     */
+    public function setRequirements($requirements): void
+    {
+        $this->requirements = $requirements;
+    }
     private $created_by;
     private $created_at;
 

@@ -11,16 +11,79 @@ class Contact
 {
     public function index()
     {
+        $contacts = [
+            [
+                "name" => "1. General",
+                "position" => "General Contacts,",
+                "org" => "Archbishop Mihayo University College of Tabora,",
+                "box" => "P.O. Box 801,",
+                "region" => "Tabora, Tanzania.",
+                "tel" => "TEL: +255 26 2605355",
+                "web" => "Website: www.amucta.ac.tz",
+                "mail" => "Email: amucta@amucta.ac.tz"
+            ],
+            [
+                "name" => "2. Principal",
+                "position" => "The Principal,",
+                "org" => "Archbishop Mihayo University College of Tabora,",
+                "box" => "P.O. Box 801,",
+                "region" => "Tabora, Tanzania.",
+                "tel" => "TEL: +255 734 966 674",
+                "web" => "Website: www.amucta.ac.tz",
+                "mail" => "Email: principal@amucta.ac.tz"
+            ],
+            [
+                "name" => "3. Public Relation Office",
+                "position" => "Public Relation Officer,",
+                "org" => "Archbishop Mihayo University College of Tabora,",
+                "box" => "P.O. Box 801,",
+                "region" => "Tabora, Tanzania.",
+                "tel" => "TEL: +255 734 928 504",
+                "web" => "Website: www.amucta.ac.tz",
+                "mail" => "Email: pro@amucta.ac.tz"
+            ],
+            [
+                "name" => "4. Admission Office",
+                "position" => "Admission Officer,",
+                "org" => "Archbishop Mihayo University College of Tabora,",
+                "box" => "P.O. Box 801,",
+                "region" => "Tabora, Tanzania.",
+                "tel" => "TEL: +255 734 928 505",
+                "web" => "Website: www.amucta.ac.tz",
+                "mail" => "Email: admission@amucta.ac.tz"
+            ],
+            [
+                "name" => "5. Webmaster",
+                "position" => "Webmaster,",
+                "org" => "Archbishop Mihayo University College of Tabora,",
+                "box" => "P.O. Box 801,",
+                "region" => "Tabora, Tanzania.",
+                "tel" => "TEL: +255 734 966 674",
+                "web" => "Website: www.amucta.ac.tz",
+                "mail" => "Email: admin@amucta.ac.tz"
+            ]
+        ];
+
+        // Build contact cards
+        $contactCards = "";
+        foreach ($contacts as $c) {
+            $contactCards .= "
+        <div class='contact-card' style='padding:15px; margin-bottom:15px; background:#fff; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.08);'>
+            <h3 style='color:var(--amucta-blue); margin-bottom:8px;'>{$c['name']}</h3>
+            <p><strong>{$c['position']}</strong> {$c['org']}</p>
+            <p>{$c['box']} {$c['region']}</p>
+            <p>{$c['tel']}</p>
+            <p><a href='mailto:{$c['mail']}'>{$c['mail']}</a></p>
+            <p><a href='https://{$c['web']}' target='_blank'>{$c['web']}</a></p>
+        </div>";
+        }
+
         $content = <<<HTML
-<div class="contact-page" style="max-width: 900px; margin: 50px auto; padding: 20px; border-radius: 12px; background: #f9f9f9; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-    <h1 style="color: var(--amucta-blue); font-size: 2.2em; margin-bottom: 20px;">Contact Us</h1>
-    
+<div class="contact-page" style="max-width: 1000px; margin: 50px auto; padding: 20px; border-radius: 12px; background: #f9f9f9; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <h1 style="color: var(--amucta-blue); font-size: 2.2em; margin-bottom: 20px; text-align:center;">Contact Us</h1>
+
     <div class="contact-info" style="margin-bottom: 30px;">
-        <h2 style="color: #1D4ED8; margin-bottom: 10px;">AMUCTA - Archbishop Mihayo University College of Tabora</h2>
-        <p><strong>Address:</strong> P.O. Box 801, Tabora, Tanzania</p>
-        <p><strong>Telephone:</strong> +255 734 966 674</p>
-        <p><strong>Email:</strong> <a href="mailto:amucta@amucta.ac.tz">amucta@amucta.ac.tz</a></p>
-        <p><strong>Website:</strong> <a href="https://amucta.ac.tz" target="_blank">https://amucta.ac.tz</a></p>
+        $contactCards
     </div>
 
     <div class="contact-form" style="margin-top: 20px;">
@@ -44,10 +107,11 @@ class Contact
 </div>
 HTML;
 
-        $head = ""; // optional extra <head> content
+        $head = "";
         $title = "Contact Us - AMUCTA";
         MainLayout::render($content, $head, $title);
     }
+
 
     public function send()
     {

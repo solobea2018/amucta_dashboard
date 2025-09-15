@@ -1,11 +1,10 @@
 <?php
 
-namespace Solobea\Go\errors;
+namespace Solobea\Dashboard\utils;
 
 
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\model\Error;
-use Solobea\Dashboard\utils\Helper;
 
 class ErrorReporter{
     public Database $db;

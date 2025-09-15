@@ -12,47 +12,6 @@ use Solobea\Dashboard\utils\Helper;
 
 class MainLayout
 {
-    public static function render2($content,$header=null,$title=null)
-    {
-        $org_name="Amucta";
-        $org_logo="/images/logo.png";
-        $title=$title??$org_name;
-        $menu =self::menu();
-        $layout = <<<HTML
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{$title}</title>    
-    <meta
-    	name="viewport"
-    	content="width=device-width, initial-scale=1.0">   
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/animate.css">
-    <link rel="stylesheet" href="/css/sweetalert2.css">
-    <link rel="stylesheet" href="/css/chat.css">
-    <link rel="stylesheet" href="/css/toastify.css">
-    <link rel="icon" href="$org_logo">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="/js/main.js" type="text/javascript"></script>
-    <script src="/js/others.js" type="text/javascript"></script>
-    <script src="/js/sweetalert2.js" type="text/javascript"></script>
-    <script src="/js/toastify.js" type="text/javascript"></script>
-    $header
-</head>
-<body>
-    <section class="header p-4">
-    $menu
-</section>
-    <section class="main p-4">$content</section>
-    <section class="footer"></section>
-</body>
-</html>
-HTML;
-        echo $layout;
-
-    }
-
     public static function render($content,$header=null,$title=null)
     {
         $org_name="Amucta";
@@ -95,7 +54,7 @@ HTML;
 <body>
 <!-- Header with Enhanced Branding and Improved Menu -->
 <header id="header">
-  <div class="header-top">
+  <div class="header-top no-print">
     <a href="/contact">Contact Us</a>
     <a href="https://amucta.ac.tz:2096">Emails</a>
     <a href="/staff">Staff Portal</a>
@@ -113,7 +72,7 @@ HTML;
   </div>
 </main>
 
-<footer>
+<footer class="no-print">
   <!-- Stats Section -->
   <section class="stats-section">
     <div class="stats-container">
@@ -156,10 +115,10 @@ HTML;
     <div class="footer-grid">
       <div class="newsletter-section">
         <h1>Subscribe our newsletter to get update.</h1>
-        <div class="newsletter-form">
+        <form action="/subscription/save" method="post" onsubmit="sendFormSweet(this,event)" class="newsletter-form">
           <input id="email" type="email" placeholder="Email Address">
           <button class="subscribe-btn">Subscribe</button>
-        </div>
+        </form>
         <div class="footer-cta">
             <a href="/donation/donate" class="cta-btn">💚 Donate Now</a>
         </div>
@@ -205,7 +164,7 @@ HTML;
   </div>
 </footer>
 <!-- Floating Chat Icon and Window -->
-<div id="chatbot-container">
+<div id="chatbot-container" class="no-print">
   <div id="chat-window" class="chat-closed">
     <div class="chat-header">
       <span>💬 AMUCTA Chatbot</span>
@@ -257,7 +216,7 @@ menu;
 
     }
 
-    public static function header()
+    public static function header(): string
     {
         $db=new Database();
         $roles=$db->select("SELECT * FROM role_group order by name");
@@ -267,6 +226,15 @@ menu;
                 $name=Helper::slugify($role['name']);
                 $id=$role['id'];
                 $stf.="<li><a href=\"/staff/amucta/{$name}/$id\">{$role['name']}</a></li>";
+            }
+        }
+        $levels=$db->select("SELECT id,name FROM level order by name");
+        $lvs="";
+        if (sizeof($levels)>0){
+            foreach ($levels as $level) {
+                $name=Helper::slugify($level['name']);
+                $id=$level['id'];
+                $lvs.="<li><a href=\"/programmes/level/{$name}/$id\">{$level['name']}</a></li>";
             }
         }
         $deps=$db->select("SELECT id,name FROM department where category='department' order by name");
@@ -288,7 +256,7 @@ menu;
             }
         }
         return <<<header
-<div class="header-container">
+<div class="header-container no-print">
     <a href="/" class="logo"><img src="/logo.png" alt="AMUCTA Logo"></a>
     <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     <a href="/" class="logo-caption">AMUCTA</a>
@@ -303,25 +271,23 @@ menu;
             <li><a href="/about/about">About us</a></li>
             <li><a href="/about/history">History</a></li>           
             <li><a href="/about/message">Vice Chancellor Message</a></li>
-            <li><a href="/about/terms">Privacy &amp; Policy and Terms &amp; Conditions</a></li>
+            <li><a href="/about/privacy">Privacy &amp; Policy</a></li>
+            <li><a href="/about/terms">Terms &amp; Conditions</a></li>
           </ul>
         </li>
         <li class="dropdown-container">
           <a href="/admissions" class="mobile-main-link">Admissions</a>
           <ul class="submenu">
-            <li><a href="/admissions/apply">How to Apply</a></li>
+            <li><a href="/admissions/admission">How to Apply</a></li>
+            <li><a href="/admissions/joining">Join Instructions</a></li>
             <li><a href="/admissions/requirements">Entry Requirements</a></li>
             <li><a href="/admissions/fees">Fees &amp; Funding</a></li>
-            <li><a href="/admissions/deadlines">Application Deadlines</a></li>
           </ul>
         </li>
         <li class="dropdown-container">
           <a href="/programmes" class="mobile-main-link">Academics</a>
           <ul class="submenu">
-            <li><a href="/programmes/undergraduate">Undergraduate</a></li>
-            <li><a href="/programmes/postgraduate">Postgraduate</a></li>
-            <li><a href="/programmes/certificates">Certificates &amp; Diplomas</a></li>
-            <li><a href="/programmes/short_courses">Short Courses</a></li>
+            $lvs
           </ul>
         </li>
         <li class="dropdown-container">
@@ -336,19 +302,27 @@ menu;
             {$dp}
           </ul>
         </li>
-        <li><a href="/research" class="mobile-main-link">Research</a></li>
-        <li><a href="/library" class="mobile-main-link">Library &amp; Resources</a></li>
         <li class="dropdown-container">
-          <a href="/student-life" class="mobile-main-link">Student Life</a>
+          <a href="/research" class="mobile-main-link">Research</a>
           <ul class="submenu">
-            <li><a href="/student-life/portal">Dean of Students</a></li>
-            <li><a href="/student-life/portal">Student Portal</a></li>
-            <li><a href="/student-life/services">Students By-laws</a></li>
-            <li><a href="/student-life/services">Medical Care</a></li>
-            <li><a href="/student-life/accommodation">Accommodation</a></li>
-            <li><a href="/student-life/clubs">Clubs &amp; Societies</a></li>
+            <li><a href="/research/research">Research Overview</a></li>
+            <li><a href="/research/student_research">Student Research</a></li>
+            <li><a href="/research/centers">Research Centers</a></li>
+            <li><a href="/research/collaborations">Collaborations</a></li>                   
           </ul>
-        </li>
+        </li>       
+        <li class="dropdown-container">
+          <a href="/library" class="mobile-main-link">ICT &amp; Other Services</a>
+          <ul class="submenu">
+            <li><a href="/library/ict">ICT Services</a></li>  
+            <li><a href="/library/index">Library</a></li>
+            <li><a href="/student-life/student">Student Life</a></li>
+            <li><a href="/student-life/by_laws">Students By-laws</a></li>
+            <li><a href="/student-life/dispensary">Medical Care</a></li>
+            <li><a href="/student-life/accommodation">Accommodation</a></li>
+            <li><a href="/student-life/others">Others</a></li>                    
+          </ul>
+        </li>       
         <li class="dropdown-container">
           <a href="/staff" class="mobile-main-link">Staff Area</a>
           <ul class="submenu">

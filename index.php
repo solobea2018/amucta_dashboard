@@ -8,7 +8,7 @@ use Solobea\Dashboard\controller\Home;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\model\Visitor;
 use Solobea\Dashboard\utils\Resource;
-use Solobea\Go\errors\ErrorReporter;
+use Solobea\Dashboard\utils\ErrorReporter;
 
 date_default_timezone_set('Africa/Nairobi');
 
