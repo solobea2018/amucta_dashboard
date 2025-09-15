@@ -323,7 +323,7 @@
     color: #fff;
     border: 1px solid rgba(255,255,255,0.2);
     margin-top: 1rem;
-    text-align: center;
+    text-align: start;
 }
 
 /* Gradient card */
@@ -368,6 +368,7 @@
 .deadline {
     display: flex;
     align-items: center;
+    flex-direction: row;
     gap: 0.5rem;
     margin-top: 1.5rem;
     font-size: 0.9rem;

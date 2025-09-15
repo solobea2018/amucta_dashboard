@@ -39,13 +39,15 @@ class Home
     <h2>Admissions <span class="underline">OPEN</span> <span class="animate">NOW</span></h2>
     <p>Missed the first call? This is your moment. Limited slots, rolling review—earlier submissions get priority. Secure your spot before the window closes.</p>
     
+    <div class="flex flex-row flex-wrap items-center justify-start">
     <div class="highlight-box">Diploma Programmes<br>Bachelor Programmes<br>Postgraduate Programmes</div>
     <div class="highlight-box">Mode<br><strong>Online Application</strong></div>
     <div class="highlight-box">Status<br><strong>OPEN</strong></div>
+</div>
 
     <div class="deadline">
       <span class="deadline-dot"></span>
-      <p>Closes: <strong>September 21, 2025</strong> • Don’t wait—applications are reviewed as they arrive.</p>
+      <span>Closes: <strong>September 21, 2025</strong> • Don’t wait—applications are reviewed as they arrive.</span>
     </div>
   </div>
 </section>
