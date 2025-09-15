@@ -14,8 +14,8 @@ class Home
         $query="select id, name from program order by level_id,department_id";
         $db=new Database();
         $progs=$db->select($query);
-        $intro=$this->intro();
-        $news=$this->news();
+        $intro=$this->intro($db);
+        $news=$this->news($db);
         $prog_list="";
         if (!empty($progs)){
             foreach ($progs as $prog) {
@@ -136,32 +136,83 @@ content;
         MainLayout::render($content,$head);
     }
 
-    private function news()
+    private function news(Database $database): string
     {
+        $query="select name, file_url, created_at from attachments order by created_at desc limit 6";
+        $attachments=$database->select($query);
+        $attachments_list="";
+        if (!empty($attachments)){
+            foreach ($attachments as $prog) {
+                $id=$prog['id'];
+                $name=$prog['name'];
+                $attachments_list.=<<<atta
+            <li>
+                <h3 class="text-blue-900 font-medium hover:underline cursor-pointer">
+                    {$name}
+                </h3>
+                <div class="text-sm text-gray-500 flex items-center space-x-2">
+                    <a href="{$prog['file_url']}" class="text-yellow-600 font-medium">
+                        📁 Download
+                    </a>
+                    <span>|</span>
+                    <span>📅 {$prog['created_at']}</span>
+                </div>
+            </li>
+atta;
+
+            }
+        }
+
+        $query="select id, feature_image, name, content, created_at, expire, category, attachment from news order by created_at desc limit 4";
+        $news=$database->select($query);
+        $news_list="";
+        if (!empty($news)){
+            foreach ($news as $prog) {
+                $id=$prog['id'];
+                $name=$prog['name'];
+                $feature_image=$prog['feature_image'];
+                $date=$prog['created_at'];
+                $content = $prog['content'];
+                $expire  = $prog['expire']; // expected in Y-m-d or Y-m-d H:i:s format
+                $img     = "";
+                if (strtotime(date("Y-m-d")) <= strtotime($expire)) {
+                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="w-6 h-6">';
+                }
+                $shortContent = mb_substr(strip_tags($content), 0, 100);
+                if (strlen(strip_tags($content)) > 100) {
+                    $shortContent .= "...";
+                }
+                $attachment =$prog['attachment']??"#";
+                $news_list.=<<<atta
+            <div class="flex gap-4">
+                <img src="$feature_image" class="w-24 h-24 object-cover rounded" alt="News">
+                <div>
+                    <div class="font-bold flex flex-row text-blue-800 hover:underline cursor-pointer" onclick="popHtml('$name','$content')">{$name}
+                        $img
+                    </div>
+                    <p class="text-sm text-gray-600">
+                        {$shortContent} <a href="$attachment" class="text-blue-600">Read More →</a>
+                    </p>
+                    <p class="text-sm text-gray-500 mt-1">📅 Posted on: {$date}</p>
+                </div>
+            </div>
+atta;
+
+            }
+        }
         return<<<news
 <div class="grid md:grid-cols-2 gap-6 p-4 bg-gray-100">
     <!-- Latest Announcements -->
     <div>
         <h2 class="text-xl font-semibold border-b-2 border-blue-600 pb-2 mb-4">Download Center</h2>
         <ul class="space-y-4">
-            <li *ngFor="let item of homeModel.news | slice:0:(showAllNews ? homeModel.news.length : 5)">
-                <h3 class="text-blue-900 font-medium hover:underline cursor-pointer">
-                    {{ item.name }}
-                </h3>
-                <div class="text-sm text-gray-500 flex items-center space-x-2">
-                    <a [href]="item.download" class="text-yellow-600 font-medium">
-                        {{ item.downloadLabel }}
-                    </a>
-                    <span>|</span>
-                    <span>{{ item.date }}</span>
-                </div>
-            </li>
+            $attachments_list
         </ul>
 
         <!-- View More / View Less Button -->
-        <button (click)="toggleNews()" class="mt-4 text-blue-700 font-semibold hover:underline">
-            {{ showAllNews ? 'View Less' : 'View More' }}
-        </button>
+        <a href="/attachments/all" class="mt-4 text-blue-700 font-semibold hover:underline">
+           View More 
+        </a>
     </div>
 
 
@@ -169,24 +220,13 @@ content;
     <div>
         <h2 class="text-xl font-semibold border-b-2 border-blue-600 pb-2 mb-4">Latest News</h2>
         <div class="space-y-6">
-            <div class="flex gap-4" *ngFor="let news of newsList | slice:0:(showAllNews ? newsList.length : 4)">
-                <img [src]="news.image" class="w-24 h-24 object-cover rounded" alt="News">
-                <div>
-                    <div class="font-bold flex flex-row text-blue-800 hover:underline cursor-pointer">{{ news.title }}
-                        <img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="w-6 h-6">
-                    </div>
-                    <p class="text-sm text-gray-600">
-                        {{ news.summary }} <a [href]="news.link" class="text-blue-600">Read More →</a>
-                    </p>
-                    <p class="text-sm text-gray-500 mt-1">📅 Posted on: {{ news.date }}</p>
-                </div>
-            </div>
+            $news_list
         </div>
 
         <!-- Read More Button -->
         <div class="mt-6 text-center">
-            <button (click)="togglePictureNews()" class="text-blue-700 font-semibold hover:underline">
-                {{ showAllPictureNews ? 'View Less' : 'Read More News' }}
+            <a href="/news/all" class="text-blue-700 font-semibold hover:underline">
+                Read More News
             </button>
         </div>
     </div>
@@ -196,8 +236,82 @@ news;
 
     }
 
-    private function intro()
+    private function intro(Database $database): string
     {
+        $query="select id, name, start_date, end_date,location,feature_image from events order by created_at desc limit 6";
+        $events=$database->select($query);
+        $events_list="";
+        if (!empty($events)){
+            foreach ($events as $prog) {
+                $id=$prog['id'];
+                $name=$prog['name'];
+                $feature_image=$prog['feature_image']??'https://www.heslb.go.tz/assets/css/assets_22/images/new.svg';
+                $date=$prog['start_date'];
+                $expire  = $prog['end_date']; // expected in Y-m-d or Y-m-d H:i:s format
+                $img     = "";
+                if (strtotime(date("Y-m-d")) <= strtotime($expire)) {
+                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="w-6">';
+                }
+                $location =$prog['location']??"";
+                $events_list.=<<<atta
+            <li>
+                <div class="flex items-start gap-3">
+                    <img src="$feature_image" alt="new" class="w-10">
+                    <div>
+                        <a href="/events/detail/$id" class="text-sm font-medium text-gray-800 hover:text-blue-600 block">
+                            {$name} - {$location}
+                        </a>
+                        <div class="text-xs text-gray-500 flex items-center gap-2 mt-1">
+                            <i class="fa fa-clock-o"></i>
+                            <span>{$date}</span>
+                            $img
+                        </div>
+                    </div>
+                </div>
+                <hr class="mt-2">
+            </li>
+atta;
+
+            }
+        }
+
+        $query="select id, feature_image, name, content, created_at, expire, category, attachment from news order by created_at desc limit 4";
+        $news=$database->select($query);
+        $news_list="";
+        if (!empty($news)){
+            foreach ($news as $prog) {
+                $id=$prog['id'];
+                $name=$prog['name'];
+                $feature_image=$prog['feature_image'];
+                $date=$prog['created_at'];
+                $content = $prog['content'];
+                $expire  = $prog['expire']; // expected in Y-m-d or Y-m-d H:i:s format
+                $img     = "";
+                if (strtotime(date("Y-m-d")) <= strtotime($expire)) {
+                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="w-6 h-6">';
+                }
+                $shortContent = mb_substr(strip_tags($content), 0, 100);
+                if (strlen(strip_tags($content)) > 100) {
+                    $shortContent .= "...";
+                }
+                $attachment =$prog['attachment']??"#";
+                $news_list.=<<<atta
+            <div class="flex gap-4">
+                <img src="$feature_image" class="w-24 h-24 object-cover rounded" alt="News">
+                <div>
+                    <div class="font-bold flex flex-row text-blue-800 hover:underline cursor-pointer" onclick="popHtml('$name','$content')">{$name}
+                        $img
+                    </div>
+                    <p class="text-sm text-gray-600">
+                        {$shortContent} <a href="$attachment" class="text-blue-600">Read More →</a>
+                    </p>
+                    <p class="text-sm text-gray-500 mt-1">📅 Posted on: {$date}</p>
+                </div>
+            </div>
+atta;
+
+            }
+        }
         return <<<intro
 <div class="py-10 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -222,26 +336,11 @@ news;
             <div class="lg:w-1/3">
                 <h3 class="text-xl font-bold mb-2 border-b-2 border-blue-500 inline-block">News & Events</h3>
                 <ul class="space-y-4 mt-4">
-                    <li *ngFor="let item of newsEvents | slice:0:5">
-                        <div class="flex items-start gap-3">
-                            <img src="https://www.heslb.go.tz/assets/css/assets_22/images/new.svg" alt="new" class="w-10">
-                            <div>
-                                <a [href]="item.link" class="text-sm font-medium text-gray-800 hover:text-blue-600 block">
-                                    {{ item.title }}
-                                </a>
-                                <div class="text-xs text-gray-500 flex items-center gap-2 mt-1">
-                                    <i class="fa fa-clock-o"></i>
-                                    <span>{{ item.date }}</span>
-                                    <img *ngIf="item.hasNewBadge" src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="w-6">
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="mt-2">
-                    </li>
+                    $events_list
 
                     <!-- Read More Toggle -->
                     <li>
-                        <a routerLink="/target-page" class="inline-block  text-amucta-blue font-semibold hover:bg-blue-700">
+                        <a href="/events/all" class="inline-block  text-amucta-blue font-semibold hover:bg-blue-700">
                             Read More
                         </a>
                     </li>
