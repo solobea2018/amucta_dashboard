@@ -24,113 +24,50 @@ class Home
                 $prog_list.="<option value='$id'>{$name}</option>";
             }
         }
-        $head='';
-        $content=<<<content
-<section class="bg-white pt-16 pb-2 md:pt-20  px-4 md:px-10">
-        <div class="w-full mx-auto items-center">
-
-            <!-- Caption & Button -->
-            <div class="text-center">
-                <h1 class="text-2xl md:text-4xl font-bold text-amucta-blue">Archbishop Mihayo University College of Tabora</h1>
-
-                <a href="https://oas.amucta.ac.tz"
-                   target="_blank"
-                   class="mt-1 inline-block bg-[#00BFFF] text-white font-semibold px-4 py-2 rounded-xl shadow-md hover:shadow-cyan-400/50 hover:scale-105 transition-all duration-300 animate-pulse">
-                    🎓 Apply Now
-                </a>
-            </div>
-
-        </div>
-    </section>
-<section class="mx-auto max-w-4xl px-4">
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#00ccff] via-[#ffff00] to-[#83e59a] p-px shadow-2xl">
-        <div class="relative rounded-3xl bg-black/60 px-6 py-10 sm:px-10">
-            <!-- Top badge -->
-            <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white ring-1 ring-white/20">
-                <span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
-                Second Window • Bachelor Applicants
-            </div>
-
-            <!-- Headline -->
-            <h2 class="mt-5 text-3xl font-extrabold leading-tight text-white sm:text-4xl">
-                Admissions <span class="underline decoration-white/40 underline-offset-4">OPEN</span> <span class="animate-pulse">NOW</span>
-            </h2>
-
-            <!-- Subcopy -->
-            <p class="mt-3 max-w-2xl text-base text-white/90 sm:text-lg">
-                Missed the first call? This is your moment. Limited slots, rolling review—earlier submissions get priority.
-                Secure your spot before the window closes.
-            </p>
-
-            <!-- Highlights -->
-            <div class="mt-6 grid gap-3 sm:grid-cols-3">
-                <div class="rounded-2xl bg-white/10 p-4 text-white/90 ring-1 ring-white/15">
-                    <p class="font-semibold">Diploma Programmes</p>
-                    <p class="font-semibold">Bachelor Programmes</p>
-                    <p class="font-semibold">Postgraduate Programmes</p>
-                </div>
-                <div class="rounded-2xl bg-white/10 p-4 text-white/90 ring-1 ring-white/15">
-                    <p class="text-sm">Mode</p>
-                    <p class="text-lg font-semibold">Online Application</p>
-                </div>
-                <div class="rounded-2xl bg-white/10 p-4 text-white/90 ring-1 ring-white/15">
-                    <p class="text-sm">Status</p>
-                    <p class="text-lg font-extrabold tracking-wide">OPEN</p>
-                </div>
-            </div>
-
-            <!-- Deadline -->
-            <div class="mt-6 flex flex-wrap items-center gap-3 text-white/90">
-        <span class="relative inline-flex h-2.5 w-2.5">
-          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-300 opacity-75"></span>
-          <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-yellow-300"></span>
-        </span>
-                <p class="text-sm">
-                    Closes: <span class="font-semibold">September 21, 2025</span> • Don’t wait—applications are reviewed as they arrive.
-                </p>
-            </div>
-
-            <!-- Button slot -->
-            <div class="mt-7">
-                <!-- Place your Apply button here -->
-            </div>
-
-            <!-- Subtle corner glow -->
-            <div class="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/20 blur-3xl"></div>
-        </div>
-    </div>
-
-    <!-- Skinny banner -->
-    <div class="mt-6 rounded-2xl bg-gradient-to-r from-[#00ccff] to-[#ffff00] p-4 text-center text-black shadow-lg ring-1 ring-black/10">
-        <strong>Second Application Window is OPEN</strong> — limited seats, submit early for priority review.
-        <span class="ml-2 rounded-full bg-black/10 px-2 py-0.5 text-xs">September 21, 2025</span>
-    </div>
+        $head="<link type='text/css' rel='stylesheet' href='/css/home.css'>";
+        $content = <<<content
+<section class="section">
+  <div class="text-center">
+    <h1 class="uni-title">Archbishop Mihayo University College of Tabora</h1>
+    <a href="https://oas.amucta.ac.tz" target="_blank" class="apply-btn">🎓 Apply Now</a>
+  </div>
 </section>
-<section class="w-full py-10 px-4">
-        <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-xl text-center">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Find Your Program</h2>
 
-            <form action="/programmes/search" method="post"
-                  class="flex flex-col md:flex-row items-center gap-4 justify-center">
-                <select
-                        name="course"
-                        required
-                        class="w-full md:w-auto px-5 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 text-gray-700">
-                    <option value="" disabled selected>Select a course</option>
-                    $prog_list
-                </select>
+<section class="gradient-card">
+  <div class="gradient-inner">
+    <div class="badge">Second Window • Bachelor Applicants</div>
+    <h2>Admissions <span class="underline">OPEN</span> <span class="animate">NOW</span></h2>
+    <p>Missed the first call? This is your moment. Limited slots, rolling review—earlier submissions get priority. Secure your spot before the window closes.</p>
+    
+    <div class="highlight-box">Diploma Programmes<br>Bachelor Programmes<br>Postgraduate Programmes</div>
+    <div class="highlight-box">Mode<br><strong>Online Application</strong></div>
+    <div class="highlight-box">Status<br><strong>OPEN</strong></div>
 
-                <button
-                        type="submit"
-                        class="bg-amucta-blue hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300">
-                    🔍 Search
-                </button>
-            </form>
-        </div>
-    </section>
+    <div class="deadline">
+      <span class="deadline-dot"></span>
+      <p>Closes: <strong>September 21, 2025</strong> • Don’t wait—applications are reviewed as they arrive.</p>
+    </div>
+  </div>
+</section>
+
+<div class="banner">
+  Second Application Window is OPEN — limited seats, submit early for priority review.
+  <span>September 21, 2025</span>
+</div>
+
+<section class="search-box">
+  <h2>Find Your Program</h2>
+  <form action="/programmes/search" method="post" class="search-form">
+    <select name="course" required>
+      <option value="" disabled selected>Select a course</option>
+      $prog_list
+    </select>
+    <button type="submit">🔍 Search</button>
+  </form>
+</section>
+
 $intro
 $news
-
 content;
 
         MainLayout::render($content,$head);
@@ -138,28 +75,23 @@ content;
 
     private function news(Database $database): string
     {
-        $query="select name, file_url, created_at from attachments order by created_at desc limit 6";
+        $query="select name, file_url, created_at from attachments order by id desc limit 6";
         $attachments=$database->select($query);
         $attachments_list="";
         if (!empty($attachments)){
             foreach ($attachments as $prog) {
-                $id=$prog['id'];
                 $name=$prog['name'];
+                $date = date("F d, Y", strtotime($prog['created_at']));
                 $attachments_list.=<<<atta
-            <li>
-                <h3 class="text-blue-900 font-medium hover:underline cursor-pointer">
-                    {$name}
-                </h3>
-                <div class="text-sm text-gray-500 flex items-center space-x-2">
-                    <a href="{$prog['file_url']}" class="text-yellow-600 font-medium">
-                        📁 Download
-                    </a>
+            <li class="attachment-item">
+                <h3 class="attachment-title">{$name}</h3>
+                <div class="attachment-meta">
+                    <a href="{$prog['file_url']}" class="download-link">📁 Download</a>
                     <span>|</span>
-                    <span>📅 {$prog['created_at']}</span>
+                    <span class="date">📅 {$date}</span>
                 </div>
             </li>
 atta;
-
             }
         }
 
@@ -168,15 +100,14 @@ atta;
         $news_list="";
         if (!empty($news)){
             foreach ($news as $prog) {
-                $id=$prog['id'];
                 $name=$prog['name'];
                 $feature_image=$prog['feature_image'];
-                $date=$prog['created_at'];
+                $date = date("F d, Y", strtotime($prog['created_at']));
                 $content = $prog['content'];
-                $expire  = $prog['expire']; // expected in Y-m-d or Y-m-d H:i:s format
+                $expire  = $prog['expire'];
                 $img     = "";
                 if (strtotime(date("Y-m-d")) <= strtotime($expire)) {
-                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="w-6 h-6">';
+                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="new-icon">';
                 }
                 $shortContent = mb_substr(strip_tags($content), 0, 100);
                 if (strlen(strip_tags($content)) > 100) {
@@ -184,61 +115,47 @@ atta;
                 }
                 $attachment =$prog['attachment']??"#";
                 $news_list.=<<<atta
-            <div class="flex gap-4">
-                <img src="$feature_image" class="w-24 h-24 object-cover rounded" alt="News">
-                <div>
-                    <div class="font-bold flex flex-row text-blue-800 hover:underline cursor-pointer" onclick="popHtml('$name','$content')">{$name}
-                        $img
-                    </div>
-                    <p class="text-sm text-gray-600">
-                        {$shortContent} <a href="$attachment" class="text-blue-600">Read More →</a>
+            <div class="news-item">
+                <img src="$feature_image" class="news-img" alt="News">
+                <div class="news-content">
+                    <div class="news-title" onclick="popHtml('$name','$content')">{$name} $img</div>
+                    <p class="news-desc">
+                        {$shortContent} <a href="$attachment" class="read-more">Read More →</a>
                     </p>
-                    <p class="text-sm text-gray-500 mt-1">📅 Posted on: {$date}</p>
+                    <p class="news-date">📅 Posted on: {$date}</p>
                 </div>
             </div>
 atta;
-
             }
         }
+
         return<<<news
-<div class="grid md:grid-cols-2 gap-6 p-4 bg-gray-100">
+<div class="news-section">
     <!-- Latest Announcements -->
     <div>
-        <h2 class="text-xl font-semibold border-b-2 border-blue-600 pb-2 mb-4">Download Center</h2>
-        <ul class="space-y-4">
+        <h2 class="section-title">Download Center</h2>
+        <ul class="attachments-list">
             $attachments_list
         </ul>
-
-        <!-- View More / View Less Button -->
-        <a href="/attachments/all" class="mt-4 text-blue-700 font-semibold hover:underline">
-           View More 
-        </a>
+        <a href="/attachment/all" class="view-more">View More</a>
     </div>
-
 
     <!-- Latest News -->
     <div>
-        <h2 class="text-xl font-semibold border-b-2 border-blue-600 pb-2 mb-4">Latest News</h2>
-        <div class="space-y-6">
+        <h2 class="section-title">Latest News</h2>
+        <div class="news-list">
             $news_list
         </div>
-
-        <!-- Read More Button -->
-        <div class="mt-6 text-center">
-            <a href="/news/all" class="text-blue-700 font-semibold hover:underline">
-                Read More News
-            </button>
+        <div class="read-more-container">
+            <a href="/news/all" class="read-more-btn">Read More News</a>
         </div>
     </div>
-
 </div>
 news;
-
     }
-
     private function intro(Database $database): string
     {
-        $query="select id, name, start_date, end_date,location,feature_image from events order by created_at desc limit 6";
+        $query="select id, name, start_date, end_date,location,feature_image from events order by start_date desc limit 4";
         $events=$database->select($query);
         $events_list="";
         if (!empty($events)){
@@ -246,126 +163,92 @@ news;
                 $id=$prog['id'];
                 $name=$prog['name'];
                 $feature_image=$prog['feature_image']??'https://www.heslb.go.tz/assets/css/assets_22/images/new.svg';
-                $date=$prog['start_date'];
-                $expire  = $prog['end_date']; // expected in Y-m-d or Y-m-d H:i:s format
+                $date = date("F d, Y", strtotime($prog['start_date']));
+
+                $expire  = $prog['end_date']??$date;
                 $img     = "";
                 if (strtotime(date("Y-m-d")) <= strtotime($expire)) {
-                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="w-6">';
+                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="event-new">';
                 }
                 $location =$prog['location']??"";
                 $events_list.=<<<atta
-            <li>
-                <div class="flex items-start gap-3">
-                    <img src="$feature_image" alt="new" class="w-10">
+            <li class="event-item">
+                <div class="event-flex">
+                    <img src="$feature_image" alt="event" class="event-img">
                     <div>
-                        <a href="/events/detail/$id" class="text-sm font-medium text-gray-800 hover:text-blue-600 block">
-                            {$name} - {$location}
-                        </a>
-                        <div class="text-xs text-gray-500 flex items-center gap-2 mt-1">
+                        <a href="/events/detail/$id" class="event-title">{$name} - {$location}</a>
+                        <div class="event-meta">
                             <i class="fa fa-clock-o"></i>
                             <span>{$date}</span>
                             $img
                         </div>
                     </div>
                 </div>
-                <hr class="mt-2">
+                <hr class="event-divider">
             </li>
 atta;
-
             }
         }
 
-        $query="select id, feature_image, name, content, created_at, expire, category, attachment from news order by created_at desc limit 4";
-        $news=$database->select($query);
-        $news_list="";
-        if (!empty($news)){
-            foreach ($news as $prog) {
-                $id=$prog['id'];
-                $name=$prog['name'];
-                $feature_image=$prog['feature_image'];
-                $date=$prog['created_at'];
-                $content = $prog['content'];
-                $expire  = $prog['expire']; // expected in Y-m-d or Y-m-d H:i:s format
-                $img     = "";
-                if (strtotime(date("Y-m-d")) <= strtotime($expire)) {
-                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="w-6 h-6">';
-                }
-                $shortContent = mb_substr(strip_tags($content), 0, 100);
-                if (strlen(strip_tags($content)) > 100) {
-                    $shortContent .= "...";
-                }
-                $attachment =$prog['attachment']??"#";
-                $news_list.=<<<atta
-            <div class="flex gap-4">
-                <img src="$feature_image" class="w-24 h-24 object-cover rounded" alt="News">
-                <div>
-                    <div class="font-bold flex flex-row text-blue-800 hover:underline cursor-pointer" onclick="popHtml('$name','$content')">{$name}
-                        $img
-                    </div>
-                    <p class="text-sm text-gray-600">
-                        {$shortContent} <a href="$attachment" class="text-blue-600">Read More →</a>
-                    </p>
-                    <p class="text-sm text-gray-500 mt-1">📅 Posted on: {$date}</p>
-                </div>
-            </div>
-atta;
-
-            }
-        }
         return <<<intro
-<div class="py-10 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row gap-8">
+<div class="intro-section">
+    <div class="intro-container">
+        <div class="intro-grid">
 
             <!-- CEO's Remarks -->
-            <div class="lg:w-1/3">
-                <h3 class="text-xl font-bold mb-2 border-b-2 border-blue-500 inline-block">AMUCTA's Remarks</h3>
-                <div class="flex flex-col sm:flex-row gap-4 mt-4">
-                    <img src="/assets/images/asantemungu.jpg" alt="CEO" class="w-32 h-auto object-cover rounded shadow">
+            <div class="intro-col">
+                <h3 class="intro-heading">AMUCTA's Remarks</h3>
+                <div class="remarks">
+                    <img src="/assets/images/asantemungu.jpg" alt="CEO" class="remarks-img">
                     <div>
-<!--                        <p class="text-gray-700 mb-2">{{homeModel.welcomeNote}}</p>-->
-                        <p class="text-gray-600 text-sm">
+                        <p class="remarks-text">
                             The Archbishop Mihayo University College of Tabora (AMUCTA) is a constituent college of St. Augustine University of Tanzania (SAUT). AMUCTA is an independent higher-learning institution governed by the Board of Trustees and the University Council under the Catholic Bishops of Tanzania (Tanzania Episcopal Conference).
                         </p>
-                        <a href="/about" class="text-blue-600 font-semibold mt-2 inline-block">Read more</a>
+                        <a href="/about" class="link-primary">Read more</a>
                     </div>
                 </div>
             </div>
 
             <!-- News & Events -->
-            <div class="lg:w-1/3">
-                <h3 class="text-xl font-bold mb-2 border-b-2 border-blue-500 inline-block">News & Events</h3>
-                <ul class="space-y-4 mt-4">
+            <div class="intro-col">
+                <h3 class="intro-heading">News & Events</h3>
+                <ul class="events-list">
                     $events_list
-
-                    <!-- Read More Toggle -->
                     <li>
-                        <a href="/events/all" class="inline-block  text-amucta-blue font-semibold hover:bg-blue-700">
-                            Read More
-                        </a>
+                        <a href="/events/all" class="link-primary">Read More</a>
                     </li>
                 </ul>
             </div>
-
 
             <!-- Shortcut Links -->
-            <div class="lg:w-1/3">
-                <h3 class="text-xl font-bold mb-2 border-b-2 border-blue-500 inline-block">Shortcut Links</h3>
-                <ul class="mt-4 space-y-3 text-sm text-gray-800">
-                    <li *ngFor="let link of shortcutLinks">
-                        <a [href]="link.url" target="_blank" class="hover:text-blue-600 flex items-start gap-2">
-                            <i class="fa fa-chevron-circle-right mt-1 text-blue-500"></i>
-                            {{ link.title }}
+            <div class="intro-col">
+                <h3 class="intro-heading">Shortcut Links</h3>
+                <ul class="shortcuts">
+                    <li>
+                        <a href="https://oas.amucta.ac.tz" class="shortcut-link">
+                            <i class="fa fa-chevron-circle-right"></i>
+                            Confirm Application
                         </a>
+                        <a href="/assets/files/AMUCTA_JOIN_INSTRUCTION.pdf" class="shortcut-link">
+                            <i class="fa fa-chevron-circle-right"></i>
+                            Joining Instruction 2025/2026
+                        </a>
+                        <a href="https://amucta.ac.tz/assets/files/Prospectus_2022-2023.pdf" class="shortcut-link">
+                            <i class="fa fa-chevron-circle-right"></i>
+                            Prospectus
+                        </a>
+                        <a href="/assets/files/Fee_structure_2025-2026.pdf" class="shortcut-link">
+                            <i class="fa fa-chevron-circle-right"></i>
+                            Fee Structure 2025-2026
+                        </a>                      
                     </li>
                 </ul>
             </div>
-
 
         </div>
     </div>
 </div>
 intro;
-
     }
+
 }

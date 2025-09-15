@@ -138,4 +138,9 @@ HTML;
         header("Content-Type: application/json");
         echo json_encode((new Database())->select("select * from attachments"));
     }
+
+    public function all()
+    {
+        MainLayout::render("");
+    }
 }

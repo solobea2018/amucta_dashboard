@@ -175,5 +175,13 @@ HTML;
         header("Content-Type: application/json");
         echo json_encode((new Database())->select("select * from events"));
     }
+    public function all()
+    {
+        MainLayout::render("");
+    }
+    public function detail()
+    {
+        MainLayout::render("");
+    }
 
 }
