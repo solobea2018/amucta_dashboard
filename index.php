@@ -87,7 +87,7 @@ function save_visitor($ip){
             CURLOPT_URL => "https://api.apilayer.com/ip_to_location/$ip",
             CURLOPT_HTTPHEADER => array(
                 "Content-Type: text/plain",
-                "apikey: hvrGy5kldLuAOZ4pIEWt4KlcZ47CEFtM"
+                "apikey: tD8e24dm34V7HQbvFNB6YuZHciy8aZsp"
             ),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
