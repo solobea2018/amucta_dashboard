@@ -7,6 +7,7 @@ namespace Solobea\Dashboard\controller;
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\model\Visitor;
+use Solobea\Dashboard\utils\Helper;
 use Solobea\Dashboard\view\MainLayout;
 use Solobea\Dashboard\utils\ErrorReporter;
 
@@ -35,6 +36,9 @@ class Visitors
         header("Content-Type: application/json");
         $input = json_decode(file_get_contents("php://input"), true);
         $ip=$this->getIPAddress();
+        if (!Helper::is_human_ip($ip)){
+            return;
+        }
         $currentUrl = $input['url'];
         $user_agent=['userAgent'];
         if (isset($_SESSION['last_url'])) {

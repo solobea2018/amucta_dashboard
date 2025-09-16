@@ -7,6 +7,7 @@ use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\controller\Home;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\model\Visitor;
+use Solobea\Dashboard\utils\Helper;
 use Solobea\Dashboard\utils\Resource;
 use Solobea\Dashboard\utils\ErrorReporter;
 
@@ -69,6 +70,9 @@ function getIPAddress() {
     return $ip;
 }
 function save_visitor($ip){
+    if (!Helper::is_human_ip($ip)){
+        return;
+    }
     $currentUrl = $_SERVER['REQUEST_URI'];
     if (isset($_SESSION['last_url'])) {
         if ($_SESSION['last_url'] === $currentUrl) {
