@@ -71,7 +71,7 @@ class Visitors
 
         $response_array=json_decode($response,true);
         if ($response_array && isset($response_array['message'])){
-            ErrorReporter::report("Saving visitor error ","IP API Error retrieving the data",$_SERVER['REQUEST_URI']);
+            ErrorReporter::report("Saving visitor error ","IP API Error {$response_array['message']}",$_SERVER['REQUEST_URI']);
         }
         if(!(isset($response_array['type']))){
             //ErrorReporter::report("Saving visitor error ","IP type Unknown",$_SERVER['REQUEST_URI']);
