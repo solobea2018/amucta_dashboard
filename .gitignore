@@ -4,3 +4,4 @@ attachments/
 files/
 assets/
 composer.lock
+src/controller/Bot.php 
