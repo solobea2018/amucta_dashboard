@@ -1,3 +1,50 @@
+.programmes-grid {
+    display: grid;
+    gap: 1rem; /* gap-3 */
+    margin-top: 1.5rem; /* mt-6 */
+}
+
+@media (min-width: 640px) {
+    .programmes-grid {
+        grid-template-columns: repeat(3, 1fr); /* sm:grid-cols-3 */
+    }
+}
+
+.programme-card {
+    background: rgba(255, 255, 255, 0.1); /* bg-white/10 */
+    padding: 1rem; /* p-4 */
+    border-radius: 1rem; /* rounded-2xl */
+    color: rgba(255, 255, 255, 0.9); /* text-white/90 */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* ring-1 ring-white/15 */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.programme-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+.programme-card p {
+    margin: 0.25rem 0;
+}
+
+.programme-card .small {
+    font-size: 0.875rem; /* text-sm */
+    opacity: 0.9;
+}
+
+.programme-card .medium {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 600; /* font-semibold */
+}
+
+.programme-card .bold {
+    font-size: 1.125rem; /* text-lg */
+    font-weight: 800; /* font-extrabold */
+    letter-spacing: 0.05em; /* tracking-wide */
+}
+
+
 .intro-section {
     background: #fff;
     padding: 40px 0;

@@ -12,7 +12,14 @@
             "email": "aw1116sm@gmail.com"
         }
     ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/solobea2018/Solobea_helpers"
+    }
+  ],
     "require": {
+      "solobea/helpers": "dev-main",
       "ext-gd": "*",
       "ext-fileinfo": "*",
       "ext-mbstring": "*",

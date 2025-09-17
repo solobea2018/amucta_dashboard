@@ -325,6 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatIcon = document.getElementById("chat-icon");
     const closeBtn = document.getElementById("chat-close-btn");
     const input = document.getElementById("chat-input");
+    const csrf_token = document.getElementById("csrf_token");
     const sendBtn = document.getElementById("chat-send-btn");
     const chatBody = document.querySelector(".chat-body");
 
@@ -336,26 +337,61 @@ document.addEventListener("DOMContentLoaded", () => {
         chatWindow.classList.add("chat-closed");
     });
 
-    // Send message
     sendBtn.addEventListener("click", () => {
         const msg = input.value.trim();
-        if (!msg) return;
+        const csrf = csrf_token.value.trim();
+        if (!msg || !csrf) return;
+
+        // Display user message
         const userMsg = document.createElement("div");
         userMsg.className = "chat-message user";
         userMsg.textContent = msg;
         chatBody.appendChild(userMsg);
+
         input.value = "";
         chatBody.scrollTop = chatBody.scrollHeight;
 
-        // Bot reply (dummy)
-        setTimeout(() => {
-            const botMsg = document.createElement("div");
-            botMsg.className = "chat-message bot";
-            botMsg.textContent = "Thanks for your message 🙏";
-            chatBody.appendChild(botMsg);
-            chatBody.scrollTop = chatBody.scrollHeight;
-        }, 1000);
+        // Show "typing..." placeholder
+        const typingMsg = document.createElement("div");
+        typingMsg.className = "chat-message bot typing";
+        typingMsg.textContent = "Agent is typing";
+        chatBody.appendChild(typingMsg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        // Send to backend
+        fetch("/bot", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: msg,
+                csrf_token: csrf
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                // Keep "typing..." visible for 5s
+                setTimeout(() => {
+                    typingMsg.remove(); // remove typing indicator
+                    const botMsg = document.createElement("div");
+                    botMsg.className = "chat-message bot";
+                    botMsg.textContent = data.reply || "⚠️ No reply from server";
+                    chatBody.appendChild(botMsg);
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                }, 5000);
+            })
+            .catch(err => {
+                typingMsg.remove();
+                const botMsg = document.createElement("div");
+                botMsg.className = "chat-message bot error";
+                botMsg.textContent = "❌ Error: " + err.message;
+                chatBody.appendChild(botMsg);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            });
     });
+
+
 });
 
 window.addEventListener('scroll', function() {

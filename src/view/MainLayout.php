@@ -174,11 +174,11 @@ class MainLayout
     <div class="chat-body">
       <div class="chat-message bot">Hello 👋, how can I help you today?</div>
     </div>
-    <form class="chat-footer">
-      <input type="hidden" name="csrf" value="$csrf_token">
+    <div class="chat-footer">
+      <input type="hidden" id="csrf_token" value="$csrf_token">
       <input type="text" id="chat-input" placeholder="Type your message..." />
       <button id="chat-send-btn">Send</button>
-    </form>
+    </div>
   </div>
 
   <div id="chat-icon">
