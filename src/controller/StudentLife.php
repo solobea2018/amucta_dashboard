@@ -382,8 +382,7 @@ HTML;
 }
 .dispensary-info p {
     margin-top: 15px;
-    line-height: 1.8;
-    color: #ffffff;
+    line-height: 1.8;   
     text-align: justify;
 }
 @media(min-width: 768px) {
