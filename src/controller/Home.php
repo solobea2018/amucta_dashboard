@@ -35,9 +35,9 @@ class Home
 
 <section class="gradient-card">
   <div class="gradient-inner">
-    <div class="badge">Second Window • Bachelor Applicants</div>
+    <div class="badge">Second Window &dot; Bachelor Applicants</div>
     <h2>Admissions <span class="underline">OPEN</span> <span class="animate">NOW</span></h2>
-    <p>Missed the first call? This is your moment. Limited slots, rolling review—earlier submissions get priority. Secure your spot before the window closes.</p>
+    <p>Missed the first call? This is your moment. Limited slots, rolling review&hyphen;earlier submissions get priority. Secure your spot before the window closes.</p>
 <div class="programmes-grid">
   <div class="programme-card">
     <p class="medium">Diploma Programmes</p>
@@ -57,13 +57,13 @@ class Home
 </div>
     <div class="deadline">
       <span class="deadline-dot"></span>
-      <span>Closes: <strong>September 21, 2025</strong> • Don’t wait—applications are reviewed as they arrive.</span>
+      <span>Closes: <strong>September 21, 2025</strong> &dot; Don&quot;t wait&hyphen;applications are reviewed as they arrive.</span>
     </div>
   </div>
 </section>
 
 <div class="banner">
-  Second Application Window is OPEN — limited seats, submit early for priority review.
+  Second Application Window is OPEN &hyphen; limited seats, submit early for priority review.
   <span>September 21, 2025</span>
 </div>
 
@@ -144,7 +144,7 @@ atta;
         return<<<news
 <div class="news-section">
     <!-- Latest Announcements -->
-    <div>
+    <div class="news-secion-item">
         <h2 class="section-title">Download Center</h2>
         <ul class="attachments-list">
             $attachments_list
@@ -153,7 +153,7 @@ atta;
     </div>
 
     <!-- Latest News -->
-    <div>
+    <div class="news-secion-item">
         <h2 class="section-title">Latest News</h2>
         <div class="news-list">
             $news_list
