@@ -9,6 +9,7 @@ use Solobea\Dashboard\controller\Program;
 use Solobea\Dashboard\controller\Visitors;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\utils\Helper;
+use Solobea\Helpers\visitor\VisitorData;
 
 class MainLayout
 {
@@ -31,6 +32,12 @@ class MainLayout
             $country=$lo['country'];
             $total=$lo['total'];
             $loc.="<li>$country - $total</li>";
+        }
+        $urls="";
+        foreach ($visitorStats['top_urls'] as $lo){
+            $country=$lo['url'];
+            $total=$lo['total'];
+            $urls.="<p><a class='text-blue-500' href='https://amucta.ac.tz{$country}'>https://amucta.ac.tz{$country} </a> - $total</p>";
         }
         $layout=<<<HTML
 <!DOCTYPE html>
@@ -105,6 +112,12 @@ class MainLayout
             <ul>
               {$loc}
             </ul>
+          </div>
+        </div>
+        <div class="stat-item visitor-stat">
+          <div class="visitor-details">
+            <p>Most visited Urls:</p>           
+              {$urls}          
           </div>
         </div>
       </div>

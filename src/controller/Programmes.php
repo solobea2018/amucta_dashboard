@@ -35,6 +35,9 @@ class Programmes
         $content = '<div class="program-detail-container">';
 
         if($program){
+            $content1=htmlspecialchars_decode($program['content']);
+            $fees = htmlspecialchars_decode($program['fees']);
+            $entry_requirements = htmlspecialchars_decode($program['entry_requirements']);
             $content .= <<<HTML
 <h1 class="program-detail-title">{$program['name']}</h1>
 <p class="program-detail-meta"><strong>Faculty:</strong> {$program['faculty_name']}</p>
@@ -50,19 +53,18 @@ class Programmes
     <div class="program-detail-text">{$program['description']}</div>
 </section>
 
-<section class="program-detail-section">
-    <h2>Program Content</h2>
-    <div class="program-detail-text">{$program['content']}</div>
+<section class="program-detail-section">  
+    <div class="program-detail-text">{$content1}</div>
 </section>
 
 <section class="program-detail-section">
     <h2>Fees</h2>
-    <div class="program-detail-text">{$program['fees']}</div>
+    <div class="program-detail-text">{$fees}</div>
 </section>
 
 <section class="program-detail-section">
     <h2>Entry Requirements</h2>
-    <div class="program-detail-text">{$program['entry_requirements']}</div>
+    <div class="program-detail-text">{$entry_requirements}</div>
 </section>
 
 <section class="program-detail-section">
@@ -78,6 +80,7 @@ HTML;
 
         $head = <<<HTML
 <style>
+tr {background-color:var(--amucta-dark);color: white;text-align: center;padding: 0.5rem 1rem}
 .program-detail-container {
     max-width: 900px;
     margin: 0 auto;
@@ -158,9 +161,6 @@ HTML;
 <div class="program-card" data-aos="fade-up" data-aos-duration="1000">
     <h2 class="program-name">{$p['name']}</h2>
     <p class="program-level"><strong>Level:</strong> {$p['level_name']}</p>
-    <p class="program-short"><strong>Code:</strong> {$p['short_name']}</p>
-    <p class="program-intake"><strong>Intakes:</strong> {$p['intakes']}</p>
-    <p class="program-duration"><strong>Duration:</strong> {$p['duration']}</p>
     <p class="program-capacity"><strong>Capacity:</strong> {$p['capacity']}</p>
     <p class="program-description">{$p['description']}</p>
     <a href="/programmes/detail/{$p['id']}">
@@ -178,6 +178,7 @@ HTML;
 
         $head = <<<HTML
 <style>
+tr {background-color:var(--amucta-dark);color: white;text-align: center;padding: 0.5rem 1rem}
 .programs-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -194,18 +195,9 @@ HTML;
 }
 
 .programs-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
 }
-
-@media(min-width: 768px) {
-    .programs-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media(min-width: 1024px) {
-    .programs-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
 .program-card {
     background: #f3f4f6;
     padding: 20px;
@@ -226,10 +218,11 @@ HTML;
     margin-bottom: 10px;
 }
 
-.program-level, .program-short, .program-intake, .program-duration, .program-capacity, .program-description {
+.program-level, .program-capacity, .program-description {
     margin: 5px 0;
     font-size: 1rem;
 }
+.program-description{text-align: justify}
 
 .program-btn {
     margin-top: 15px;

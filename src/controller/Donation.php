@@ -68,9 +68,10 @@ HTML;
             <div class="p-2 text-center font-semibold text-green-700">Supporting Local Business and Entrepreneurship</div>
         </div>
     </div>
+    <p>Archbishop Mihayo University College of Tabora. Name of Account AMUCTA, A/C No. 0150382588700 CRDB BANK (LTD), TABORA BRANCH</p>
 
     <!-- Donation Form -->
-    <form onsubmit="sendFormSweet(this,event)" action="/donation/save" method="POST" class="space-y-4">
+    <form onsubmit="sendFormSweet(this,event)" action="/donation/save" method="POST" class="space-y-4">   
         <div class="form-group">
             <label>Full Name</label>
             <input type="text" name="full_name" class="form-control" required>
