@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Show "typing..." placeholder
         const typingMsg = document.createElement("div");
         typingMsg.className = "chat-message bot typing";
-        typingMsg.textContent = "Agent is typing";
+        typingMsg.textContent = "";
         chatBody.appendChild(typingMsg);
         chatBody.scrollTop = chatBody.scrollHeight;
 
@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 typingMsg.remove();
                 const botMsg = document.createElement("div");
                 botMsg.className = "chat-message bot error";
-                botMsg.textContent = "❌ Error: " + err.message;
+                botMsg.textContent = "❌ Error: Unknown error occurred";
                 chatBody.appendChild(botMsg);
                 chatBody.scrollTop = chatBody.scrollHeight;
             });

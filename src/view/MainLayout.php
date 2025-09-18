@@ -116,7 +116,7 @@ class MainLayout
         </div>
         <div class="stat-item visitor-stat">
           <div class="visitor-details">
-            <p>Most visited Urls:</p>           
+            <p>Most visited Pages:</p>           
               {$urls}          
           </div>
         </div>
@@ -279,7 +279,6 @@ menu;
     <nav class="navigation-container" id="navigation-container">
       <div class="flex flex-row justify-end w-full"><span class="menu-close" id="menu-close">✖</span></div>
       <ul class="nav-menu" id="navigation">
-        <li><a href="/" class="mobile-main-link">Home</a></li>
         <li class="dropdown-container">
           <a href="/about" class="mobile-main-link">About</a>
           <ul class="submenu">

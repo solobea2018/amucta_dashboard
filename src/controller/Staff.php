@@ -134,7 +134,7 @@ HTML;
                     <div class='employee-info'>
                         <h3>{$emp['name']}</h3>
                         <p class='title'>{$emp['title']}</p>
-                        <p class='role'>{$emp['role_name']} since {$emp['start_date']}</p>
+                        <p class='role'>{$emp['role_name']} | {$emp['start_date']}</p>
                         {$activeStatus}
                         <a href='/profile/profile/{$emp['id']}' class='view-profile'>View Profile</a>
                     </div>
@@ -195,9 +195,8 @@ HTML;
             display: inline-block;
             padding: 4px 10px;
             border-radius: 12px;
-            font-size: 12px;
-            background: var(--amucta-green);
-            color: #fff;
+            font-size: 12px;           
+            color: green;
             margin-bottom: 10px;
         }
         .employee-info .inactive {
