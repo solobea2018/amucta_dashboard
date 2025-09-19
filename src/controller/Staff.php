@@ -6,6 +6,7 @@ namespace Solobea\Dashboard\controller;
 
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
+use Solobea\Dashboard\utils\Helper;
 use Solobea\Dashboard\view\MainLayout;
 
 class Staff
@@ -123,6 +124,7 @@ HTML;
             } else {
                 $content = "<div class='employee-grid animate__animated animate__fadeInUp'>";
                 foreach ($stfs as $emp) {
+                    $name=Helper::slugify($emp['name']);
                     $profileImg = !empty($emp['profile']) ? $emp['profile'] : "/images/default-profile.png";
                     $activeStatus = $emp['active'] ? "<span class='active'>Active</span>" : "<span class='inactive'>Inactive</span>";
 
@@ -136,7 +138,7 @@ HTML;
                         <p class='title'>{$emp['title']}</p>
                         <p class='role'>{$emp['role_name']} | {$emp['start_date']}</p>
                         {$activeStatus}
-                        <a href='/profile/profile/{$emp['id']}' class='view-profile'>View Profile</a>
+                        <a href='/profile/profile/{$emp['id']}/{$name}' class='view-profile'>View Profile</a>
                     </div>
                 </div>";
                 }

@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\view;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\controller\Employee;
 use Solobea\Dashboard\controller\Program;
 use Solobea\Dashboard\controller\Visitors;
@@ -25,6 +26,8 @@ class MainLayout
         $emp_count=Employee::getCount();
         $all_times=number_format($visitorStats['totals']['all_time']);
         $today=$visitorStats['totals']['today'];
+        $auth=new Authentication();
+        $menu_admin = $auth->is_admin() ? MainLayout::menu() : "";
         $week=$visitorStats['totals']['this_week'];
         $loc="";
         $csrf_token=self::generateCsrfToken();
@@ -75,6 +78,7 @@ class MainLayout
 
 <!-- Main Content Area - Placeholder for Dynamic Content -->
 <main>
+$menu_admin
   <div class="main-content">
     {$content}
   </div>

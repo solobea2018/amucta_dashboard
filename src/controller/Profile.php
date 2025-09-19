@@ -122,6 +122,9 @@ class Profile
     </table>
 </div>
 HTML;
+        $meta_tags=<<<mt
+<meta name='og:'
+mt;
 
         $head=$this->profStyle();
         MainLayout::render($content,$head,$emp['name']);

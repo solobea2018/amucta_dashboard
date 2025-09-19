@@ -216,7 +216,7 @@ atta;
                         <p class="remarks-text">
                             The Archbishop Mihayo University College of Tabora (AMUCTA) is a constituent college of St. Augustine University of Tanzania (SAUT). AMUCTA is an independent higher-learning institution governed by the Board of Trustees and the University Council under the Catholic Bishops of Tanzania (Tanzania Episcopal Conference).
                         </p>
-                        <a href="/about" class="link-primary">Read more</a>
+                        <a href="/about/message" class="link-primary">Read more</a>
                     </div>
                 </div>
             </div>
