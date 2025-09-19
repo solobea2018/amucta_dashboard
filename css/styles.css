@@ -2,6 +2,25 @@
 :root{--amucta-green: #ebfc02;--amucta-blue: rgba(5, 182, 252, 0.99);--amucta-dark: #111827;}
 a{text-decoration: none;color: inherit;}
 h1,h2,h3,h4{color:var(--amucta-blue);}
+p.info {
+    background-color: #e7f3fe;   /* Light blue */
+    color: #084298;              /* Dark blue text */
+    border-left: 5px solid #0d6efd;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin-top: 1rem;
+    font-family: Arial, sans-serif;
+}
+
+p.warning {
+    margin-top: 1rem;
+    background-color: #fff3cd;   /* Light yellow */
+    color: #664d03;              /* Dark gold text */
+    border-left: 5px solid #ffc107;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-family: Arial, sans-serif;
+}
 th {background-color:var(--amucta-blue);color: white;text-align: center;padding: 0.5rem 1rem}
 .alumni-grid {display: grid;grid-template-columns: repeat(auto-fill,minmax(250px,1fr));gap: 1rem;}
 .alumni-card {background: #fff;border: 1px solid #ddd;border-radius: 8px;padding: 15px;box-shadow: 0 2px 4px rgba(0,0,0,0.1);}  .alumni-card h2 {font-size: 1.2em;margin-bottom: 8px;color: var(--amucta-blue);}
