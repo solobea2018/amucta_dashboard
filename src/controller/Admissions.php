@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
 class Admissions
@@ -429,33 +430,59 @@ HTML;
         MainLayout::render($content, $head, $title);
     }
 
-    public function fees()
+    public function fees1()
     {
-        $content = <<<HTML
-<div class="fees-container">
+        $query = "SELECT id, name, fees, duration 
+              FROM program 
+              ORDER BY level_id";
+        $fees = (new Database())->select($query);
 
-    <p class="fees-title" data-aos="fade-right" data-aos-duration="1000">
-        Fees & Funding at AMUCTA
-    </p>
+        $content = '<div class="fees-container">';
+        $content .= '<h1 class="fees-title">Program Fees & Funding</h1>';
 
-    <p class="fees-text">
-        All fee details and payment options for our programs can be found in the official fee structure document.
-        You can view it by clicking the link below:
-    </p>
-
-    <p class="fees-link">
-        <a href="https://amucta.ac.tz/assets/files/AMUCTA_JOIN_INSTRUCTION.pdf" target="_blank">
-            <button class="fees-btn">View Fee Structure</button>
-        </a>
-    </p>
-
-    <p class="fees-note">
-        For further funding information, scholarships, or financial assistance, please contact the Finance Office via email: 
-        <strong>finance@amucta.ac.tz</strong> or call +255 26 2605355.
-    </p>
-
-</div>
+        if (!empty($fees)) {
+            $content .= '<table class="fees-table">';
+            $content .= '<thead>
+                        <tr>
+                            <th>Program</th>
+                            <th>Fees</th>
+                            <th>Duration</th>
+                        </tr>
+                     </thead><tbody>';
+            foreach ($fees as $f) {
+                $feeAmount = number_format((float)$f['fees'], 2); // format nicely
+                $content .= <<<HTML
+<tr data-aos="fade-up" data-aos-duration="1000">
+    <td class="fee-name"><a href="/programmes/detail/{$f['id']}">{$f['name']}</a></td>
+    <td class="fee-amount">{$feeAmount}</td>
+    <td class="fee-duration">{$f['duration']}</td>
+</tr>
 HTML;
+            }
+            $content .= '</tbody></table>';
+
+            // add the static info under the table
+            $content .= <<<HTML
+        <div class="fees-info">
+            <p class="fees-text">
+                All fee details and payment options for our programs can also be found in the official fee structure document.
+            </p>
+            <p class="fees-link">
+                <a href="https://amucta.ac.tz/assets/files/AMUCTA_JOIN_INSTRUCTION.pdf" target="_blank">
+                    <button class="fees-btn">View Full Fee Structure</button>
+                </a>
+            </p>
+            <p class="fees-note">
+                For further funding information, scholarships, or financial assistance, please contact the Finance Office via email: 
+                <strong>finance@amucta.ac.tz</strong> or call +255 26 2605355.
+            </p>
+        </div>
+HTML;
+        } else {
+            $content .= '<p class="no-fees">No fee information found.</p>';
+        }
+
+        $content .= '</div>'; // close container
 
         $head = <<<HTML
 <style>
@@ -464,14 +491,50 @@ HTML;
     margin: 0 auto;
     padding: 20px;
     font-family: Arial, sans-serif;
-    line-height: 1.6;
 }
 
 .fees-title {
-    font-size: 2.5rem;
+    font-size: 2rem;
+    color: var(--amucta-blue);
     font-weight: bold;
-    color: #1e40af; /* AMUCTA Blue */
-    margin-top: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.fees-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.fees-table th, 
+.fees-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.fees-table th {
+    background-color: var(--amucta-dark);
+    color: #fff;
+    font-weight: bold;
+}
+
+.fees-table tr:hover {
+    background-color: #f9fafb;
+}
+
+.fee-name {
+    font-weight: bold;
+    color: var(--amucta-blue);
+}
+
+.fees-info {
+    margin-top: 30px;
+    line-height: 1.6;
 }
 
 .fees-text, .fees-note {
@@ -482,12 +545,13 @@ HTML;
 
 .fees-link {
     margin-top: 20px;
+    text-align: center;
 }
 
 .fees-btn {
     display: inline-block;
     padding: 10px 20px;
-    background-color: #2563eb;
+    background-color: var(--amucta-blue);
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -497,17 +561,128 @@ HTML;
 }
 
 .fees-btn:hover {
-    background-color: #1e40af;
+    background-color: var(--amucta-blue);
 }
 
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
 }
+
+.no-fees {
+    text-align: center;
+    font-size: 1.125rem;
+    color: #374151;
+    margin-top: 20px;
+}
 </style>
 HTML;
 
-        $title = "Fees & Funding at AMUCTA";
+        $title = "Program Fees & Funding";
+
+        MainLayout::render($content, $head, $title);
+    }
+
+    public function fees()
+    {
+        $query = "SELECT id, name, fees, duration 
+              FROM program 
+              ORDER BY level_id";
+        $fees = (new Database())->select($query);
+
+        $content = '<div class="fees-container">';
+        $content .= '<h1 class="fees-title">Program Fees</h1>';
+
+        if (!empty($fees)) {
+            $content .= '<table class="fees-table">';
+            $content .= '<thead>
+                        <tr>
+                            <th>Program</th>
+                            <th>Fees & Funding</th>
+                            <th>Duration</th>
+                        </tr>
+                     </thead><tbody>';
+            foreach ($fees as $f) {
+                $feeContent = htmlspecialchars_decode($f['fees']); // decode HTML content
+                $content .= <<<HTML
+<tr data-aos="fade-up" data-aos-duration="1000">
+    <td class="fee-name"><a href="/programmes/detail/{$f['id']}">{$f['name']}</a></td>
+    <td class="fee-content">{$feeContent}</td>
+    <td class="fee-duration">{$f['duration']}</td>
+</tr>
+HTML;
+            }
+            $content .= '</tbody></table>';
+        } else {
+            $content .= '<p class="no-fees">No fee information found.</p>';
+        }
+
+        $content .= '</div>'; // close container
+
+        $head = <<<HTML
+<style>
+.fees-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.fees-title {
+    font-size: 2rem;
+    color: var(--amucta-blue);
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.fees-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.fees-table th, 
+.fees-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+}
+
+.fees-table th {
+    background-color: var(--amucta-dark);
+    color: #fff;
+    font-weight: bold;
+}
+
+.fees-table tr:hover {
+    background-color: #f9fafb;
+}
+
+.fee-name {
+    font-weight: bold;
+    color: var(--amucta-blue);
+}
+
+.fee-content {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.no-fees {
+    text-align: center;
+    font-size: 1.125rem;
+    color: #374151;
+    margin-top: 20px;
+}
+</style>
+HTML;
+
+        $title = "Program Fees";
 
         MainLayout::render($content, $head, $title);
     }
@@ -515,7 +690,101 @@ HTML;
 
     public function requirements()
     {
+        $query = "SELECT id, name, entry_requirements, duration 
+              FROM program 
+              ORDER BY level_id";
+        $requirements = (new Database())->select($query);
 
+        $content = '<div class="requirements-container">';
+        $content .= '<h1 class="requirements-title">Program Entry Requirements</h1>';
+
+        if (!empty($requirements)) {
+            $content .= '<table class="requirements-table">';
+            $content .= '<thead>
+                        <tr>
+                            <th>Program</th>
+                            <th>Entry Requirements</th>
+                            <th>Duration</th>
+                        </tr>
+                     </thead><tbody>';
+            foreach ($requirements as $r) {
+
+                $rqs =htmlspecialchars_decode($r['entry_requirements']);
+                $content .= <<<HTML
+<tr data-aos="fade-up" data-aos-duration="1000">
+    <td class="req-name"><a href="/programmes/detail/{$r['id']}">{$r['name']}</a></td>
+    <td class="req-entry">{$rqs}</td>
+    <td class="req-duration">{$r['duration']}</td>
+</tr>
+HTML;
+            }
+            $content .= '</tbody></table>';
+        } else {
+            $content .= '<p class="no-reqs">No requirements found.</p>';
+        }
+
+        $content .= '</div>'; // close container
+
+        $head = <<<HTML
+<style>
+.requirements-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.requirements-title {
+    font-size: 2rem;
+    color: var(--amucta-blue);
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.requirements-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.requirements-table th, 
+.requirements-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.requirements-table th {
+    background-color: var(--amucta-dark);
+    color: #fff;
+    font-weight: bold;
+}
+
+.requirements-table tr:hover {
+    background-color: #f9fafb;
+}
+
+.req-name {
+    font-weight: bold;
+    color: var(--amucta-blue);
+}
+
+.no-reqs {
+    text-align: center;
+    font-size: 1.125rem;
+    color: #374151;
+    margin-top: 20px;
+}
+</style>
+HTML;
+
+        $title = "Program Entry Requirements";
+
+        MainLayout::render($content, $head, $title);
     }
 
     public function apply()

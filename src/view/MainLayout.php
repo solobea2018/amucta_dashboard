@@ -71,6 +71,7 @@ class MainLayout
     <a href="/staff">Staff Portal</a>
     <a href="https://oas.amucta.ac.tz">Online Application</a>
     <a href="https://oas.amucta.ac.tz">SIMS</a>
+    <a href="https://library.amucta.ac.tz">Library</a>
     <a href="/alumni">Alumni</a>
   </div>
   $menu
@@ -283,6 +284,7 @@ menu;
     <nav class="navigation-container" id="navigation-container">
       <div class="flex flex-row justify-end w-full"><span class="menu-close" id="menu-close">✖</span></div>
       <ul class="nav-menu" id="navigation">
+        <a href="/" class="btn btn-primary">Home</a>
         <li class="dropdown-container">
           <a href="/about" class="mobile-main-link">About</a>
           <ul class="submenu">

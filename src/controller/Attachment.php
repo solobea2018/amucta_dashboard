@@ -25,9 +25,7 @@ class Attachment
 <td>{$att['type']}</td>
 <td>{$att['related_to']}</td>
 <td>
-<button class='btn btn-complete' onclick='editAttachment({$att['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"attachments\",{$att['id']})'>Delete <i class='bi bi-trash'></i></button>
-<button class='btn btn-primary' onclick='viewAttachment({$att['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
             }

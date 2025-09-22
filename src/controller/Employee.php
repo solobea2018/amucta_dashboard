@@ -33,7 +33,6 @@ class Employee
 <td>
 <button class='btn btn-complete' onclick='editEmployee({$emp['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-mark-read' onclick='addEmployeeRole({$emp['id']})'>Role<i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger hidden' onclick='deleteResourcet(\"employee\",{$emp['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewEmployee({$emp['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
@@ -340,6 +339,49 @@ HTML;
         }
     }
 
+    public function data($params)
+    {
+        if (isset($params) && !empty($params)) {
+            try {
+                $id = intval($params[0]);
+                $db = new Database();
+
+                // Fetch employee by ID
+                $employee = $db->select("SELECT e.*,d.name as department_name FROM employee e left join department d on d.id = e.department_id WHERE e.id = {$id} LIMIT 1");
+                $roles = $db->select("SELECT * FROM employee_role WHERE employee_id = {$id}");
+                $deps = $db->select("SELECT id,name FROM department");
+                $res = $db->select("SELECT id,title,created_at FROM employee_research where employee_id={$id}");
+
+                if ($employee && count($employee) > 0) {
+                    // Return JSON response
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        "status" => "success",
+                        "data" => $employee[0],
+                        "roles" =>$roles,
+                        "departments"=>$deps,
+                        "researches"=>$res
+                    ]);
+                } else {
+                    // Employee not found
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Employee not found"
+                    ]);
+                }
+            } catch (\Exception $exception) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => $exception->getMessage()
+                ]);
+            }
+        } else {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Invalid Request"
+            ]);
+        }
+    }
     public function add()
     {
         $auth = new Authentication();
@@ -505,4 +547,128 @@ HTML;
         header("Content-Type: application/json");
         echo json_encode((new Database())->select("select * from employee order by name"));
     }
+    public function update()
+    {
+        $auth = new Authentication();
+        if (!$auth->is_admin()) {
+            echo json_encode(['status' => "error", 'message' => "Not Authorized"]);
+            return;
+        }
+
+        $id = intval($_POST['id'] ?? 0);
+        if ($id <= 0) {
+            echo json_encode(['status' => "error", 'message' => "Invalid employee ID"]);
+            return;
+        }
+
+        // Sanitize inputs
+        $name          = htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $title         = htmlspecialchars(trim($_POST['title'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $email         = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+        $phone         = htmlspecialchars(trim($_POST['phone'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $branch        = htmlspecialchars(trim($_POST['branch'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $qualification = htmlspecialchars(trim($_POST['qualification'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $department_id = intval($_POST['department_id'] ?? 0);
+
+        $db = new Database();
+
+        // Fetch current employee (to keep old files if no new upload)
+        $current = $db->fetch("SELECT profile, cv_url FROM employee WHERE id = ?", [$id]);
+        if (!$current) {
+            echo json_encode(['status' => "error", 'message' => "Employee not found"]);
+            return;
+        }
+
+        $profilePath = $current['profile'];
+        $cvPath      = $current['cv'];
+
+        // Handle new profile upload
+        if (!empty($_FILES['profile']['name']) && $_FILES['profile']['error'] === UPLOAD_ERR_OK) {
+            $fileTmp  = $_FILES['profile']['tmp_name'];
+            $fileMime = mime_content_type($fileTmp);
+            $allowedMime = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+            if (in_array($fileMime, $allowedMime)) {
+                $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', strtolower($name));
+                $uniqueId = uniqid();
+                $fileName = $safeName . "_" . $uniqueId . ".webp";
+
+                $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/images/employees/";
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+                $targetFile = $uploadDir . $fileName;
+
+                switch ($fileMime) {
+                    case 'image/jpeg': $img = imagecreatefromjpeg($fileTmp); break;
+                    case 'image/png': $img = imagecreatefrompng($fileTmp);
+                        imagepalettetotruecolor($img);
+                        imagealphablending($img, true);
+                        imagesavealpha($img, true);
+                        break;
+                    case 'image/gif':  $img = imagecreatefromgif($fileTmp); break;
+                    case 'image/webp': $img = imagecreatefromwebp($fileTmp); break;
+                    default: $img = null;
+                }
+
+                if ($img) {
+                    if (!imageistruecolor($img)) {
+                        $trueColor = imagecreatetruecolor(imagesx($img), imagesy($img));
+                        imagecopy($trueColor, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
+                        imagedestroy($img);
+                        $img = $trueColor;
+                    }
+                    imagewebp($img, $targetFile, 40);
+                    imagedestroy($img);
+
+                    $profilePath = "/images/employees/" . $fileName;
+                }
+            }
+        }
+
+        // Handle CV upload (PDF or DOCX assumed)
+        if (!empty($_FILES['cv']['name']) && $_FILES['cv']['error'] === UPLOAD_ERR_OK) {
+            $cvTmp  = $_FILES['cv']['tmp_name'];
+            $cvMime = mime_content_type($cvTmp);
+            $allowedCv = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+
+            if (in_array($cvMime, $allowedCv)) {
+                $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', strtolower($name));
+                $uniqueId = uniqid();
+                $ext = pathinfo($_FILES['cv']['name'], PATHINFO_EXTENSION);
+                $cvName = $safeName . "_" . $uniqueId . "." . $ext;
+
+                $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/files/cv/";
+                if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+                $targetCv = $uploadDir . $cvName;
+                if (move_uploaded_file($cvTmp, $targetCv)) {
+                    $cvPath = "/files/cv/" . $cvName;
+                }
+            }
+        }
+
+        // Prepare update data
+        $employeeData = [
+            'name'          => $name,
+            'title'         => $title,
+            'email'         => $email,
+            'phone'         => $phone,
+            'branch'        => $branch,
+            'qualification' => $qualification,
+            'department_id' => $department_id,
+            'profile'       => $profilePath,
+            'cv_url'            => $cvPath,
+            'updated_at'    => date("Y-m-d H:i:s")
+        ];
+
+        // Run update
+        $updated = $db->update("employee", $employeeData, ["id"=>$id]);
+
+        if ($updated) {
+            echo json_encode(['status' => "success", 'message' => "Employee updated successfully"]);
+        } else {
+            echo json_encode(['status' => "error", 'message' => "No changes made or update failed"]);
+        }
+    }
+
 }

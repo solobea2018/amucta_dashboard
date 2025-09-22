@@ -376,7 +376,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     typingMsg.remove(); // remove typing indicator
                     const botMsg = document.createElement("div");
                     botMsg.className = "chat-message bot";
-                    botMsg.textContent = data.reply || "⚠️ No reply from server";
+                    botMsg.textContent = data.reply || "Habari! Wahudumu wetu watakujibu hivi punde. Unaweza kutuandikia swali lako kupitia https://amucta.ac.tz/contact";
                     chatBody.appendChild(botMsg);
                     chatBody.scrollTop = chatBody.scrollHeight;
                 }, 5000);
@@ -385,7 +385,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 typingMsg.remove();
                 const botMsg = document.createElement("div");
                 botMsg.className = "chat-message bot error";
-                botMsg.textContent = "❌ Error: Unknown error occurred";
+                botMsg.textContent = "Habari! Wahudumu wetu watakujibu hivi punde. Unaweza kutuandikia swali lako kupitia https://amucta.ac.tz/contact";
                 chatBody.appendChild(botMsg);
                 chatBody.scrollTop = chatBody.scrollHeight;
             });

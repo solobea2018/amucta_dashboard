@@ -29,9 +29,9 @@ class Users
 <td>" . ($user['verified'] ? 'Yes' : 'No') . "</td>
 <td>{$profile}</td>
 <td>
-<button class='btn btn-complete' onclick='editUser({$user['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteUser({$user['id']})'>Delete <i class='bi bi-trash'></i></button>
-<button class='btn btn-primary' onclick='viewUser({$user['id']})'>View <i class='bi bi-eye'></i></button>
+<button class='btn btn-complete' onclick='resetPass({$user['id']})'>Reset Password</button>
+<button class='btn btn-danger' onclick='updateResource(\"users\",{$user['id']},{active:0})'>Inactive</button>
+<a href='#' class='btn btn-primary'>Profile<i class='bi bi-person'></i></a>
 </td>
 </tr>";
             }

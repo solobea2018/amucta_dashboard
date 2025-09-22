@@ -1381,8 +1381,189 @@ function addResearch() {
         })
         .catch(err => console.error("Error loading employees:", err));
 }
+function editDepartment(id) {
+    fetch(`/department/department/${id}`)
+        .then(r => r.json())
+        .then(data => {
+            let alumni=data.data;
+            let form = `
+            <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/department/add">
+                <input type="hidden" name="id" value="${alumni.id}">
+                <input type="hidden" name="faculty_id" value="${alumni.faculty_id}">
+                
+                <div class="form-group">
+                    <label for="full_name">Name</label>
+                    <input type="text" id="full_name" name="name" value="${alumni.name}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" value="${alumni.category}" class="form-control" required>
+                </div>
 
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea type="text" name="description" id="description" class="form-control">${alumni.description}</textarea>
+                </div>
 
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                </div>
+            </form>`;
+
+            popHtml("Edit Alumni", form);
+        });
+}
+function editFaculty(id) {
+    fetch(`/faculty/faculty/${id}`)
+        .then(r => r.json())
+        .then(data => {
+            let alumni=data.data;
+            let form = `
+            <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/faculty/add">
+                <input type="hidden" name="id" value="${alumni.id}">                
+                
+                <div class="form-group">
+                    <label for="full_name">Name</label>
+                    <input type="text" id="full_name" name="name" value="${alumni.name}" class="form-control" required>
+                </div>               
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea type="text" name="description" id="description" class="form-control">${alumni.description}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                </div>
+            </form>`;
+
+            popHtml("Edit Alumni", form);
+        });
+}
+function editLevel(id) {
+    let form = `
+            <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/level/add">
+                <input type="hidden" name="id" value="${id}">                
+                
+                <div class="form-group">
+                    <label for="full_name">Name</label>
+                    <input type="text" id="full_name" name="name" class="form-control" required>
+                </div>               
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea type="text" name="description" id="description" class="form-control"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                </div>
+            </form>`;
+
+    popHtml("Edit Level", form);
+}
+function editRole(id){
+    let form = `
+            <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee-role/add">
+                <input type="hidden" name="id" value="${id}">                
+                
+                <div class="form-group">
+                    <label for="full_name">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>               
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                </div>
+            </form>`;
+
+    popHtml("Edit Role", form);
+}
+function resetPass(id){
+    fetch("/users/reset",{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: id
+        })
+    })
+        .then(response => response.json())
+        .then(dataResponse => {
+            if (dataResponse.status === "success") {
+                Swal.fire("Password reset to phone number", dataResponse.message, "success");
+            } else {
+                Swal.fire("Error!", dataResponse.message || "Failed to update user", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Update error:", error);
+            Swal.fire("Error!", "Something went wrong", "error");
+        });
+}
+function editEmployee(id) {
+    fetch(`/employee/data/${id}`)
+        .then(r => r.json())
+        .then(data => {
+            let employee=data.data;
+            let departments=data.departments;
+            let form = `
+            <form enctype="multipart/form-data" class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee/update">
+                <input type="hidden" name="id" value="${employee.id}">
+                
+                <div class="form-group">
+                    <label for="full_name">Name</label>
+                    <input type="text" id="full_name" name="name" value="${employee.name}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" value="${employee.title}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="text" id="email" name="email" value="${employee.email}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" id="phone" name="phone" value="${employee.phone}" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="branch">Branch</label>
+                    <input type="text" id="branch" name="branch" value="${employee.branch}" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label for="qualification">Qualification</label>
+                    <textarea type="text" name="qualification" id="qualification" class="form-control">${employee.qualification}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="cv">CV</label>
+                    <input type="file" id="cv" name="cv" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="department_id">Department</label>
+                    <select name="department_id" id="department_id" class="form-control" required>
+                        <option value="${employee.department_id}">${employee.department_name}</option>
+                        ${departments.map(d => `
+                            <option value="${d.id}">${d.name}</option>
+                        `).join("")}
+                    </select>
+
+                </div>
+                <div class="form-group">
+                    <label for="profile">Profile</label>
+                    <input type="file" id="profile" name="profile" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                </div>
+            </form>`;
+
+            popHtml("Edit Alumni", form);
+        });
+}
 
 
 

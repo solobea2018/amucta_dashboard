@@ -23,9 +23,7 @@ class Gallery
 <td>{$img['category']}</td>
 <td><img src='{$img['url']}' alt='{$img['name']}' style='width:50px;height:50px;object-fit:cover;'></td>
 <td>
-<button class='btn btn-complete' onclick='editImage({$img['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger' onclick='deleteResource(\"image\",{$img['id']})'>Delete <i class='bi bi-trash'></i></button>
-<button class='btn btn-primary' onclick='viewImage({$img['id']})'>View <i class='bi bi-eye'></i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"images\",{$img['id']})'>Delete <i class='bi bi-trash'></i></button>
 </td>
 </tr>";
             }

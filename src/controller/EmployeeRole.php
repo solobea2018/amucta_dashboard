@@ -23,7 +23,7 @@ class EmployeeRole
 <td>{$att['name']}</td>
 <td>{$att['created_at']}</td>
 <td>
-<button class='btn btn-complete' onclick='editAttachment({$att['id']})'>Edit <i class='bi bi-pencil'></i></button>
+<button class='btn btn-complete' onclick='editRole({$att['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"role_group\",{$att['id']})'>Delete <i class='bi bi-trash'></i></button>
 </td>
 </tr>";
@@ -53,7 +53,7 @@ HTML;
         MainLayout::render($content);
     }
 
-    public function add()
+    public function add1()
     {
         $auth = new Authentication();
 
@@ -86,6 +86,85 @@ HTML;
             echo json_encode(['status' => 'error', 'message' => 'Failed to add Role']);
         }
     }
+    public function add()
+    {
+        $auth = new Authentication();
+
+        // Only admin can add/update roles
+        if (!$auth->is_admin()) {
+            echo json_encode(['status' => 'error', 'message' => 'Not authorized']);
+            return;
+        }
+
+        // Sanitize inputs
+        $id   = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+        $user_id = $auth->get_authenticated_user()->getId();
+
+        if ($name === '') {
+            echo json_encode(['status' => 'error', 'message' => 'Role name is required']);
+            return;
+        }
+
+        // Prevent XSS
+        $name = htmlspecialchars($name);
+
+        $db = new Database();
+
+        if ($id > 0) {
+            // 🔹 Update by ID
+            $exists = $db->fetch("SELECT id FROM role_group WHERE id = ?", [$id]);
+            if (!$exists) {
+                echo json_encode(['status' => 'error', 'message' => 'Role not found']);
+                return;
+            }
+
+            $updated = $db->update('role_group', [
+                'name' => $name,
+                'user_id' => $user_id,
+                'updated_at' => date("Y-m-d H:i:s")
+            ], ["id"=>$id]);
+
+            if ($updated) {
+                echo json_encode(['status' => 'success', 'message' => 'Role updated successfully']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'No changes made or update failed']);
+            }
+
+        } else {
+            // 🔹 Insert new (or update if name exists)
+            $exists = $db->fetch("SELECT id FROM role_group WHERE name = ?", [$name]);
+
+            if ($exists) {
+                // Update instead of duplicate
+                $updated = $db->update('role_group', [
+                    'name' => $name,
+                    'user_id' => $user_id,
+                    'updated_at' => date("Y-m-d H:i:s")
+                ], ["id"=>$exists['id']]);
+
+                if ($updated) {
+                    echo json_encode(['status' => 'success', 'message' => 'Role updated successfully']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'No changes made or update failed']);
+                }
+            } else {
+                // Insert new
+                $inserted = $db->insert('role_group', [
+                    'name' => $name,
+                    'user_id' => $user_id,
+                    'created_at' => date("Y-m-d H:i:s")
+                ]);
+
+                if ($inserted) {
+                    echo json_encode(['status' => 'success', 'message' => 'Role added successfully']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'Failed to add Role']);
+                }
+            }
+        }
+    }
+
 
     public function get()
     {

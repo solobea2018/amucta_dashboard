@@ -23,9 +23,7 @@ class News
 <td>{$news['category']}</td>
 <td>{$news['created_at']}</td>
 <td>
-<button class='btn btn-complete' onclick='editNews({$news['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"news\",{$news['id']})'>Delete <i class='bi bi-trash'></i></button>
-<button class='btn btn-primary' onclick='viewNews({$news['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
             }

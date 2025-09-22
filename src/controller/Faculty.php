@@ -25,7 +25,6 @@ class Faculty
 <td>
 <button class='btn btn-complete' onclick='editFaculty({$faculty['id']})'>Update <i class='bi bi-pencil'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"faculty\",{$faculty['id']})'>Delete <i class='bi bi-trash'></i></button>
-<button class='btn btn-primary' onclick='viewFaculty({$faculty['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
             }
@@ -53,7 +52,7 @@ HTML;
 
         MainLayout::render($content);
     }
-    public function add()
+    public function add1()
     {
         $auth = new Authentication();
 
@@ -115,6 +114,100 @@ HTML;
             ]);
         }
     }
+    public function add()
+    {
+        $auth = new Authentication();
+
+        // Ensure user is logged in and is admin
+        if (!$auth->is_admin()) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Not authorized to perform this action.'
+            ]);
+            return;
+        }
+
+        // Sanitize and validate inputs
+        $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+        $description = isset($_POST['description']) ? trim($_POST['description']) : '';
+        $user_id = $auth->get_authenticated_user()->getId();
+
+        if ($name === '') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Faculty name is required.'
+            ]);
+            return;
+        }
+
+        // Clean XSS
+        $name = htmlspecialchars($name);
+        $description = htmlspecialchars($description);
+
+        $db = new Database();
+
+        if ($id > 0) {
+            // 🔹 Update by ID
+            $exists = $db->fetch("SELECT id FROM faculty WHERE id = ?", [$id]);
+            if (!$exists) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Faculty not found.'
+                ]);
+                return;
+            }
+
+            $updated = $db->update("faculty", [
+                'name' => $name,
+                'description' => $description,
+                'user_id' => $user_id,
+                'updated_at' => date("Y-m-d H:i:s")
+            ], ["id"=>$id]);
+
+            if ($updated) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Faculty updated successfully!'
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'No changes made or update failed.'
+                ]);
+            }
+
+        } else {
+            $exists = $db->fetch("SELECT id FROM faculty WHERE name = ?", [$name]);
+            if ($exists) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Faculty with this name already exists.'
+                ]);
+                return;
+            }
+
+            $inserted = $db->insert("faculty", [
+                'name' => $name,
+                'description' => $description,
+                'user_id' => $user_id,
+                'created_at' => date("Y-m-d H:i:s")
+            ]);
+
+            if ($inserted) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Faculty added successfully!'
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Failed to add faculty. Please try again.'
+                ]);
+            }
+        }
+    }
+
 
     public function get_simple()
     {
@@ -134,5 +227,42 @@ HTML;
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
         echo json_encode((new Database())->select("select * from faculty order by name"));
+    }
+    public function faculty($params)
+    {
+        if (isset($params) && !empty($params)) {
+            try {
+                $id = intval($params[0]);
+                $db = new Database();
+
+                // Fetch employee by ID
+                $employee = $db->select("SELECT * FROM faculty WHERE id = {$id} LIMIT 1");
+
+                if ($employee && count($employee) > 0) {
+                    // Return JSON response
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        "status" => "success",
+                        "data" => $employee[0],
+                    ]);
+                } else {
+                    // Employee not found
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "not found"
+                    ]);
+                }
+            } catch (\Exception $exception) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => $exception->getMessage()
+                ]);
+            }
+        } else {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Invalid Request"
+            ]);
+        }
     }
 }
