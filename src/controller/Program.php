@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -20,9 +21,9 @@ class Program
 <td>{$program['short_name']}</td>
 <td>{$program['name']}</td>
 <td>
-<button class='btn btn-primary'>Delete <i class='bi bi-eye'></i></button>
+<button class='btn btn-primary'>Active<i class='bi bi-eye'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"program\",{$program['id']})'>Delete <i class='bi bi-trash'></i></button>
-<button class='btn btn-complete'>Edit <i class='bi bi-pencil'></i></button>
+<button class='btn btn-complete' onclick='editProgram({$program['id']})'>Edit <i class='bi bi-pencil'></i></button>
 </td>
 </tr>";
             }
@@ -114,6 +115,79 @@ content;
             echo "Failed to create program";
         }
     }
+    public function update()
+    {
+        $auth=new Authentication();
+        if (!$auth->is_authenticated()){
+            http_response_code(403);
+            echo "Not authorized";
+            exit();
+        }
+        $db = new Database();
+
+        // Required fields
+        $required = [
+            'id', 'name', 'short_name', 'intakes', 'duration',
+            'capacity', 'accreditation_year',
+            'faculty_id', 'department_id', 'level_id',
+            'description', 'content'
+        ];
+
+        foreach ($required as $field) {
+            if (empty($_POST[$field])) {
+                http_response_code(400);
+                echo "Required field missing: $field";
+                exit();
+            }
+        }
+
+        // Sanitize inputs
+        $id = (int) $_POST['id'];
+        $name = htmlspecialchars(trim($_POST['name']), ENT_QUOTES, 'UTF-8');
+        $short_name = htmlspecialchars(trim($_POST['short_name']), ENT_QUOTES, 'UTF-8');
+        $intakes = (int) $_POST['intakes'];
+        $duration = htmlspecialchars(trim($_POST['duration']), ENT_QUOTES, 'UTF-8');
+        $capacity = (float) $_POST['capacity'];
+        $accreditation_year = htmlspecialchars(trim($_POST['accreditation_year']), ENT_QUOTES, 'UTF-8');
+        $faculty_id = (int) $_POST['faculty_id'];
+        $department_id = (int) $_POST['department_id'];
+        $level_id = (int) $_POST['level_id'];
+        $description = htmlspecialchars(trim($_POST['description'] ?? ""));
+        $content = htmlspecialchars(trim($_POST['content'] ?? ""));
+        $fees = htmlspecialchars(trim($_POST['fees'] ?? ""));
+        $requirements = htmlspecialchars(trim($_POST['requirements'] ?? ""));
+        $user_id = $auth->get_authenticated_user()->getId();
+
+
+        // Update program object
+        $program = new \Solobea\Dashboard\model\Program();
+        $program->setId($id);
+        $program->setName($name);
+        $program->setShortName($short_name);
+        $program->setIntakes($intakes);
+        $program->setDuration($duration);
+        $program->setCapacity($capacity);
+        $program->setAccreditationYear($accreditation_year);
+        $program->setFacultyId($faculty_id);
+        $program->setDepartmentId($department_id);
+        $program->setLevelId($level_id);
+        $program->setDescription($description);
+        $program->setContent($content);
+        $program->setFees($fees);
+        $program->setRequirements($requirements);
+        $program->setUpdatedBy($user_id);
+        $program->setUpdatedAt(date('Y-m-d H:i:s'));
+
+        // Save changes
+        if ($db->update_program($program)) {
+            http_response_code(200);
+            echo "Program updated successfully";
+        } else {
+            http_response_code(500);
+            echo "Failed to update program";
+        }
+    }
+
 
     public static function getCount()
     {
@@ -128,5 +202,48 @@ content;
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
         echo json_encode((new Database())->select("select * from program"));
+    }
+    public function data($params)
+    {
+        if (isset($params) && !empty($params)) {
+            try {
+                $id = intval($params[0]);
+                $db = new Database();
+
+                // Fetch employee by ID
+                $employee = $db->select("SELECT * from program where id= {$id} LIMIT 1");
+                $lvs = $db->select("SELECT id,name FROM level");
+                $deps = $db->select("SELECT id,name FROM department");
+                $faculty = $db->select("SELECT id,name FROM faculty");
+
+                if ($employee && count($employee) > 0) {
+                    // Return JSON response
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        "status" => "success",
+                        "data" => $employee[0],
+                        "levels" => $lvs,
+                        "departments"=>$deps,
+                        "faculties"=>$faculty
+                    ]);
+                } else {
+                    // Employee not found
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Employee not found"
+                    ]);
+                }
+            } catch (\Exception $exception) {
+                echo json_encode([
+                    "status" => "error",
+                    "message" => $exception->getMessage()
+                ]);
+            }
+        } else {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Invalid Request"
+            ]);
+        }
     }
 }

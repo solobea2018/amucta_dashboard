@@ -19,6 +19,40 @@ class Program
     private $content;
     private $fees;
     private $requirements;
+    private $updated_at;
+    private $updated_by;
+
+    /**
+     * @return mixed
+     */
+    public function getUpdatedBy()
+    {
+        return $this->updated_by;
+    }
+
+    /**
+     * @param mixed $updated_by
+     */
+    public function setUpdatedBy($updated_by): void
+    {
+        $this->updated_by = $updated_by;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updated_at;
+    }
+
+    /**
+     * @param mixed $updated_at
+     */
+    public function setUpdatedAt($updated_at): void
+    {
+        $this->updated_at = $updated_at;
+    }
 
     /**
      * @return mixed

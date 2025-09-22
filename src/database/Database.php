@@ -1363,4 +1363,75 @@ FROM users";
         return false;
     }
 
+    public function update_program(Program $program): bool
+    {
+        $stmt = $this->con->prepare("
+        UPDATE program SET
+            name = ?, 
+            short_name = ?, 
+            intakes = ?, 
+            duration = ?, 
+            capacity = ?, 
+            accreditation_year = ?, 
+            faculty_id = ?, 
+            department_id = ?, 
+            level_id = ?, 
+            description = ?, 
+            content = ?, 
+            entry_requirements = ?, 
+            fees = ?, 
+            updated_by = ?, 
+            updated_at = ?
+        WHERE id = ?
+    ");
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $id                = $program->getId();
+        $name              = $program->getName();
+        $shortName         = $program->getShortName();
+        $intakes           = $program->getIntakes();
+        $duration          = $program->getDuration();
+        $capacity          = $program->getCapacity();
+        $accreditationYear = $program->getAccreditationYear();
+        $facultyId         = $program->getFacultyId();
+        $departmentId      = $program->getDepartmentId();
+        $levelId           = $program->getLevelId();
+        $description       = $program->getDescription();
+        $content           = $program->getContent();
+        $req               = $program->getRequirements();
+        $fee               = $program->getFees();
+        $updatedBy         = $program->getUpdatedBy();
+        $updatedAt         = $program->getUpdatedAt();
+
+        // Bind variables
+        $stmt->bind_param(
+            "ssisdiiiissssssi",
+            $name,
+            $shortName,
+            $intakes,
+            $duration,
+            $capacity,
+            $accreditationYear,
+            $facultyId,
+            $departmentId,
+            $levelId,
+            $description,
+            $content,
+            $req,
+            $fee,
+            $updatedBy,
+            $updatedAt,
+            $id
+        );
+
+        $result = $stmt->execute();
+        $stmt->close();
+
+        return $result;
+    }
+
+
 }

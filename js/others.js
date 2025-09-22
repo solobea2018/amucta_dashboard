@@ -1508,6 +1508,8 @@ function editEmployee(id) {
         .then(data => {
             let employee=data.data;
             let departments=data.departments;
+            let faculties=data.faculties;
+            let levels=data.levels;
             let form = `
             <form enctype="multipart/form-data" class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee/update">
                 <input type="hidden" name="id" value="${employee.id}">
@@ -1561,6 +1563,101 @@ function editEmployee(id) {
                 </div>
             </form>`;
 
+            popHtml("Edit Alumni", form);
+        });
+}
+function editProgram(id) {
+    fetch(`/program/data/${id}`)
+        .then(r => r.json())
+        .then(data => {
+            let program=data.data;
+            let departments=data.departments;
+            let levels=data.levels;
+            let faculties=data.faculties;
+            let form =`
+            <form class="form-container" onsubmit="sendFormSweet(this, event)" action="/program/update" method="post">
+    <input type="hidden" name="id" value="${program.id}">
+
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" value="${program.name}" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label>Short Name</label>
+        <input type="text" name="short_name" value="${program.short_name}" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label>Intakes</label>
+        <input type="number" name="intakes" value="${program.intakes}" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label>Duration</label>
+        <input type="text" name="duration" value="${program.duration}" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label>Capacity</label>
+        <input type="number" name="capacity" value="${program.capacity}" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label>Accreditation Year</label>
+        <input type="text" name="accreditation_year" value="${program.accreditation_year}" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+        <label>Faculty</label>
+        <select name="faculty_id" class="form-control" required>
+            <option>--Select--</option>
+            ${faculties.map(f => `<option value="${f.id}">${f.name}</option>`).join("")}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Department</label>
+        <select name="department_id" class="form-control" required>
+            <option>--Select--</option>
+            ${departments.map(d => `<option value="${d.id}">${d.name}</option>`).join("")}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Level</label>
+        <select name="level_id" class="form-control" required>
+            <option >--Select--</option>
+            ${levels.map(l => `<option value="${l.id}">${l.name}</option>`).join("")}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" class="form-control">${program.description}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Content</label>
+        <textarea name="content" class="form-control">${program.content}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Fees (HTML)</label>
+        <textarea name="fees" class="form-control">${program.fees}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Requirements (HTML)</label>
+        <textarea name="requirements" class="form-control">${program.requirements}</textarea>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">💾 Update Program</button>
+    </div>
+</form>
+
+            `;
             popHtml("Edit Alumni", form);
         });
 }

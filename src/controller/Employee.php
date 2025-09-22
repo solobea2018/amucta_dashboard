@@ -580,7 +580,7 @@ HTML;
         }
 
         $profilePath = $current['profile'];
-        $cvPath      = $current['cv'];
+        $cvPath      = $current['cv_url'];
 
         // Handle new profile upload
         if (!empty($_FILES['profile']['name']) && $_FILES['profile']['error'] === UPLOAD_ERR_OK) {
