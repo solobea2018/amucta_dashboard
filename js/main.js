@@ -192,6 +192,31 @@ function chatbot() {
     }, delay);
 
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const slider = document.getElementById("background-slider");
+    let images = [];
+    let currentIndex = 0;
+
+    // Fetch image list from server (JSON format)
+    fetch("/gallery/background") // example endpoint
+        .then(res => res.json())
+        .then(data => {
+            images = data.images;
+            if (images.length > 0) {
+                setBackground(images[0]); // first image
+                setInterval(() => {
+                    currentIndex = (currentIndex + 1) % images.length;
+                    setBackground(images[currentIndex]);
+                }, 5000); // change every 5s
+            }
+        })
+        .catch(err => console.error("Failed to load images:", err));
+
+    function setBackground(url) {
+        slider.style.backgroundImage = `url('${url}')`;
+    }
+});
+
 
 (function() {
     // Only run if not already shown in this session

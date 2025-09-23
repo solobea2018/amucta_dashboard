@@ -165,5 +165,17 @@ HTML;
         echo json_encode((new Database())->select("select * from images"));
     }
 
+    public function background()
+    {
+        $images=[
+            "/images/gallery/slides_68b75ed49e2e4.webp",
+            "/images/gallery/slides_68b75f064937e.webp",
+            "/images/gallery/slides_68b7600d7a24a.webp"
+        ];
+        $images=(new Database())->select("from images where category='slides' order by  rand() limit 5");
+        header("Content-Type: application/json");
+        echo json_encode(["images"=>$images]);
+    }
+
 
 }

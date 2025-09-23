@@ -13,6 +13,24 @@ class Home
     {
         $query="select id, name from program order by level_id,department_id";
         $db=new Database();
+        $program_count=Program::getCount();
+        $emp_count=Employee::getCount();
+        $visitorStats = Visitors::dataArray();
+        $all_times=number_format($visitorStats['totals']['all_time']);
+        $today=$visitorStats['totals']['today'];
+        $week=$visitorStats['totals']['this_week'];
+        $loc="";
+        foreach ($visitorStats['top_countries'] as $lo){
+            $country=$lo['country'];
+            $total=$lo['total'];
+            $loc.="<li>$country - $total</li>";
+        }
+        $urls="";
+        foreach ($visitorStats['top_urls'] as $lo){
+            $country=$lo['url'];
+            $total=$lo['total'];
+            $urls.="<p><a class='text-blue-500' href='https://amucta.ac.tz{$country}'>https://amucta.ac.tz{$country} </a> - $total</p>";
+        }
         $progs=$db->select($query);
         $intro=$this->intro($db);
         $news=$this->news($db);
@@ -26,6 +44,8 @@ class Home
         }
         $head="<link type='text/css' rel='stylesheet' href='/css/home.css'>";
         $content = <<<content
+<!-- Background container -->
+<div id="background-slider"></div>
 <section class="section">
   <div class="text-center">
     <h1 class="uni-title">Archbishop Mihayo University College of Tabora</h1>
@@ -77,9 +97,49 @@ class Home
     <button type="submit">🔍 Search</button>
   </form>
 </section>
-
 $intro
 $news
+<section class="stats-section">
+    <div class="stats-container">
+      <h2 class="stats-title">AMUCTA in Numbers</h2>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number" style="color: #007BFF;">$program_count</div>
+          <p class="stat-label">Programs</p>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" style="color: #4F46E5;">2,207</div>
+          <p class="stat-label">Students</p>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" style="color: #059669;">$emp_count</div>
+          <p class="stat-label">Employees</p>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" style="color: #7C3AED;">4,087+</div>
+          <p class="stat-label">Graduates</p>
+        </div>
+        <div class="stat-item visitor-stat">
+          <div class="stat-number">{$all_times}M</div>
+          <p class="stat-label">Visitors (All-Time)</p>
+          <div class="visitor-details">
+            <p>📅 Today: <span style="font-weight: 600;">{$today}</span></p>
+            <p>📊 This Week: <span style="font-weight: 600;">{$week}</span></p>
+            <p>🌍 Top Locations:</p>
+            <ul>
+              {$loc}
+            </ul>
+          </div>
+        </div>
+        <div class="stat-item visitor-stat">
+          <div class="visitor-details">
+            <p>Most visited Pages:</p>           
+              {$urls}          
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 content;
 
         MainLayout::render($content,$head);
