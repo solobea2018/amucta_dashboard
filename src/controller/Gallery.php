@@ -172,9 +172,13 @@ HTML;
             "/images/gallery/slides_68b75f064937e.webp",
             "/images/gallery/slides_68b7600d7a24a.webp"
         ];
-        $images=(new Database())->select("from images where category='slides' order by  rand() limit 5");
+        $images=(new Database())->select("select url from images where category='slides' order by  rand() limit 5");
+        $slides=[];
+        foreach ($images as $image) {
+            $slides[]=$image['url'];
+        }
         header("Content-Type: application/json");
-        echo json_encode(["images"=>$images]);
+        echo json_encode(["images"=>$slides]);
     }
 
 
