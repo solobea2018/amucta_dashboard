@@ -15,8 +15,8 @@ use Solobea\Dashboard\utils\ErrorReporter;
 
 class Database
 {
-    //private $host="localhost";
-    private $host="data.tetea.store";
+    private $host="localhost";
+    //private $host="data.tetea.store";
 
     private $user="amucta_user";
     private $db="dashboard";
