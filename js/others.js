@@ -585,6 +585,38 @@ function addProgram(){
 
 
 }
+function addHomeContent(){
+    var form=  `
+    <form onsubmit="sendFormSweet(this,event)" action="/home-content/add">
+  <!-- Program Name -->
+  <div class="form-group">
+    <label>Name</label>
+    <input type="text" name="name" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label>Deadline</label>
+    <input type="date" name="deadline" class="form-control" required>
+  </div>
+  <!-- Description -->
+  <div class="form-group">
+    <label>Content</label>
+    <textarea name="content" rows="5" class="form-control" required 
+              placeholder="<div>.....</div>"></textarea>
+  </div>
+
+  <!-- Content -->
+  <div class="form-group">
+    <label>Style</label>
+    <textarea name="style" rows="5" class="form-control" 
+              placeholder="<style> ...</style>"></textarea>
+  </div>
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary">💾 Save</button>
+  </div>
+</form>
+`;
+    popHtml("Add Program",form);
+}
 function addDepartment() {
     fetch('/faculty/get_simple')
         .then(response => response.json())

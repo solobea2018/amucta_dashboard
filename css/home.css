@@ -346,8 +346,12 @@
 }
 
 .section {
-    padding: 4rem 1rem;
-    background: #fff;
+    padding: 2rem 1rem;
+}
+.or-title{
+    max-width: 600px;
+    background-color: rgba(210, 245, 3, 0.1);
+    border-radius: 10px;
 }
 
 /* University Title */
@@ -394,85 +398,12 @@
     margin-top: 1rem;
     text-align: start;
 }
-
-/* Gradient card */
-.gradient-card {
-    border-radius: 20px;
-    padding: 2rem;
-    background: linear-gradient(90deg,var(--amucta-blue),#ffff00,#83e59a);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    position: relative;
-    overflow: hidden;
-    margin: 2rem auto;
-}
-
-/* Inside black overlay */
-.gradient-inner {
-    border-radius: 20px;
-    padding: 2rem;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    position: relative;
-}
-
-/* Headline */
-.gradient-inner h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-top: 1rem;
-}
-.gradient-inner h2 span.animate {
-    animation: pulse 1.5s infinite;
-    color: #ffeb3b;
-}
-
-/* Subtext */
-.gradient-inner p {
-    margin-top: 1rem;
-    line-height: 1.5;
-    color: rgba(255,255,255,0.9);
-}
-
-/* Deadline */
-.deadline {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    gap: 0.5rem;
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    color: rgba(255,255,255,0.9);
-}
-.deadline-dot {
-    height: 10px;
-    width: 10px;
-    border-radius: 50%;
-    background: #ffeb3b;
-    animation: ping 1.5s infinite;
-}
-@keyframes ping {
-    0% { transform: scale(0.8); opacity: 0.8; }
-    50% { transform: scale(1.4); opacity: 0.4; }
-    100% { transform: scale(0.8); opacity: 0.8; }
-}
-
-/* Banner */
-.banner {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    border-radius: 12px;
-    background: linear-gradient(90deg,#00ccff,#ffff00);
-    text-align: center;
-    font-weight: bold;
-    color: #000;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
 /* Search section */
 .search-box {
     background: #fff;
     padding: 1.0rem;
     border-radius: 12px;
+    max-width: 600px;
     box-shadow: 0 6px 18px rgba(0,0,0,0.1);
     text-align: center;
     margin: 1rem auto;

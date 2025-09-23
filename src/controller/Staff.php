@@ -88,7 +88,7 @@ HTML;
             $category=$params[0];
             $id=intval($params[1]);
             $db=new Database();
-            $stfs=$db->select("SELECT e.*,er.role_name,er.start_date,er.end_date,er.active from employee e join employee_role er on e.id = er.employee_id where er.id={$id} order by e.name");
+            $stfs=$db->select("SELECT e.*,er.role_name,er.start_date,er.end_date,er.active from employee e join employee_role er on e.id = er.employee_id where er.id={$id} and e.active=1 order by e.name");
             $content="<div class=''>hello</div>";
             $head="";
             $title=$category;
@@ -106,6 +106,7 @@ HTML;
             FROM employee e 
             JOIN employee_role er ON e.id = er.employee_id 
             WHERE er.role_group_id={$id} 
+            and e.active =1
             ORDER BY e.name
         ");
 

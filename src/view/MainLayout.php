@@ -5,12 +5,8 @@ namespace Solobea\Dashboard\view;
 
 
 use Solobea\Dashboard\authentication\Authentication;
-use Solobea\Dashboard\controller\Employee;
-use Solobea\Dashboard\controller\Program;
-use Solobea\Dashboard\controller\Visitors;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\utils\Helper;
-use Solobea\Helpers\visitor\VisitorData;
 
 class MainLayout
 {
@@ -166,6 +162,7 @@ HTML;
     <a href="/news/list" class="btn btn-primary"><i class="bi bi-newspaper mx-2"></i>News</a>
     <a href="/events/list" class="btn btn-primary"><i class="bi bi-calendar-event mx-2"></i>Events</a>
     <a href="/attachment/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Attachments</a>
+    <a href="/home-content/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Homepage Contents</a>
     <a href="/employee-role/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Employee Role</a>
     <a href="/employee/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Employee</a>
     <a href="/employee-research/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Employee Research</a>

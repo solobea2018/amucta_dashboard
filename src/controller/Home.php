@@ -34,6 +34,9 @@ class Home
         $progs=$db->select($query);
         $intro=$this->intro($db);
         $news=$this->news($db);
+        $hp=$this->getRecentHomepageIntro($db);
+        $h_content=htmlspecialchars_decode($hp['content']??"");
+        $h_style=htmlspecialchars_decode($hp['style']??"");
         $prog_list="";
         if (!empty($progs)){
             foreach ($progs as $prog) {
@@ -42,50 +45,21 @@ class Home
                 $prog_list.="<option value='$id'>{$name}</option>";
             }
         }
-        $head="<link type='text/css' rel='stylesheet' href='/css/home.css'>";
+        $head=<<<kl
+<link type='text/css' rel='stylesheet' href='/css/home.css'>
+{$h_style}
+kl;
         $content = <<<content
 <!-- Background container -->
 <div id="background-slider"></div>
-<section class="section">
-  <div class="text-center">
+<section class="section flex flex-row justify-center">
+  <div class="text-center or-title">
     <h1 class="uni-title">Archbishop Mihayo University College of Tabora</h1>
     <a href="https://oas.amucta.ac.tz" target="_blank" class="apply-btn">🎓 Apply Now</a>
   </div>
 </section>
+$h_content
 
-<section class="gradient-card">
-  <div class="gradient-inner">
-    <div class="badge">Second Window &dot; Bachelor Applicants</div>
-    <h2>Admissions <span class="underline">OPEN</span> <span class="animate">NOW</span></h2>
-    <p>Missed the first call? This is your moment. Limited slots, rolling review&hyphen;earlier submissions get priority. Secure your spot before the window closes.</p>
-<div class="programmes-grid">
-  <div class="programme-card">
-    <p class="medium">Diploma Programmes</p>
-    <p class="medium">Bachelor Programmes</p>
-    <p class="medium">Postgraduate Programmes</p>
-  </div>
-
-  <div class="programme-card">
-    <p class="small">Mode</p>
-    <p class="medium">Online Application</p>
-  </div>
-
-  <div class="programme-card">
-    <p class="small">Status</p>
-    <p class="bold">OPEN</p>
-  </div>
-</div>
-    <div class="deadline">
-      <span class="deadline-dot"></span>
-      <span>Closes: <strong>September 21, 2025</strong> &dot; Don&quot;t wait&hyphen;applications are reviewed as they arrive.</span>
-    </div>
-  </div>
-</section>
-
-<div class="banner">
-  Second Application Window is OPEN &hyphen; limited seats, submit early for priority review.
-  <span>September 21, 2025</span>
-</div>
 
 <section class="search-box">
   <h2>Find Your Program</h2>
@@ -322,5 +296,25 @@ atta;
 </div>
 intro;
     }
+
+    function getRecentHomepageIntro(Database $db): array
+    {
+        $sql = "
+        SELECT content,style
+        FROM homepage_intro
+        WHERE deadline > NOW()
+        ORDER BY created_at DESC
+        LIMIT 1
+    ";
+
+        $row = $db->select($sql);
+
+        if ($row && isset($row[0]['content'])) {
+            return $row[0];
+        }
+
+        return [];
+    }
+
 
 }
