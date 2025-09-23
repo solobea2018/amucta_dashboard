@@ -27,7 +27,7 @@ class Departments
                 $title = $dept['name'];
             } else {
                 $content = "<p>Department not found.</p>";
-                $head = "";
+                $head = '<script src="/js/donate.js" defer></script>';
                 $title = "Department";
             }
 

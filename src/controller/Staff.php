@@ -81,20 +81,6 @@ HTML;
         echo $content;
     }
 
-
-    public function amucta1($params)
-    {
-        if (!empty($params)){
-            $category=$params[0];
-            $id=intval($params[1]);
-            $db=new Database();
-            $stfs=$db->select("SELECT e.*,er.role_name,er.start_date,er.end_date,er.active from employee e join employee_role er on e.id = er.employee_id where er.id={$id} and e.active=1 order by e.name");
-            $content="<div class=''>hello</div>";
-            $head="";
-            $title=$category;
-            MainLayout::render($content,$head,$title);
-        }
-    }
     public function amucta($params)
     {
         if (!empty($params)) {
@@ -132,7 +118,7 @@ HTML;
                     $content .= "
                 <div class='employee-card'>
                     <div class='profile-pic'>
-                        <img src='{$profileImg}' alt='{$emp['name']}'>
+                        <img loading='lazy' src='{$profileImg}' alt='{$emp['name']}'>
                     </div>
                     <div class='employee-info'>
                         <h3>{$emp['name']}</h3>

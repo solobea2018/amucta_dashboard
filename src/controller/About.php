@@ -44,6 +44,7 @@ class About
 
         // Add CSS
         $head = <<<HTML
+<script src="/js/donate.js" defer></script>
 <style>
 .about-section {
     max-width: 1000px;
@@ -128,6 +129,7 @@ HTML;
         $mapsDirectionsDesc = "Please navigate the map below to find the exact location of AMUCTA in Tabora Municipality.";
 
         $head = <<<HTML
+<script src="/js/donate.js" defer></script>
 <style>
 .history-section {
     max-width: 1000px;
@@ -381,6 +383,7 @@ HTML;
 
         // Add CSS into $head
         $head = <<<HTML
+<script src="/js/donate.js" defer></script>
 <style>
 .message-card {
     max-width: 900px;

@@ -74,7 +74,7 @@ class Profile
             <td>".($r['active'] ? "Yes" : "No")."</td>
         </tr>";
         }
-        $profile_tag=($emp['profile'] ? "<img src='{$emp['profile']}' width='100'>" : "No Image");
+        $profile_tag=($emp['profile'] ? "<img loading='lazy' src='{$emp['profile']}' width='100'>" : "No Image");
 
         $content = <<<HTML
 <div class="profile-container">
