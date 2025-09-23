@@ -1445,6 +1445,41 @@ function editDepartment(id) {
             popHtml("Edit Alumni", form);
         });
 }
+function editHome(id) {
+    fetch(`/home-content/get/${id}`)
+        .then(r => r.json())
+        .then(data => {
+            let alumni=data.data;
+            let form = `
+            <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/home-content/add">
+                <input type="hidden" name="id" value="${alumni.id}">                
+                
+                <div class="form-group">
+                    <label for="full_name">Name</label>
+                    <input type="text" id="full_name" name="name" value="${alumni.name}" class="form-control" required>
+                </div>   
+                <div class="form-group">
+                    <label for="deadline">Deadline</label>
+                    <input type="date" id="deadline" name="deadline" class="form-control" required>
+                </div>         
+                <div class="form-group">
+                    <label for="description">Content</label>
+                    <textarea type="text" name="content" id="description" class="form-control">${alumni.content}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="style">Style</label>
+                    <textarea type="text" name="style" id="style" class="form-control">${alumni.style}</textarea>
+                </div>
+              
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                </div>
+            </form>`;
+
+            popHtml("Edit Alumni", form);
+        });
+}
 function editFaculty(id) {
     fetch(`/faculty/faculty/${id}`)
         .then(r => r.json())
