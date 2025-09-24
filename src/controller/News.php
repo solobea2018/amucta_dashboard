@@ -191,7 +191,49 @@ HTML;
     }
     public function all()
     {
-        MainLayout::render("");
+        $news=(new Database())->select("select id, feature_image, name, content, created_at, expire, category, attachment from news order by created_at desc");
+        $news_list="";
+        if (!empty($news)){
+            foreach ($news as $prog) {
+                $name=$prog['name'];
+                $feature_image=$prog['feature_image'];
+                $date = date("F d, Y", strtotime($prog['created_at']));
+                $content = $prog['content'];
+                $expire  = $prog['expire'];
+                $img     = "";
+                if (strtotime(date("Y-m-d")) <= strtotime($expire)) {
+                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="new-icon">';
+                }
+                $shortContent = mb_substr(strip_tags($content), 0, 100);
+                if (strlen(strip_tags($content)) > 100) {
+                    $shortContent .= "...";
+                }
+                $attachment =$prog['attachment']??"#";
+                $news_list.=<<<atta
+            <div class="news-item">
+                <img src="$feature_image" class="news-img" alt="News">
+                <div class="news-content">
+                    <div class="news-title" onclick="popHtml('$name','$content')">{$name} $img</div>
+                    <p class="news-desc">
+                        {$shortContent} <a href="$attachment" class="read-more">Link →</a>
+                    </p>
+                    <p class="news-date">📅 Posted on: {$date}</p>
+                </div>
+            </div>
+atta;
+            }
+        }
+        $content=<<<pl
+<div class="">
+        <h2 class="section-title">News List</h2>
+        <div class="news-list">
+            $news_list
+        </div>        
+    </div>
+pl;
+
+        $head="<link rel='stylesheet' href='/css/home.css'>";
+        MainLayout::render($content,$head,"News");
     }
     public function detail()
     {

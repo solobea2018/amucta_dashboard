@@ -116,7 +116,7 @@ HTML;
                     $activeStatus = $emp['active'] ? "<span class='active'>Active</span>" : "<span class='inactive'>Inactive</span>";
 
                     $content .= "
-                <div class='employee-card'>
+                <div class='employee-card' data-aos='fade-up' data-aos-duration='1000'>
                     <div class='profile-pic'>
                         <img loading='lazy' src='{$profileImg}' alt='{$emp['name']}'>
                     </div>

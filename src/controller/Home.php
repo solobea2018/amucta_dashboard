@@ -166,7 +166,7 @@ atta;
                 <div class="news-content">
                     <div class="news-title" onclick="popHtml('$name','$content')">{$name} $img</div>
                     <p class="news-desc">
-                        {$shortContent} <a href="$attachment" class="read-more">Read More →</a>
+                        {$shortContent} <a href="$attachment" class="read-more ">Link →</a>
                     </p>
                     <p class="news-date">📅 Posted on: {$date}</p>
                 </div>

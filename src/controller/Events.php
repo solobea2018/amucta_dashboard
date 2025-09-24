@@ -175,11 +175,105 @@ HTML;
     }
     public function all()
     {
-        MainLayout::render("");
+        $events=(new Database())->select("select id, name, description, start_date, end_date, location, feature_image, attachment, category, created_at from events order by created_at desc");
+        $events_list="";
+        if (!empty($events)){
+            foreach ($events as $prog) {
+                $id=$prog['id'];
+                $name=$prog['name'];
+                $feature_image=$prog['feature_image']??'https://www.heslb.go.tz/assets/css/assets_22/images/new.svg';
+                $date = date("F d, Y", strtotime($prog['start_date']));
+
+                $expire  = $prog['end_date']??$date;
+                $img     = "";
+                if (strtotime(date("Y-m-d")) <= strtotime($expire)) {
+                    $img = '<img src="https://www.heslb.go.tz/assets/images/new.gif" alt="new" class="event-new">';
+                }
+                $location =$prog['location']??"";
+                $events_list.=<<<atta
+            <li class="event-item">
+                <div class="event-flex">
+                    <img src="$feature_image" alt="event" class="event-img">
+                    <div>
+                        <a href="/events/detail/$id" class="event-title">{$name} - {$location}</a>
+                        <div class="event-meta">
+                            <i class="fa fa-clock-o"></i>
+                            <span>{$date}</span>
+                            $img
+                        </div>
+                    </div>
+                </div>
+                <hr class="event-divider">
+            </li>
+atta;
+            }
+        }
+        $content=<<<pl
+<div class="intro-col">
+                <h3 class="intro-heading">News & Events</h3>
+                <ul class="events-list">
+                    $events_list                   
+                </ul>
+            </div>
+pl;
+
+        $head="<link rel='stylesheet' href='/css/home.css'>";
+        MainLayout::render($content,$head,"Events");
     }
-    public function detail()
+    public function detail($params)
     {
-        MainLayout::render("");
+        if (!empty($params)) {
+            $id = intval($params[0]);
+
+            $event = (new Database())->select("
+            SELECT id, name, description, start_date, end_date, location, feature_image, attachment, category, created_at
+            FROM events 
+            WHERE id='{$id}' 
+            LIMIT 1
+        ")[0];
+
+            $desc = nl2br($event['description']);
+            $featureImg = $event['feature_image'] ? "<img src='{$event['feature_image']}' alt='{$event['name']}' class='event-image'>" : "";
+            $attachment = $event['attachment'] ? "<a href='{$event['attachment']}' class='btn btn-outline-primary mt-3' target='_blank'><i class='bi bi-paperclip'></i> Download Attachment</a>" : "";
+
+            $content = <<<CONTENT
+<div class="event-detail">
+    <div class="event-header">
+        {$featureImg}
+        <h2 class="event-title">{$event['name']}</h2>
+        <p class="event-category"><i class="bi bi-tags"></i> {$event['category']}</p>
+    </div>
+    <div class="event-body">
+        <p class="event-info"><i class="bi bi-calendar-event"></i> 
+            {$event['start_date']} to {$event['end_date']}
+        </p>
+        <p class="event-info"><i class="bi bi-geo-alt"></i> {$event['location']}</p>
+        <div class="event-description">{$desc}</div>
+        {$attachment}
+    </div>
+    <div class="event-footer text-muted">
+        <small>Posted on {$event['created_at']}</small>
+    </div>
+</div>
+CONTENT;
+
+            $head = <<<HEAD
+<style>
+    .event-detail { max-width: 900px; margin: 2rem auto; padding: 1.5rem; background: #fff; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); font-family: Arial, sans-serif; }
+    .event-header { text-align: center; margin-bottom: 1.5rem; }
+    .event-title { font-size: 2rem; font-weight: bold; margin: 1rem 0 0.5rem; }
+    .event-category { font-size: 0.9rem; color: #6c757d; }
+    .event-image { width: 100%; max-height: 400px; object-fit: cover; border-radius: 10px; }
+    .event-body { margin-top: 1rem; line-height: 1.7; }
+    .event-info { margin: 0.5rem 0; font-weight: 500; }
+    .event-description { margin-top: 1rem; font-size: 1rem; color: #333; }
+    .event-footer { text-align: right; margin-top: 2rem; font-size: 0.85rem; }
+</style>
+HEAD;
+
+            MainLayout::render($content, $head, $event['name']);
+        }
     }
+
 
 }

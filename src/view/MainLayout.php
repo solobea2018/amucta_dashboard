@@ -33,6 +33,7 @@ class MainLayout
     <link rel="stylesheet" href="/css/toastify.css">
     <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
     <script src="/js/others.js" type="text/javascript"></script>
     <script src="/js/sweetalert2.js" type="text/javascript"></script>
     <script src="/js/toastify.js" type="text/javascript"></script>
@@ -106,11 +107,11 @@ $menu_admin
     </div>
 
     <div class="social-section">
-      <a href="https://www.tiktok.com/@amucta_official"><img src="https://amucta.ac.tz/assets/images/tiktok-removebg-preview.png" alt="Tiktok"></a>
-      <a href="https://www.instagram.com/amucta_official/"><img src="https://amucta.ac.tz/assets/images/insta.png" alt="Instagram"></a>
-      <a href="https://www.threads.com/@amucta_official?hl=en"><img src="https://amucta.ac.tz/assets/images/thread-removebg-preview.png" alt="Threads"></a>
-      <a href="https://www.facebook.com/amuctaOfficial"><img src="https://amucta.ac.tz/assets/images/facebook.png" alt="Facebook"></a>
-      <a href="https://www.youtube.com/@amucta_official"><img src="https://amucta.ac.tz/assets/images/youtub-removebg-preview.png" alt="YouTube"></a>
+      <a href="https://www.tiktok.com/@amucta_official" data-aos="fade-up" data-aos-duration="500"><img src="https://amucta.ac.tz/assets/images/tiktok-removebg-preview.png" alt="Tiktok"></a>
+      <a href="https://www.instagram.com/amucta_official/" data-aos="fade-up" data-aos-duration="1000"><img src="https://amucta.ac.tz/assets/images/insta.png" alt="Instagram"></a>
+      <a href="https://www.threads.com/@amucta_official?hl=en" data-aos="fade-up" data-aos-duration="1500"><img src="https://amucta.ac.tz/assets/images/thread-removebg-preview.png" alt="Threads"></a>
+      <a href="https://www.facebook.com/amuctaOfficial" data-aos="fade-up" data-aos-duration="2000"><img src="https://amucta.ac.tz/assets/images/facebook.png" alt="Facebook"></a>
+      <a href="https://www.youtube.com/@amucta_official" data-aos="fade-up" data-aos-duration="2500"><img src="https://amucta.ac.tz/assets/images/youtub-removebg-preview.png" alt="YouTube"></a>
     </div>
 
     <hr class="footer-hr">
@@ -142,6 +143,13 @@ $menu_admin
     <i class="bi bi-chat-dots-fill"></i>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,   // animation duration in ms
+    once: true,       // whether animation should happen only once
+  });
+</script>
 
 </body>
 </html>

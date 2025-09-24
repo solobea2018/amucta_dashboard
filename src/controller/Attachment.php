@@ -139,6 +139,35 @@ HTML;
 
     public function all()
     {
-        MainLayout::render("");
+        $attachments=(new Database())->select("select id, name, file_url, type, created_at from attachments order by created_at desc");
+        $attachments_list="";
+        if (!empty($attachments)){
+            foreach ($attachments as $prog) {
+                $name=$prog['name'];
+                $date = date("F d, Y", strtotime($prog['created_at']));
+                $attachments_list.=<<<atta
+            <li class="attachment-item">
+                <h3 class="attachment-title">{$name}</h3>
+                <div class="attachment-meta">
+                    <a href="{$prog['file_url']}" class="download-link">📁 Download</a>
+                    <span>|</span>
+                    <span class="date">📅 {$date}</span>
+                </div>
+            </li>
+atta;
+            }
+        }
+        $content=<<<pl
+<div class="">
+        <h2 class="section-title">Download Center</h2>
+        <ul class="attachments-list">
+            $attachments_list
+        </ul>       
+    </div>
+pl;
+
+        $head="<link rel='stylesheet' href='/css/home.css'>";
+        MainLayout::render($content,$head,"Attachments");
     }
+
 }
