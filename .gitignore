@@ -1,6 +1,7 @@
 vendor/
 .idea/
 attachments/
+src/database/Database.php
 images/
 files/
 assets/
