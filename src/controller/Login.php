@@ -6,7 +6,6 @@ namespace Solobea\Dashboard\controller;
 
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
-use Solobea\Dashboard\utils\Helper;
 use Solobea\Dashboard\view\MainLayout;
 
 class Login
@@ -35,14 +34,14 @@ class Login
             <label>
                 <input type="checkbox" name="remember"> Remember Me
             </label>
-            <a href="/auth/forgot-password" style="font-size:0.9em;">Forgot Password?</a>
+            <a href="/account/forget_password" style="font-size:0.9em;">Forgot Password?</a>
         </div>
 
         <div class="form-group" style="text-align:center;">
             <button type="submit" class="btn btn-primary" style="width:100%;">Login</button>
         </div>
 
-        <p style="text-align:center; margin-top:15px; display: none">
+        <p style="text-align:center; margin-top:15px;">
             Don't have an account? <a href="/register">Register</a>
         </p>
     </form>
@@ -73,8 +72,8 @@ HTML;
             if (password_verify($passwordInput, $hashedPassword)) {
                 // Password correct, login user
                 Authentication::login($user);
-                http_response_code(200);
-                echo "Login successful";
+                http_response_code(300);
+                echo "/";
             } else {
                 // Wrong password
                 http_response_code(401);
@@ -85,6 +84,4 @@ HTML;
             echo "Username and password are required";
         }
     }
-
-
 }
