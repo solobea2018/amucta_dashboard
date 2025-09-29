@@ -93,10 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, 5000); // change every 5s
             }
         })
+
         .catch(err => console.error("Failed to load images:", err));
 
     function setBackground(url) {
-        slider.style.backgroundImage = `url('${url}')`;
+        if (slider){
+            slider.style.backgroundImage = `url('${url}')`;
+        }
     }
 });
 

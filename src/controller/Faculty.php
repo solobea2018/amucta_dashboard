@@ -18,10 +18,10 @@ class Faculty
 
         if (sizeof($faculties) > 0) {
             foreach ($faculties as $faculty) {
-                $des=html_entity_decode($faculty['description'],ENT_QUOTES,"UTF-8");
+                $des=htmlspecialchars_decode($faculty['description']);
                 $tr .= "<tr>
 <td>{$faculty['name']}</td>
-<td><textarea name='description'>{$des}</textarea></td>
+<td>{$des}</td>
 <td>
 <button class='btn btn-complete' onclick='editFaculty({$faculty['id']})'>Update <i class='bi bi-pencil'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"faculty\",{$faculty['id']})'>Delete <i class='bi bi-trash'></i></button>
@@ -51,68 +51,6 @@ class Faculty
 HTML;
 
         MainLayout::render($content);
-    }
-    public function add1()
-    {
-        $auth = new Authentication();
-
-        // Ensure user is logged in and is admin
-        if (!$auth->is_admin()) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Not authorized to perform this action.'
-            ]);
-            return;
-        }
-
-        // Sanitize and validate inputs
-        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $description = isset($_POST['description']) ? trim($_POST['description']) : '';
-        $user_id = $auth->get_authenticated_user()->getId();
-
-        if ($name === '') {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Faculty name is required.'
-            ]);
-            return;
-        }
-
-        // Clean XSS
-        $name = htmlspecialchars($name);
-        $description=htmlspecialchars($description);
-
-        $db = new Database();
-
-        // Check duplicate faculty name
-        $exists = $db->fetch("SELECT id FROM faculty WHERE name = ?", [$name]);
-        if ($exists) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Faculty with this name already exists.'
-            ]);
-            return;
-        }
-
-        // Insert into database
-        $inserted = $db->insert("faculty", [
-            'name' => $name,
-            'description' => $description,
-            'user_id' => $user_id,
-            'created_at' => date("Y-m-d H:i:s")
-        ]);
-
-        if ($inserted) {
-            echo json_encode([
-                'status' => 'success',
-                'message' => 'Faculty added successfully!'
-            ]);
-        } else {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Failed to add faculty. Please try again.'
-            ]);
-        }
     }
     public function add()
     {

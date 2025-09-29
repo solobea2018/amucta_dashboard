@@ -4,8 +4,10 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
+use Solobea\Helpers\data\Sanitizer;
 
 class Contact
 {
@@ -112,15 +114,18 @@ HTML;
         MainLayout::render($content, $head, $title);
     }
 
-
     public function send()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Sanitize input
             $full_name = htmlspecialchars(trim($_POST['name']));
             $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
-            $subject = htmlspecialchars(trim($_POST['subject']));
-            $message = htmlspecialchars(trim($_POST['message']));
+            $subject  = Sanitizer::sanitize(Sanitizer::clean_for_json($_POST['subject']));
+            $message = Sanitizer::sanitize(Sanitizer::clean_for_json($_POST['message']));
+            if (Sanitizer::is_valid_message($message)){
+                echo "Invalid message!";
+                exit();
+            }
 
             if (!$email) {
                 http_response_code(400);
@@ -147,5 +152,121 @@ HTML;
             exit;
         }
     }
+
+    public function list()
+    {
+        $auth = new Authentication();
+        if (!$auth->is_admin()) {
+            exit();
+        }
+
+        $query = "SELECT id, full_name, email, message, read_status, create_date, title 
+              FROM contacts ORDER BY create_date DESC";
+        $contacts = (new Database())->select($query);
+
+        $items = "";
+
+        if (sizeof($contacts) > 0) {
+            foreach ($contacts as $contact) {
+                $readStatus = $contact['read_status'] ? "Read" : "Unread";
+
+                $items .= <<<HTML
+<div class="contact-card" style="border:1px solid #ddd; border-radius:8px; padding:16px; margin-bottom:15px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+    <h3 style="margin:0; font-size:18px; color:#1976d2;">{$contact['title']}</h3>
+    <p style="margin:6px 0; font-size:15px; line-height:1.5; color:#333;">{$contact['message']}</p>
+    
+    <p style="margin:4px 0; font-size:13px; color:#555;">
+        <strong>Name:</strong> {$contact['full_name']} <br>
+        <strong>Email:</strong> <a href="mailto:{$contact['email']}" style="color:#1976d2; text-decoration:none;">{$contact['email']}</a>
+    </p>
+    
+    <p style="margin:4px 0; font-size:13px; color:#999;">
+        <strong>Status:</strong> {$readStatus}
+    </p>
+
+    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+        <small style="color:#777;">{$contact['create_date']}</small>
+        <div>
+            <button class="btn btn-primary" onclick="replyContact('{$contact['email']}', '{$contact['full_name']}')">Reply</button>
+            <button class="btn btn-danger" onclick="deleteResource('contacts', {$contact['id']})">Delete</button>
+        </div>
+    </div>
+</div>
+HTML;
+            }
+        } else {
+            $items = "<p style='color:#777; font-style:italic;'>No messages found.</p>";
+        }
+
+        $content = <<<HTML
+<div class="flex flex-col" style="max-width:800px; margin:0 auto;">
+    <h2 style="margin-bottom:20px; color:#333;">Contact Messages</h2>
+    $items
+</div>
+
+<script>
+function replyContact(email, name) {
+    window.location.href = "mailto:" + email + "?subject=Reply to your message&body=Hello " + name + ",";
+}
+</script>
+HTML;
+
+        MainLayout::render($content);
+    }
+
+    public function ai()
+    {
+        $auth = new Authentication();
+        if (!$auth->is_admin()) {
+            exit();
+        }
+
+        $query = "SELECT id, name, message, reply, created_at 
+              FROM ai_chats ORDER BY created_at DESC";
+        $chats = (new Database())->select($query);
+
+        $items = "";
+
+        if (sizeof($chats) > 0) {
+            foreach ($chats as $chat) {
+                $items .= <<<HTML
+<div class="chat-card" style="border:1px solid #ddd; border-radius:8px; padding:16px; margin-bottom:15px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+    <h4 style="margin:0; font-size:16px; color:#1976d2;">{$chat['name']}</h4>
+    
+    <p style="margin:6px 0; font-size:15px; color:#333;">
+        <strong>User:</strong> {$chat['message']}
+    </p>
+HTML;
+
+                if (!empty($chat['reply'])) {
+                    $items .= <<<HTML
+    <p style="margin:6px 0; font-size:15px; color:#555;">
+        <strong>AI:</strong> {$chat['reply']}
+    </p>
+HTML;
+                }
+
+                $items .= <<<HTML
+    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+        <small style="color:#777;">{$chat['created_at']}</small>
+        <button class="btn btn-danger" onclick="deleteResource('ai_chats', {$chat['id']})">Delete</button>
+    </div>
+</div>
+HTML;
+            }
+        } else {
+            $items = "<p style='color:#777; font-style:italic;'>No chats found.</p>";
+        }
+
+        $content = <<<HTML
+<div class="flex flex-col" style="max-width:800px; margin:0 auto;">
+    <h2 style="margin-bottom:20px; color:#333;">AI Chat History</h2>
+    $items
+</div>
+HTML;
+
+        MainLayout::render($content);
+    }
+
 
 }

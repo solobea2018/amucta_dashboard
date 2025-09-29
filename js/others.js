@@ -1700,12 +1700,12 @@ function editProgram(id) {
     </div>
 
     <div class="form-group">
-        <label>Description</label>
+        <label>Description (text)</label>
         <textarea name="description" class="form-control">${program.description}</textarea>
     </div>
 
     <div class="form-group">
-        <label>Content</label>
+        <label>Content (HTML)</label>
         <textarea name="content" class="form-control">${program.content}</textarea>
     </div>
 
@@ -1716,7 +1716,7 @@ function editProgram(id) {
 
     <div class="form-group">
         <label>Requirements (HTML)</label>
-        <textarea name="requirements" class="form-control">${program.requirements}</textarea>
+        <textarea name="requirements" class="form-control">${program.entry_requirements}</textarea>
     </div>
 
     <div class="form-group">

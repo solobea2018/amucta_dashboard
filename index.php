@@ -1,7 +1,7 @@
 <?php
-ini_set('display_errors', 1);
+/*ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL);*/
 
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\controller\Home;
@@ -18,6 +18,7 @@ session_start();
 require_once "vendor/autoload.php";
 
 $path = $_SERVER['PATH_INFO']??"";
+save_visitor(getIpAddress());
 $path_array = explode("/", trim($path, "/")); // Trim extra slashes
 if (!empty($path_array) && $path_array[0]!="") {
     $raw = strtolower($path_array[0]);               // "employee-role"
@@ -55,20 +56,22 @@ if (!empty($path_array) && $path_array[0]!="") {
     $home->index();
 }
 function getIPAddress() {
-    //whether ip is from the share internet
-    if(!empty($_SERVER['HTTP_CLIENT_IP'])) {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
         $ip = $_SERVER['HTTP_CLIENT_IP'];
-    }
-    //whether ip is from the proxy
-    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
         $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    }
-//whether ip is from the remote address
-    else{
+    } else {
         $ip = $_SERVER['REMOTE_ADDR'];
     }
+
+    // Normalize IPv6-mapped IPv4 (e.g., ::ffff:41.59.219.11 → 41.59.219.11)
+    if (strpos($ip, '::ffff:') === 0) {
+        $ip = substr($ip, 7);
+    }
+
     return $ip;
 }
+
 function save_visitor($ip){
     if (!Helper::is_human_ip($ip)){
         return;
@@ -108,7 +111,7 @@ function save_visitor($ip){
 
     $response_array=json_decode($response,true);
     if ($response_array && isset($response_array['message'])){
-        ErrorReporter::report("Saving visitor error ","IP API Error retrieving the data",$_SERVER['REQUEST_URI']);
+        ErrorReporter::report("response",$response." ip: ".$ip);
     }
     if(!(isset($response_array['type']))){
         //ErrorReporter::report("Saving visitor error ","IP type Unknown",$_SERVER['REQUEST_URI']);
@@ -121,11 +124,7 @@ function save_visitor($ip){
         $region_name=$response_array['region_name'];
         $city_name=$response_array['city'];
         $isp=$response_array['connection']['isp'];
-        $auth=new Authentication();
-        if ($auth->is_authenticated()){
-            $is_registered=true;
-        }
-        else $is_registered=false;
+        $is_registered=false;
         $visitor= new Visitor();
         $visitor->setCity($city_name);
         $visitor->setRegion($region_name);

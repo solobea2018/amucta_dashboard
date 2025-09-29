@@ -7,6 +7,8 @@ namespace Solobea\Dashboard\controller;
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
+use Solobea\Helpers\data\Sanitizer;
+use Solobea\Helpers\visitor\VisitorData;
 
 class Program
 {
@@ -205,12 +207,11 @@ content;
     }
     public function data($params)
     {
+        header('Content-Type: application/json');
         if (isset($params) && !empty($params)) {
             try {
                 $id = intval($params[0]);
                 $db = new Database();
-
-                // Fetch employee by ID
                 $employee = $db->select("SELECT * from program where id= {$id} LIMIT 1");
                 $lvs = $db->select("SELECT id,name FROM level");
                 $deps = $db->select("SELECT id,name FROM department");
@@ -218,7 +219,11 @@ content;
 
                 if ($employee && count($employee) > 0) {
                     // Return JSON response
-                    header('Content-Type: application/json');
+                    $employee[0]['description'] = Sanitizer::clean_for_json($employee[0]['description']);
+                    $employee[0]['content'] = Sanitizer::clean_for_json($employee[0]['content']);
+                    $employee[0]['fees'] = Sanitizer::clean_for_json($employee[0]['fees']);
+                    $employee[0]['entry_requirements'] = Sanitizer::clean_for_json($employee[0]['entry_requirements']);
+
                     echo json_encode([
                         "status" => "success",
                         "data" => $employee[0],
@@ -230,7 +235,7 @@ content;
                     // Employee not found
                     echo json_encode([
                         "status" => "error",
-                        "message" => "Employee not found"
+                        "message" => "Programs not found"
                     ]);
                 }
             } catch (\Exception $exception) {

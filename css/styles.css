@@ -2,6 +2,7 @@
 :root{--amucta-green: #ebfc02;--amucta-blue: rgba(5, 182, 252, 0.99);--amucta-dark: #111827;}
 a{text-decoration: none;color: inherit;}
 h1,h2,h3,h4{color:var(--amucta-blue);}
+li{list-style-position: inside}
 p.info {
     background-color: #e7f3fe;   /* Light blue */
     color: #084298;              /* Dark blue text */

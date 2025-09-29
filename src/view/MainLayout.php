@@ -50,7 +50,7 @@ class MainLayout
     <a href="https://amucta.ac.tz:2096">Emails</a>
     <a href="/staff">Staff Portal</a>
     <a href="https://oas.amucta.ac.tz">Online Application</a>
-    <a href="https://oas.amucta.ac.tz">SIMS</a>
+    <a href="https://sims.amucta.ac.tz">SIMS</a>
     <a href="https://library.amucta.ac.tz">Library</a>
     <a href="/alumni">Alumni</a>
   </div>
@@ -177,6 +177,9 @@ HTML;
     <a href="/users/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Users</a>
     <a href="/gallery/list" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Gallery</a>
     <a href="/visitors/dashboard" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Visitors</a>
+    <a href="/contact/list" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Contacts</a>
+    <a href="/contact/ai" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>AI chats</a>
+    <a href="/errors/list" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Logs</a>
     <a href="/login" class="btn btn-primary"><i class="bi bi-arrow-bar-left mx-2"></i>Login</a>
     <a href="/logout" class="btn btn-primary"><i class="bi bi-arrow-bar-left mx-2"></i>Logout</a>
 </div> 
@@ -196,7 +199,7 @@ menu;
                 $stf.="<li><a href=\"/staff/amucta/{$name}/$id\">{$role['name']}</a></li>";
             }
         }
-        $levels=$db->select("SELECT id,name FROM level order by name");
+        $levels=$db->select("SELECT id,name FROM level");
         $lvs="";
         if (sizeof($levels)>0){
             foreach ($levels as $level) {

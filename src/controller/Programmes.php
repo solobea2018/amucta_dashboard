@@ -22,9 +22,9 @@ class Programmes
                          f.name AS faculty_name, 
                          l.name AS level_name 
                   FROM program p 
-                  JOIN department d ON d.id = p.department_id 
-                  JOIN faculty f ON f.id = d.faculty_id 
-                  JOIN level l ON l.id = p.level_id 
+                  left JOIN department d ON d.id = p.department_id 
+                  left JOIN faculty f ON f.id = d.faculty_id 
+                  left JOIN level l ON l.id = p.level_id 
                   WHERE p.id = {$program_id} 
                   ORDER BY level_id";
             $program = (new Database())->selectOne($query);
@@ -49,17 +49,14 @@ class Programmes
 <p class="program-detail-meta"><strong>Capacity:</strong> {$program['capacity']}</p>
 
 <section class="program-detail-section">
-    <h2>Description</h2>
-    <div class="program-detail-text">{$program['description']}</div>
-</section>
-
-<section class="program-detail-section">  
+<h2>Description</h2>  
     <div class="program-detail-text">{$content1}</div>
 </section>
 
 <section class="program-detail-section">
     <h2>Fees</h2>
     <div class="program-detail-text">{$fees}</div>
+    <p class="info">Meals and Accommodation allowances are arranged personally between the student and his/her sponsor as per companies/government scales</p>
 </section>
 
 <section class="program-detail-section">
@@ -136,7 +133,6 @@ HTML;
 
         MainLayout::render($content, $head, $title);
     }
-
 
     public function level($params)
     {

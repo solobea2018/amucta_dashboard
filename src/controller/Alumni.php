@@ -117,7 +117,7 @@ HTML;
                 <p><strong>Graduation Year:</strong> {$a['graduation_year']}</p>
                 <p><strong>Course:</strong> {$a['course']}</p>
                 <p><strong>Employment:</strong> {$a['employment_status']}</p>
-                <div class='alumni-actions'>
+                <div class='alumni-actions hidden'>
                     <button class='btn btn-primary' onclick='editAlumni({$a['id']})'>
                         Edit <i class='bi bi-pencil'></i>
                     </button>                   
