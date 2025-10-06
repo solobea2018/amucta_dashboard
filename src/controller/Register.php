@@ -15,6 +15,10 @@ class Register
 {
     public function index()
     {
+        MainLayout::render("");
+    }
+    public function index1()
+    {
         Authentication::logout();
         $content = <<<HTML
 <div class="flex justify-center items-center" style="height:100vh;">

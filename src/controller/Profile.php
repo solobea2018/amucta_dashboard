@@ -14,7 +14,7 @@ class Profile
     {
         
     }
-    public function profile($params)
+    public function profile1($params)
     {
         if (!isset($params[0]) || empty($params[0])) {
             echo Resource::getErrorPage("Invalid Request:");
@@ -126,7 +126,8 @@ HTML;
 <meta name='og:'
 mt;
 
-        $head=$this->profStyle();
+        $head="";
+        $head.=$this->profStyle();
         MainLayout::render($content,$head,$emp['name']);
     }
     private function profStyle(): string
@@ -216,4 +217,157 @@ mt;
 </style>
 style;
     }
+    public function profile($params)
+    {
+        if (!isset($params[0]) || empty($params[0])) {
+            echo Resource::getErrorPage("Invalid Request:");
+            return;
+        }
+
+        $employee_id = intval($params[0]);
+        $db = new Database();
+
+        // Fetch employee info
+        $employee = $db->select_prepared("SELECT e.*, d.name as department_name
+                             FROM employee e
+                             LEFT JOIN department d ON e.department_id = d.id
+                             WHERE e.id = ? LIMIT 1", [$employee_id],"i");
+
+        if (!$employee || count($employee) === 0) {
+            echo Resource::getErrorPage("Employee not found");
+            return;
+        }
+
+        $emp = $employee[0];
+
+        // Fetch employee roles
+        $roles = $db->select_prepared("SELECT r.role_name, r.start_date, r.end_date, d.name as department_name
+                          FROM employee_role r
+                          LEFT JOIN department d ON r.department_id = d.id
+                          WHERE r.employee_id = ? AND r.active = 1
+                          ORDER BY r.start_date DESC", [$employee_id],"i");
+
+        // Fetch employee researches, publications, projects
+        $researches = $db->select_prepared("SELECT title, type, description, start_date, end_date, link, file_path, active
+                               FROM employee_research
+                               WHERE employee_id = ?
+                               ORDER BY start_date DESC", [$employee_id],"i");
+
+        // Build Roles Table
+        $rolesHtml = "";
+        if ($roles) {
+            foreach ($roles as $role) {
+                $rolesHtml .= "<tr>
+                <td>{$role['role_name']}</td>
+                <td>{$role['department_name']}</td>
+                <td>{$role['start_date']}</td>
+                <td>{$role['end_date']}</td>
+            </tr>";
+            }
+        } else {
+            $rolesHtml = "<tr><td colspan='4'>No active roles found</td></tr>";
+        }
+
+        // Build Research Table
+        $researchHtml = "";
+        if ($researches) {
+            foreach ($researches as $r) {
+                $researchHtml .= "<tr>
+                <td>{$r['title']}</td>
+                <td>{$r['type']}</td>
+                <td>{$r['description']}</td>
+                <td>{$r['start_date']}</td>
+                <td>{$r['end_date']}</td>
+                <td>".($r['link'] ? "<a href='{$r['link']}' target='_blank'>Link</a>" : "-")."</td>
+                <td>".($r['file_path'] ? "<a href='{$r['file_path']}' target='_blank'>File</a>" : "-")."</td>
+                <td>".($r['active'] ? "Yes" : "No")."</td>
+            </tr>";
+            }
+        } else {
+            $researchHtml = "<tr><td colspan='8'>No research records found</td></tr>";
+        }
+
+        $profile_img = ($emp['profile'] ? "<img loading='lazy' src='{$emp['profile']}' width='120' style='border-radius:8px;'>" : "No Image");
+
+        // --- SEO & SOCIAL META TAGS ---
+        $url = "https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $description = htmlspecialchars(strip_tags($emp['qualification'] . " - " . $emp['department_name']));
+        $title = htmlspecialchars($emp['name'] . " | " . $emp['title']);
+        $image = !empty($emp['profile']) ? "https://" . $_SERVER['HTTP_HOST']."/".$emp['profile'] : "https://" . $_SERVER['HTTP_HOST'] . "/assets/default-profile.png";
+
+        $meta_tags = <<<mt
+<!-- SEO Meta Tags -->
+<meta name="title" content="{$title}">
+<meta name="description" content="{$description}">
+<meta name="keywords" content="{$emp['name']}, {$emp['title']}, {$emp['department_name']}, staff profile, research, education, Tanzania">
+<meta name="robots" content="index, follow">
+<meta name="author" content="{$emp['name']}">
+
+<!-- Open Graph / Facebook / WhatsApp -->
+<meta property="og:type" content="profile">
+<meta property="og:title" content="{$title}">
+<meta property="og:description" content="{$description}">
+<meta property="og:image" content="{$image}">
+<meta property="og:url" content="{$url}">
+<meta property="og:site_name" content="Your Institution Name">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{$title}">
+<meta name="twitter:description" content="{$description}">
+<meta name="twitter:image" content="{$image}">
+mt;
+
+        // --- PAGE CONTENT ---
+        $content = <<<HTML
+<div class="profile-container">
+    <h2>{$emp['name']}</h2>
+    <div class="w-full flex flex-row items-center justify-center">$profile_img</div>
+    <p><strong>Title:</strong> {$emp['title']}</p>
+    <p><strong>Email:</strong> {$emp['email']}</p>
+    <p><strong>Phone:</strong> {$emp['phone']}</p>
+    <p><strong>Qualification:</strong> {$emp['qualification']}</p>
+    <p><strong>Entry Year:</strong> {$emp['entry_year']}</p>
+    <p><strong>Department:</strong> {$emp['department_name']}</p>   
+
+    <h3>Roles</h3>
+    <table class="solobea-table">
+        <thead>
+            <tr>
+                <th>Role Name</th>
+                <th>Department</th>             
+                <th>Start Date</th>
+                <th>End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            $rolesHtml
+        </tbody>
+    </table>
+
+    <h3>Researches / Publications / Projects</h3>
+    <table class="solobea-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Link</th>
+                <th>File</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            $researchHtml
+        </tbody>
+    </table>
+</div>
+HTML;
+
+        $head = $meta_tags . $this->profStyle();
+        MainLayout::render($content, $head, $emp['name']);
+    }
+
 }

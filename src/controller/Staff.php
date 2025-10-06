@@ -132,8 +132,39 @@ HTML;
                 $content .= "</div>";
             }
 
+            $title = ucfirst(str_replace("-", " ", $category));
+            $pageUrl = "https://www.amucta.ac.tz/staff/{$category}/{$id}";
+            $description = "Meet AMUCTA staff members in the {$title} category. View profiles, roles, and professional information.";
+            $image = "https://amucta.ac.tz/logo.png";
             // CSS styling
             $head = "
+<meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <meta name='robots' content='index, follow'>
+        <meta name='author' content='Archbishop Mihayo University College of Tabora (AMUCTA)'>
+        <meta name='description' content='{$description}'>
+        <meta name='keywords' content='AMUCTA, staff, university, education, Tanzania, {$title}, Catholic university, higher learning'>
+
+        <!-- Canonical URL -->
+        <link rel='canonical' href='{$pageUrl}'>
+
+        <!-- Open Graph / Facebook / LinkedIn -->
+        <meta property='og:title' content='{$title} | AMUCTA'>
+        <meta property='og:description' content='{$description}'>
+        <meta property='og:type' content='website'>
+        <meta property='og:url' content='{$pageUrl}'>
+        <meta property='og:image' content='{$image}'>
+        <meta property='og:site_name' content='AMUCTA'>
+
+        <!-- Twitter Card -->
+        <meta name='twitter:card' content='summary_large_image'>
+        <meta name='twitter:title' content='{$title} | AMUCTA'>
+        <meta name='twitter:description' content='{$description}'>
+        <meta name='twitter:image' content='{$image}'>
+        <meta name='twitter:site' content='@amucta'>
+
+        <!-- Favicon -->
+        <link rel='icon' type='image/png' href='/assets/images/favicon.png'>
         <style>
         .employee-grid {
             display: grid;
@@ -152,7 +183,7 @@ HTML;
             transform: translateY(-5px);
         }
         .employee-card .profile-pic {
-            height: 180px;
+            height: 250px;
             background: var(--amucta-blue);
             display: flex;
             justify-content: center;
@@ -162,13 +193,14 @@ HTML;
             width: 100%;
             height: 100%;
             object-fit: cover;
+          
         }
         .employee-info {
-            padding: 15px;
+            padding: 5px;
             text-align: center;
         }
         .employee-info h3 {
-            margin: 10px 0 5px;
+            margin: 5px 0 5px;
             color: var(--amucta-dark);
         }
         .employee-info .title {
@@ -212,11 +244,7 @@ HTML;
         }
         </style>
         ";
-
-            $title = ucfirst(str_replace("-"," ",$category));
             MainLayout::render($content, $head, $title);
         }
     }
-
-
 }
