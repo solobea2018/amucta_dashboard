@@ -73,6 +73,9 @@ function getIPAddress() {
 }
 
 function save_visitor($ip){
+    if (isset($_GET['save_visitor'])){
+        return;
+    }
     if (!Helper::is_human_ip($ip)){
         return;
     }

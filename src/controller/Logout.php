@@ -11,5 +11,6 @@ class Logout
     public function index()
     {
         Authentication::logout();
+        header("Location: /");
     }
 }

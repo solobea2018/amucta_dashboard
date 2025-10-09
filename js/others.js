@@ -45,7 +45,7 @@ function handleKeyDown(event){
     }
 }
 
-function sendFormSweet(form, event) {
+function sendFormSweet1(form, event) {
     var popup = document.getElementById("overlay");
     if (!(popup===null)) {
         popup.remove();
@@ -1072,7 +1072,123 @@ function filterAlumni() {
         card.style.display = (name.includes(input) || course.includes(input)) ? "block" : "none";
     });
 }
+function sendFormSweet(form, event) {
+    var popup = document.getElementById("overlay");
+    if (!(popup===null)) {
+        popup.remove();
+    }
+    event.preventDefault();
 
+    // Show loading alert
+    Swal.fire({
+        title: "Processing...",
+        text: "Please wait",
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    var action = form.action;
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", action);
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            Swal.close(); // Close loading alert
+
+            if (xhr.status === 200) {
+                let resText = xhr.responseText.trim();
+                let isJson = false;
+                let data = null;
+
+                try {
+                    data = JSON.parse(resText);
+                    isJson = true;
+                } catch (e) {
+                    isJson = false;
+                }
+
+                if (isJson && data.status === "success" && data.message) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success",
+                        text: data.message,
+                        allowOutsideClick: false
+                    });
+                    form.reset();
+                } else if (isJson && data.status === "error" && data.message) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message,
+                    });
+                } else {
+                    // Fallback if response isn't in expected JSON structure
+                    Swal.fire({
+                        icon: "success",
+                        allowOutsideClick: false,
+                        html: resText
+                    });
+                    form.reset();
+                }
+            }
+            else if (xhr.status === 300 || xhr.status === 301) {
+                window.location.href = xhr.responseText;
+            }
+            else {
+                let msg = xhr.responseText;
+                try {
+                    let err = JSON.parse(msg);
+                    msg = err.message || msg;
+                } catch (e) {}
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    html: msg
+                });
+            }
+        }
+    };
+
+    xhr.onerror = function () {
+        Swal.close();
+        Swal.fire({
+            icon: "error",
+            title: "Network Error",
+            text: "Something went wrong. Please try again."
+        });
+    };
+
+    xhr.send(new FormData(form));
+}
+function toggleActive(table, id) {
+    fetch('/api.php?active=1', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            table: table,
+            id: id,
+        })
+    })
+        .then(response => response.json())
+        .then(dataResponse => {
+            if (dataResponse.status === "success") {
+                Swal.fire("Updated!", dataResponse.message, "success").then(() => {
+                    // Refresh the page
+                    location.reload();
+                });
+            } else {
+                Swal.fire("Error!", dataResponse.message || "Failed to update resource", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Update error:", error);
+            Swal.fire("Error!", "Something went wrong", "error");
+        });
+}
 function editAlumni(id) {
     fetch(`/alumni/get/${id}`)
         .then(r => r.json())

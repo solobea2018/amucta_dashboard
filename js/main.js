@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentIndex = 0;
 
     // Fetch image list from server (JSON format)
-    fetch("/gallery/background") // example endpoint
+    fetch("/gallery/background?save_visitor=0") // example endpoint
         .then(res => res.json())
         .then(data => {
             images = data.images;
@@ -141,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         chatBody.scrollTop = chatBody.scrollHeight;
 
         // Send to backend
-        fetch("/bot", {
+        fetch("/bot?save_visitor=0", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
