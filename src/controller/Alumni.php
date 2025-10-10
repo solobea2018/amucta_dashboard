@@ -18,12 +18,12 @@ class Alumni
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AMUCTA Alumni</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/styles_v1.css">
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/css/sweetalert2.css">
-    <script src="/js/others.js"></script>
+    <script src="/js/others_v1.js"></script>
     <script src="/js/sweetalert2.js"></script>
-    <script src="/js/main.js"></script>
+    <script src="/js/main_v1.js"></script>
     <link rel="icon" href="/logo.png">
     <style>
         body { font-family: Arial, sans-serif; margin:0; background:#f5f6f7; }

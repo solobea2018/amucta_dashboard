@@ -167,12 +167,7 @@ HTML;
 
     public function background()
     {
-        $images=[
-            "/images/gallery/slides_68b75ed49e2e4.webp",
-            "/images/gallery/slides_68b75f064937e.webp",
-            "/images/gallery/slides_68b7600d7a24a.webp"
-        ];
-        $images=(new Database())->select("select url from images where category='slides' order by  rand() limit 5");
+        $images=(new Database())->select("select url from images where category='slides' order by  rand() limit 4");
         $slides=[];
         foreach ($images as $image) {
             $slides[]=$image['url'];

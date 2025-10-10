@@ -21,24 +21,24 @@ class MainLayout
         $menu_admin = $auth->is_admin() ? MainLayout::menu() : "";
         $csrf_token=self::generateCsrfToken();
 
-        $layout=<<<HTML
+        $layout= <<<HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/styles_v1.css">
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/css/sweetalert2.css">
     <link rel="stylesheet" href="/css/toastify.css">
     <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
-    <script src="/js/others.js" type="text/javascript"></script>
+    <script src="/js/others_v1.js" type="text/javascript"></script>
     <script src="/js/sweetalert2.js" type="text/javascript"></script>
     <script src="/js/toastify.js" type="text/javascript"></script>
     <title>$title</title>
-    <script type="text/javascript" src="/js/main.js" defer></script>
+    <script type="text/javascript" src="/js/main_v1.js" defer></script>
   <link rel="icon" href="$org_logo">
   $header
 </head>
@@ -135,7 +135,7 @@ $menu_admin
     <div class="chat-footer">
       <input type="hidden" id="csrf_token" value="$csrf_token">
       <input type="text" id="chat-input" placeholder="Type your message..." />
-      <button id="chat-send-btn">Send</button>
+      <button id="chat-send-btn" class="btn btn-amucta">Send</button>
     </div>
   </div>
 
@@ -162,26 +162,26 @@ HTML;
     {
         return <<<menu
 <div class="flex flex-row flex-wrap">
-    <a href="/" class="btn btn-primary"><i class="bi bi-house mx-2"></i>Home</a>
-    <a href="/faculty/list" class="btn btn-primary"><i class="bi bi-dash-circle mx-2"></i>Faculty</a>
-    <a href="/department/list" class="btn btn-primary"><i class="bi bi-house mx-2"></i>Department/Unit</a>
-    <a href="/Level/list" class="btn btn-primary"><i class="bi bi-graph-up mx-2"></i>Level</a>
-    <a href="/program/list" class="btn btn-primary"><i class="bi bi-book mx-2"></i>Program</a>
-    <a href="/news/list" class="btn btn-primary"><i class="bi bi-newspaper mx-2"></i>News</a>
-    <a href="/events/list" class="btn btn-primary"><i class="bi bi-calendar-event mx-2"></i>Events</a>
-    <a href="/attachment/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Attachments</a>
-    <a href="/home-content/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Homepage Contents</a>
-    <a href="/employee-role/list" class="btn btn-primary"><i class="bi bi-file mx-2"></i>Employee Role</a>
-    <a href="/employee/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Employee</a>
-    <a href="/employee-research/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Employee Research</a>
-    <a href="/users/list" class="btn btn-primary"><i class="bi bi-people mx-2"></i>Users</a>
-    <a href="/gallery/list" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Gallery</a>
-    <a href="/visitors/dashboard" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Visitors</a>
-    <a href="/contact/list" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Contacts</a>
-    <a href="/contact/ai" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>AI chats</a>
-    <a href="/errors/list" class="btn btn-primary"><i class="bi bi-medium mx-2"></i>Logs</a>
-    <a href="/login" class="btn btn-primary"><i class="bi bi-arrow-bar-left mx-2"></i>Login</a>
-    <a href="/logout" class="btn btn-primary"><i class="bi bi-arrow-bar-left mx-2"></i>Logout</a>
+    <a href="/" class="btn btn-amucta"><i class="bi bi-house mx-2"></i>Home</a>
+    <a href="/faculty/list" class="btn btn-amucta"><i class="bi bi-dash-circle mx-2"></i>Faculty</a>
+    <a href="/department/list" class="btn btn-amucta"><i class="bi bi-house mx-2"></i>Department/Unit</a>
+    <a href="/Level/list" class="btn btn-amucta"><i class="bi bi-graph-up mx-2"></i>Level</a>
+    <a href="/program/list" class="btn btn-amucta"><i class="bi bi-book mx-2"></i>Program</a>
+    <a href="/news/list" class="btn btn-amucta"><i class="bi bi-newspaper mx-2"></i>News</a>
+    <a href="/events/list" class="btn btn-amucta"><i class="bi bi-calendar-event mx-2"></i>Events</a>
+    <a href="/attachment/list" class="btn btn-amucta"><i class="bi bi-file mx-2"></i>Attachments</a>
+    <a href="/home-content/list" class="btn btn-amucta"><i class="bi bi-file mx-2"></i>Homepage Contents</a>
+    <a href="/employee-role/list" class="btn btn-amucta"><i class="bi bi-file mx-2"></i>Employee Role</a>
+    <a href="/employee/list" class="btn btn-amucta"><i class="bi bi-people mx-2"></i>Employee</a>
+    <a href="/employee-research/list" class="btn btn-amucta"><i class="bi bi-people mx-2"></i>Employee Research</a>
+    <a href="/users/list" class="btn btn-amucta"><i class="bi bi-people mx-2"></i>Users</a>
+    <a href="/gallery/list" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Gallery</a>
+    <a href="/visitors/dashboard" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Visitors</a>
+    <a href="/contact/list" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Contacts</a>
+    <a href="/contact/ai" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>AI chats</a>
+    <a href="/errors/list" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Logs</a>
+    <a href="/login" class="btn btn-amucta"><i class="bi bi-arrow-bar-left mx-2"></i>Login</a>
+    <a href="/logout" class="btn btn-amucta"><i class="bi bi-arrow-bar-left mx-2"></i>Logout</a>
 </div> 
 menu;
 
@@ -235,7 +235,7 @@ menu;
     <nav class="navigation-container" id="navigation-container">
       <div class="flex flex-row justify-end w-full"><span class="menu-close" id="menu-close">✖</span></div>
       <ul class="nav-menu" id="navigation">
-        <a href="/" class="btn btn-primary">Home</a>
+        <a href="/" class="btn btn-amucta">Home</a>
         <li class="dropdown-container">
           <a href="/about" class="mobile-main-link">About</a>
           <ul class="submenu">

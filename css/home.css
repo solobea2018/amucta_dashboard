@@ -219,11 +219,11 @@
     display: flex;
     width: 100%;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
     flex-direction: column;
     background: #f7fafc;
 }
-.news-secion-item{ width: 100%}
+.news-secion-item{ width: 100%;padding: 0 16px;}
 @media (min-width: 768px) {
     .news-section{
         align-items: start;

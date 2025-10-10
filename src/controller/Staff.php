@@ -30,11 +30,11 @@ class Staff
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Staff Dashboard - AMUCTA</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/styles_v1.css">
     <link rel="stylesheet" href="/css/animate.css">
     <link rel="stylesheet" href="/css/toastify.css">
     <link rel="icon" href="/logo.png">
-    <script src="/js/main.js"></script>
+    <script src="/js/main_v1.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
         .dashboard-container { max-width: 1200px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
