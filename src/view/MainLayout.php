@@ -241,7 +241,7 @@ menu;
           <ul class="submenu">
             <li><a href="/about/about">About us</a></li>
             <li><a href="/about/history">History</a></li>           
-            <li><a href="/about/message">Vice Chancellor Message</a></li>
+            <li><a href="/about/message">Principal's Message</a></li>
             <li><a href="/about/privacy">Privacy &amp; Policy</a></li>
             <li><a href="/about/terms">Terms &amp; Conditions</a></li>
           </ul>
