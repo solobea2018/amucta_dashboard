@@ -162,7 +162,6 @@ HTML;
     {
         return <<<menu
 <div class="flex flex-row flex-wrap">
-    <a href="/" class="btn btn-amucta"><i class="bi bi-house mx-2"></i>Home</a>
     <a href="/faculty/list" class="btn btn-amucta"><i class="bi bi-dash-circle mx-2"></i>Faculty</a>
     <a href="/department/list" class="btn btn-amucta"><i class="bi bi-house mx-2"></i>Department/Unit</a>
     <a href="/Level/list" class="btn btn-amucta"><i class="bi bi-graph-up mx-2"></i>Level</a>
@@ -180,7 +179,6 @@ HTML;
     <a href="/contact/list" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Contacts</a>
     <a href="/contact/ai" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>AI chats</a>
     <a href="/errors/list" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Logs</a>
-    <a href="/login" class="btn btn-amucta"><i class="bi bi-arrow-bar-left mx-2"></i>Login</a>
     <a href="/logout" class="btn btn-amucta"><i class="bi bi-arrow-bar-left mx-2"></i>Logout</a>
 </div> 
 menu;

@@ -139,4 +139,59 @@ class Authentication
         return htmlspecialchars(trim($token));
     }
 
+    public static function user(): ?User
+    {
+        $auth=new self();
+        if ($auth->is_authenticated()){
+            $username=$_SESSION['username']??null;
+            // Todo remember to sanitize string for username query
+            if ($username){
+                $database= new Database();
+                $user =$database->find_user_by_email($username);
+                if (!($user==null)){
+                    return $user;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static function requireAuthentication()
+    {
+        $auth=new self();
+        if (!$auth->is_authenticated()){
+            http_response_code(403);
+            exit();
+        }
+
+    }
+    public static function requireAdmin()
+    {
+        $auth=new self();
+        if (!$auth->is_admin()){
+            http_response_code(403);
+            exit();
+        }
+    }
+    public static function require_role($role)
+    {
+        $auth=new self();
+        if (!$auth->has_role($role)){
+            http_response_code(403);
+            exit();
+        }
+    }
+
+    public static function has_role($role): bool
+    {
+        $auth=new self();
+        if ($auth->is_authenticated()) {
+            if ($auth->get_authenticated_user()->getRole()===$role){
+                return true;
+            }
+        }
+        return  false;
+    }
+
 }
