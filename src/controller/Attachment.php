@@ -12,6 +12,7 @@ class Attachment
 {
     public function list()
     {
+        Authentication::require_roles(['admin','pro','hro']);
         $query = "SELECT * FROM attachments";
         $attachments = (new Database())->select($query);
         $tr = "";
@@ -57,19 +58,13 @@ HTML;
     }
     public function add()
     {
-        $auth = new Authentication();
-
-        // Only admin can add attachments
-        if (!$auth->is_admin()) {
-            echo json_encode(['status' => 'error', 'message' => 'Not authorized']);
-            return;
-        }
+        Authentication::require_roles(['admin','pro','hro']);
 
         // Sanitize inputs
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
         $type = isset($_POST['type']) ? trim($_POST['type']) : '';
         $related_to = isset($_POST['related_to']) ? trim($_POST['related_to']) : '';
-        $user_id = $auth->get_authenticated_user()->getId();
+        $user_id = Authentication::user()->getId();
 
         if ($name === '') {
             echo json_encode(['status'=>'error','message'=>'Attachment name is required']);

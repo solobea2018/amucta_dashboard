@@ -12,10 +12,7 @@ class Errors
 {
     public function list()
     {
-        $auth = new Authentication();
-        if (!$auth->is_admin()) {
-            exit();
-        }
+        Authentication::require_roles(['admin','developer']);
 
         $query = "SELECT id, title, message, cause_url, create_date FROM errors ORDER BY create_date DESC";
         $errors = (new Database())->select($query);

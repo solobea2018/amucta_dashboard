@@ -14,6 +14,7 @@ class Program
 {
     public function list()
     {
+        Authentication::require_roles(['admin','hod']);
         $query="select * from program order by level_id,department_id";
         $programs=(new Database())->select($query);
         $tr="";
@@ -50,6 +51,7 @@ content;
     }
     public function add()
     {
+        Authentication::require_roles(['admin','hod']);
         // Required fields check
         $required = [
             'name', 'short_name', 'intakes', 'duration',
@@ -119,12 +121,7 @@ content;
     }
     public function update()
     {
-        $auth=new Authentication();
-        if (!$auth->is_authenticated()){
-            http_response_code(403);
-            echo "Not authorized";
-            exit();
-        }
+        Authentication::require_roles(['admin','hod']);
         $db = new Database();
 
         // Required fields
@@ -158,7 +155,7 @@ content;
         $content = htmlspecialchars(trim($_POST['content'] ?? ""));
         $fees = htmlspecialchars(trim($_POST['fees'] ?? ""));
         $requirements = htmlspecialchars(trim($_POST['requirements'] ?? ""));
-        $user_id = $auth->get_authenticated_user()->getId();
+        $user_id = Authentication::user()->getId();
 
 
         // Update program object

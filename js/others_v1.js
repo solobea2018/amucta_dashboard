@@ -716,6 +716,10 @@ function addImage() {
           <option value="profile">Profile</option>
         </select>
       </div>
+      <div class="form-group">
+       <label for="description">Description (Optional)</label>
+       <textarea class="form-control" name="description" id="description"></textarea>
+</div>
 
       <div class="form-group">
         <label for="image">Image file</label>

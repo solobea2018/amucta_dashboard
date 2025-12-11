@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\model\User;
 use Solobea\Dashboard\view\MainLayout;
@@ -12,6 +13,7 @@ class Users
 {
     public function list()
     {
+        Authentication::require_roles(['admin','hro']);
         $query = "SELECT * FROM users";
         $users = (new Database())->select($query);
         $tr = "";
@@ -69,6 +71,7 @@ HTML;
     }
     public function add()
     {
+        Authentication::require_roles(['admin','hro']);
         if (!isset($_POST['username'], $_POST['email'], $_POST['full_name'])) {
             http_response_code(400);
             echo "Required fields missing";

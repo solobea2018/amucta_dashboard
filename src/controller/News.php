@@ -12,6 +12,7 @@ class News
 {
     public function list()
     {
+        Authentication::require_roles(['admin','pro','hro']);
         $query = "SELECT * FROM news";
         $newsItems = (new Database())->select($query);
         $tr = "";
@@ -54,20 +55,14 @@ HTML;
     }
     public function add()
     {
-        $auth = new Authentication();
-
-        // Check if user is admin
-        if (!$auth->is_admin()) {
-            echo json_encode(['status' => 'error', 'message' => 'Not authorized']);
-            return;
-        }
+        Authentication::require_roles(['admin','pro','hro']);
 
         // Get and sanitize inputs
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
         $category = isset($_POST['category']) ? trim($_POST['category']) : '';
         $expire = $_POST['expire'] ?? null;
         $content = isset($_POST['content']) ? trim($_POST['content']) : '';
-        $user_id = $auth->get_authenticated_user()->getId();
+        $user_id = Authentication::user()->getId();
 
         if ($name === '' || $content === '') {
             echo json_encode(['status' => 'error', 'message' => 'Title and content are required']);

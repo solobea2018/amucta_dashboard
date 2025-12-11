@@ -182,12 +182,30 @@ class Authentication
             exit();
         }
     }
+    public static function require_roles(array $roles)
+    {
+        $auth=new self();
+        if (!$auth->has_roles($roles)){
+            http_response_code(403);
+            exit();
+        }
+    }
 
     public static function has_role($role): bool
     {
         $auth=new self();
         if ($auth->is_authenticated()) {
             if ($auth->get_authenticated_user()->getRole()===$role){
+                return true;
+            }
+        }
+        return  false;
+    }
+    public static function has_roles(array $roles): bool
+    {
+        $auth=new self();
+        if ($auth->is_authenticated()) {
+            if (in_array($auth->get_authenticated_user()->getRole(),$roles)){
                 return true;
             }
         }

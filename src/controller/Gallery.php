@@ -54,6 +54,7 @@ HTML;
     }
     public function add()
     {
+        Authentication::require_roles(['admin','pro']);
         $auth = new Authentication();
         if (!$auth->is_admin()) {
             echo json_encode(['status' => "error", 'message' => "Not Authorized"]);
@@ -63,6 +64,7 @@ HTML;
         // Sanitize inputs
         $name     = htmlspecialchars(trim($_POST['name'] ?? ''), ENT_QUOTES, 'UTF-8');
         $category = htmlspecialchars(trim($_POST['category'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $description = htmlspecialchars(trim($_POST['description'] ?? ''), ENT_QUOTES, 'UTF-8');
 
         $imagePath = null;
 
@@ -146,6 +148,7 @@ HTML;
             'category' => $category,
             'url'     => $imagePath,
             'user_id'  => $user_id,
+            'description' =>$description,
             'created_at' => date("Y-m-d H:i:s")
         ];
 

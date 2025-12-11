@@ -13,6 +13,7 @@ class EmployeeResearch
 {
     public function list()
     {
+        Authentication::require_roles(['admin','dupr']);
         $query = "SELECT er.*, e.name AS employee_name 
                   FROM employee_research er
                   JOIN employee e ON e.id = er.employee_id order by e.name";
@@ -100,12 +101,7 @@ HTML;
 
     public function add()
     {
-        $auth = new Authentication();
-        if (!$auth->is_admin()) {
-            echo json_encode(['status' => "error", 'message' => "Not Authorized"]);
-            return;
-        }
-
+        Authentication::require_roles(['admin','dupr']);
         // Sanitize inputs
         $employee_id = intval($_POST['employee_id'] ?? 0);
         $title       = htmlspecialchars(trim($_POST['title'] ?? ''), ENT_QUOTES, 'UTF-8');
@@ -139,7 +135,7 @@ HTML;
         }
 
         $db = new Database();
-        $user_id = $auth->get_authenticated_user()->getId();
+        $user_id = Authentication::user()->getId();
         $data = [
             'employee_id' => $employee_id,
             'title'       => $title,

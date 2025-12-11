@@ -12,6 +12,7 @@ class EmployeeRole
 {
     public function list()
     {
+        Authentication::require_roles(['admin','hro']);
         $query = "SELECT * FROM role_group order by name";
         $attachments = (new Database())->select($query);
         $tr = "";
@@ -53,53 +54,14 @@ HTML;
         MainLayout::render($content);
     }
 
-    public function add1()
-    {
-        $auth = new Authentication();
-
-        // Only admin can add attachments
-        if (!$auth->is_admin()) {
-            echo json_encode(['status' => 'error', 'message' => 'Not authorized']);
-            return;
-        }
-
-        // Sanitize inputs
-        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $user_id = $auth->get_authenticated_user()->getId();
-
-        if ($name === '') {
-            echo json_encode(['status' => 'error', 'message' => 'Role name is required']);
-            return;
-        }
-
-        // Insert into database
-        $db = new Database();
-        $inserted = $db->insert('role_group', [
-            'name' => $name,
-            'user_id' => $user_id,
-            'created_at' => date("Y-m-d H:i:s")
-        ]);
-
-        if ($inserted) {
-            echo json_encode(['status' => 'success', 'message' => 'Role added successfully']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to add Role']);
-        }
-    }
     public function add()
     {
-        $auth = new Authentication();
-
-        // Only admin can add/update roles
-        if (!$auth->is_admin()) {
-            echo json_encode(['status' => 'error', 'message' => 'Not authorized']);
-            return;
-        }
+        Authentication::require_roles(['admin','hro']);
 
         // Sanitize inputs
         $id   = isset($_POST['id']) ? intval($_POST['id']) : 0;
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $user_id = $auth->get_authenticated_user()->getId();
+        $user_id = Authentication::user()->getId();
 
         if ($name === '') {
             echo json_encode(['status' => 'error', 'message' => 'Role name is required']);

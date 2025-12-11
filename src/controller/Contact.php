@@ -155,11 +155,7 @@ HTML;
 
     public function list()
     {
-        $auth = new Authentication();
-        if (!$auth->is_admin()) {
-            exit();
-        }
-
+       Authentication::require_roles(['admin','admission','hro','pro']);
         $query = "SELECT id, full_name, email, message, read_status, create_date, title 
               FROM contacts ORDER BY create_date DESC";
         $contacts = (new Database())->select($query);
@@ -216,11 +212,7 @@ HTML;
 
     public function ai()
     {
-        $auth = new Authentication();
-        if (!$auth->is_admin()) {
-            exit();
-        }
-
+        Authentication::require_roles(['admin','admission','hro','pro']);
         $query = "SELECT id, name, message, reply, created_at 
               FROM ai_chats ORDER BY created_at DESC";
         $chats = (new Database())->select($query);

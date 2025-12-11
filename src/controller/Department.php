@@ -12,6 +12,7 @@ class Department
 {
     public function list()
     {
+        Authentication::require_roles(['admin','hod']);
         $query = "SELECT d.*, f.name as faculty_name 
               FROM department d 
               LEFT JOIN faculty f ON d.faculty_id = f.id order by category,name";
@@ -54,82 +55,9 @@ HTML;
 
         MainLayout::render($content);
     }
-    public function add1()
-    {
-        $auth = new Authentication();
-
-        // Ensure user is logged in and is admin
-        if (!$auth->is_admin()) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Not authorized to perform this action.'
-            ]);
-            return;
-        }
-
-        // Sanitize inputs
-        $name = isset($_POST['name']) ? trim($_POST['name']) : '';
-        $description = isset($_POST['description']) ? trim($_POST['description']) : '';
-        $category = isset($_POST['category']) ? trim($_POST['category']) : '';
-        $faculty_id = isset($_POST['faculty_id']) ? intval($_POST['faculty_id']) : null;
-        $user_id = $auth->get_authenticated_user()->getId();
-
-        if ($name === '' || !$faculty_id) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Department name and faculty are required.'
-            ]);
-            return;
-        }
-
-        $description=htmlspecialchars($description);
-
-        $db = new Database();
-
-        // Check for duplicate department in the same faculty
-        $exists = $db->fetch("SELECT id FROM department WHERE name = ? AND faculty_id = ?", [$name, $faculty_id]);
-        if ($exists) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Department with this name already exists in the selected faculty.'
-            ]);
-            return;
-        }
-
-        // Insert into database
-        $inserted = $db->insert("department", [
-            'name' => $name,
-            'description' => $description,
-            'category'=> $category,
-            'faculty_id' => $faculty_id,
-            'user_id' => $user_id,
-            'created_at' => date("Y-m-d H:i:s")
-        ]);
-
-        if ($inserted) {
-            echo json_encode([
-                'status' => 'success',
-                'message' => 'Department added successfully!'
-            ]);
-        } else {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Failed to add department. Please try again.'
-            ]);
-        }
-    }
     public function add()
     {
-        $auth = new Authentication();
-
-        // Ensure user is logged in and is admin
-        if (!$auth->is_admin()) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Not authorized to perform this action.'
-            ]);
-            return;
-        }
+        Authentication::require_roles(['admin','hod']);
 
         // Sanitize inputs
         $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
@@ -137,7 +65,7 @@ HTML;
         $description = isset($_POST['description']) ? trim($_POST['description']) : '';
         $category = isset($_POST['category']) ? trim($_POST['category']) : '';
         $faculty_id = isset($_POST['faculty_id']) ? intval($_POST['faculty_id']) : null;
-        $user_id = $auth->get_authenticated_user()->getId();
+        $user_id = Authentication::user()->getId();
 
         if ($name === '' || !$faculty_id) {
             echo json_encode([

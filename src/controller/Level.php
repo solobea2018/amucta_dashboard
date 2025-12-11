@@ -12,6 +12,7 @@ class Level
 {
     public function list()
     {
+        Authentication::require_roles(['admin','hod']);
         $query = "SELECT * FROM level";
         $levels = (new Database())->select($query);
         $tr = "";
@@ -55,14 +56,7 @@ HTML;
     {
         header('Content-Type: application/json; charset=utf-8');
 
-        // 1) Auth guard
-        $auth = new Authentication();
-        if (!$auth->is_admin()) {
-            http_response_code(403);
-            echo json_encode(['status' => 'error', 'message' => 'Not authorized']);
-            return;
-        }
-
+        Authentication::require_roles(['admin','hod']);
         // 2) Method guard
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
@@ -153,7 +147,7 @@ HTML;
             }
         } else {
             // Insert
-            $user_id=$auth->get_authenticated_user()->getId();
+            $user_id=Authentication::user()->getId();
             $sql = "INSERT INTO level (name, description,user_id) VALUES (?, ?, ?)";
             if ($stmt = $con->prepare($sql)) {
                 $stmt->bind_param('ssi', $name, $description,$user_id);

@@ -12,6 +12,7 @@ class Events
 {
     public function list()
     {
+        Authentication::require_roles(['admin','pro','hro']);
         $query = "SELECT * FROM events";
         $events = (new Database())->select($query);
         $tr = "";
@@ -56,12 +57,7 @@ HTML;
     }
     public function add()
     {
-        $auth = new Authentication();
-
-        if (!$auth->is_admin()) {
-            echo json_encode(['status'=>'error','message'=>'Not authorized']);
-            return;
-        }
+        Authentication::require_roles(['admin','pro','hro']);
 
         // Sanitize inputs
         $name        = isset($_POST['name']) ? trim($_POST['name']) : '';
@@ -70,7 +66,7 @@ HTML;
         $end_date    = $_POST['end_date'] ?? null;
         $location    = isset($_POST['location']) ? trim($_POST['location']) : '';
         $category    = isset($_POST['category']) ? trim($_POST['category']) : '';
-        $user_id     = $auth->get_authenticated_user()->getId();
+        $user_id     = Authentication::user()->getId();
 
         if ($name === '' || $start_date === null) {
             echo json_encode(['status'=>'error','message'=>'Event name and start date are required']);

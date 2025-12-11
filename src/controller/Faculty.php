@@ -12,6 +12,7 @@ class Faculty
 {
     public function list()
     {
+        Authentication::require_roles(['admin','hod']);
         $query = "SELECT * FROM faculty";
         $faculties = (new Database())->select($query);
         $tr = "";
@@ -54,7 +55,7 @@ HTML;
     }
     public function add()
     {
-        $auth = new Authentication();
+        /*$auth = new Authentication();
 
         // Ensure user is logged in and is admin
         if (!$auth->is_admin()) {
@@ -63,13 +64,14 @@ HTML;
                 'message' => 'Not authorized to perform this action.'
             ]);
             return;
-        }
+        }*/
+        Authentication::require_roles(['admin','hod']);
 
         // Sanitize and validate inputs
         $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
         $name = isset($_POST['name']) ? trim($_POST['name']) : '';
         $description = isset($_POST['description']) ? trim($_POST['description']) : '';
-        $user_id = $auth->get_authenticated_user()->getId();
+        $user_id = Authentication::user()->getId();
 
         if ($name === '') {
             echo json_encode([
