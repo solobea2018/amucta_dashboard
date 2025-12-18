@@ -47,12 +47,14 @@ class Home
         }
         $head=<<<kl
 <link type='text/css' rel='stylesheet' href='/css/home.css'>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {$h_style}
 kl;
         $content = <<<content
 <!-- Background container -->
 <div id="background-slider"></div>
-<section class="section flex flex-row justify-center">
+<div class="amucta-ads"></div>
+<section class="section hidden flex-row justify-center">
   <div class="text-center or-title">
     <h1 class="uni-title">Archbishop Mihayo University College of Tabora</h1>
     <a href="https://oas.amucta.ac.tz" target="_blank" class="apply-btn">🎓 Apply Now</a>
@@ -60,17 +62,20 @@ kl;
 </section>
 $h_content
 
-
-<section class="search-box">
-  <h2>Find Your Program</h2>
-  <form action="/programmes/search" method="post" class="search-form">
-    <select name="course" required>
-      <option value="" disabled selected>Select a course</option>
-      $prog_list
-    </select>
-    <button type="submit">🔍 Search</button>
-  </form>
+<div class="heroo">
+    
+    <section class="search-box">
+    <form action="/programmes/search" method="post" class="search-form">
+        <select name="course" required>
+            <option value="" disabled selected>Find your program</option>
+            $prog_list
+        </select>
+        <button type="submit">Search</button>
+    </form>
 </section>
+
+    
+</div>
 $intro
 $news
 <section class="stats-section">
@@ -94,7 +99,7 @@ $news
           <p class="stat-label">Graduates</p>
         </div>
         <div class="stat-item visitor-stat">
-          <div class="stat-number">{$all_times}M</div>
+          <div class="stat-number hidden">{$all_times}M</div>
           <p class="stat-label">Visitors (All-Time)</p>
           <div class="visitor-details">
             <p>📅 Today: <span style="font-weight: 600;">{$today}</span></p>

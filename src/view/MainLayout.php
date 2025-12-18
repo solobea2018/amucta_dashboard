@@ -17,8 +17,12 @@ class MainLayout
         $org_logo="/logo.png";
         $title=$title??$org_name;
         $menu=self::header();
-        $auth=new Authentication();
-        $menu_admin = $auth->is_admin() ? MainLayout::menu() : "";
+        $menu_admin = "";
+        $admn_js='';
+        if (Authentication::has_role('admin')){
+            $admn_js='<script src="/js/others_v1.js" type="text/javascript"></script>';
+            $menu_admin =  MainLayout::menu();
+        }
         $csrf_token=self::generateCsrfToken();
 
         $layout= <<<HTML
@@ -34,7 +38,8 @@ class MainLayout
     <link rel="stylesheet" href="/css/chat.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
-    <script src="/js/others_v1.js" type="text/javascript"></script>
+    <script src="/js/amucta.js" type="text/javascript"></script>
+   $admn_js
     <script src="/js/sweetalert2.js" type="text/javascript"></script>
     <script src="/js/toastify.js" type="text/javascript"></script>
     <title>$title</title>
@@ -46,6 +51,7 @@ class MainLayout
 <!-- Header with Enhanced Branding and Improved Menu -->
 <header id="header">
   <div class="header-top no-print">
+    <span class="text-yellow-500 text-lg">Archbishop Mihayo University College of Tabora</span>
     <a href="/contact">Contact Us</a>
     <a href="https://amucta.ac.tz:2096">Emails</a>
     <a href="/staff">Staff Portal</a>
@@ -235,7 +241,7 @@ menu;
       <ul class="nav-menu" id="navigation">
         <a href="/" class="btn btn-amucta">Home</a>
         <li class="dropdown-container">
-          <a href="/about" class="mobile-main-link">About</a>
+          <a href="/about" class="mobile-main-link">About »</a>
           <ul class="submenu">
             <li><a href="/about/about">About us</a></li>
             <li><a href="/about/history">History</a></li>           
@@ -245,7 +251,7 @@ menu;
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="/admissions" class="mobile-main-link">Admissions</a>
+          <a href="/admissions" class="mobile-main-link">Admissions »</a>
           <ul class="submenu">
             <li><a href="/admissions/admission">How to Apply</a></li>
             <li><a href="/admissions/joining">Join Instructions</a></li>
@@ -254,25 +260,25 @@ menu;
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="/programmes" class="mobile-main-link">Academics</a>
+          <a href="/programmes" class="mobile-main-link">Academics »</a>
           <ul class="submenu">
             $lvs
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="/faculties" class="mobile-main-link">Faculties</a>
+          <a href="/faculties" class="mobile-main-link">Faculties »</a>
           <ul class="submenu">
             {$ft}
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="/departments" class="mobile-main-link">Departments</a>
+          <a href="/departments" class="mobile-main-link">Departments »</a>
           <ul class="submenu">
             {$dp}
           </ul>
         </li>
         <li class="dropdown-container">
-          <a href="/research" class="mobile-main-link">Research</a>
+          <a href="/research" class="mobile-main-link">Research »</a>
           <ul class="submenu">
             <li><a href="/research/research">Research Overview</a></li>
             <li><a href="/research/student_research">Student Research</a></li>
@@ -281,7 +287,7 @@ menu;
           </ul>
         </li>       
         <li class="dropdown-container">
-          <a href="/library" class="mobile-main-link">ICT &amp; Other Services</a>
+          <a href="/library" class="mobile-main-link">ICT &amp; Other Services »</a>
           <ul class="submenu">
             <li><a href="/library/ict">ICT Services</a></li>  
             <li><a href="/library/index">Library</a></li>
@@ -293,9 +299,10 @@ menu;
           </ul>
         </li>       
         <li class="dropdown-container">
-          <a href="/staff" class="mobile-main-link">Staff Area</a>
+          <a href="/staff" class="mobile-main-link">Staff Area »</a>
           <ul class="submenu">
             $stf
+            <li><a href="/gallery">Gallery</a></li>
           </ul>
         </li>
       </ul>

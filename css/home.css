@@ -403,44 +403,50 @@
 }
 /* Search section */
 .search-box {
-    background: #fff;
-    padding: 1.0rem;
-    border-radius: 12px;
-    max-width: 600px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-    text-align: center;
-    margin: 1rem auto;
-}
-.search-box h2 {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 1rem;
-}
-.search-form {
-    display: flex;
-    flex-wrap: wrap;
     width: 100%;
-    gap: 1rem;
-    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
 }
+
+.search-form {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    height: 40px;
+}
+
 .search-form select {
-    padding: 0.8rem 1.2rem;
+    flex: 1;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    max-width: 90%;
-    font-size: 1rem;
+    border-right: none;
+    padding: 0 10px;
+    font-size: 14px;
+    outline: none;
+    border-radius: 4px 0 0 4px;
 }
+
 .search-form button {
-    background: var(--amucta-blue);
+    width: 90px;
+    background: #2f6df6;
     color: #fff;
-    font-weight: 600;
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: 8px;
+    border: 1px solid #2f6df6;
+    font-size: 14px;
     cursor: pointer;
-    transition: 0.3s;
+    border-radius: 0 4px 4px 0;
 }
+
 .search-form button:hover {
-    background: #003366;
+    background: #2459c9;
+}
+
+
+
+.heroo {
+    width: 100%;
+    position: relative;
+}
+.amucta-ads{
+    width: 100%;
+    height: 60vh;
+    background-color: #0c4128;
 }

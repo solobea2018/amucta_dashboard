@@ -49,8 +49,12 @@ class Gallery
     </table>
 </div>
 HTML;
+        $header=<<<header
+<style>
+</style>
+header;
 
-        MainLayout::render($content);
+        MainLayout::render($content,$header);
     }
     public function add()
     {
@@ -178,6 +182,42 @@ HTML;
         header("Content-Type: application/json");
         echo json_encode(["images"=>$slides]);
     }
+
+    public function index()
+    {
+        $query = "SELECT * FROM images where category= 'gallery' or category='slides' order by created_at desc  limit 25";
+        $images = (new Database())->select($query);
+        $cards = "";
+        if (sizeof($images) > 0) {
+            foreach ($images as $img) {
+                $cards .= "
+        <div class='gallery-card'>
+            <div class='gallery-image'>
+                <img onclick='previewImage(\"{$img['url']}\",\"{$img['description']}\")' src='{$img['url']}' alt='{$img['name']}'>
+            </div>
+            <div class='gallery-info'>
+                <div class='gallery-category'>{$img['description']}</div>                
+            </div>
+        </div>
+        ";
+            }
+        } else {
+            $cards = "<div class='gallery-empty'>No images found</div>";
+        }
+
+        $content=<<<Content
+<div class="gallery-wrapper"> $cards </div>
+Content;
+
+        $header = <<<HTML
+<style> .gallery-wrapper { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; } .gallery-card { border: 1px solid #ddd; border-radius: 6px; overflow: hidden; background: #fff; } .gallery-image { width: 100%; height: 150px; overflow: hidden; } .gallery-image img { width: 100%; height: 100%; object-fit: cover; } .gallery-info { padding: 10px; text-align: center; } .gallery-name { font-weight: 600; margin-bottom: 4px; } .gallery-category { font-size: 13px; color: #666; margin-bottom: 8px; } .gallery-empty { padding: 20px; text-align: center; color: #777; } </style>
+HTML;
+        MainLayout::render($content, $header);
+
+
+    }
+
+
 
 
 }
