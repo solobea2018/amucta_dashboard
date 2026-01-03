@@ -122,7 +122,7 @@ HTML;
             $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
             $subject  = Sanitizer::sanitize(Sanitizer::clean_for_json($_POST['subject']));
             $message = Sanitizer::sanitize(Sanitizer::clean_for_json($_POST['message']));
-            if (Sanitizer::is_valid_message($message)){
+            if (!Sanitizer::is_valid_message($message)){
                 echo "Invalid message!";
                 exit();
             }

@@ -13,7 +13,7 @@ class Events
     public function list()
     {
         Authentication::require_roles(['admin','pro','hro']);
-        $query = "SELECT * FROM events";
+        $query = "SELECT * FROM events order by id desc ";
         $events = (new Database())->select($query);
         $tr = "";
 
@@ -167,7 +167,7 @@ HTML;
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
-        echo json_encode((new Database())->select("select * from events"));
+        echo json_encode((new Database())->select("select * from events order by id desc "));
     }
     public function all()
     {

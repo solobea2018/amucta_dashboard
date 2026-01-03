@@ -14,23 +14,18 @@ class EmployeeResearch
     public function list()
     {
         Authentication::require_roles(['admin','dupr']);
-        $query = "SELECT er.*, e.name AS employee_name 
-                  FROM employee_research er
-                  JOIN employee e ON e.id = er.employee_id order by e.name";
+        $query = "SELECT * FROM amucta_research ORDER BY year DESC, id DESC ";
         $researches = (new Database())->select($query);
         $tr = "";
 
         if (sizeof($researches) > 0) {
             foreach ($researches as $r) {
                 $tr .= "<tr>
-<td>{$r['employee_name']}</td>
 <td>{$r['title']}</td>
-<td>{$r['type']}</td>
-<td>{$r['start_date']}</td>
-<td>{$r['end_date']}</td>
+<td>{$r['publication_type']}</td>
+<td>{$r['authors']}</td>
 <td>
-<button class='btn btn-complete' onclick='editResearch({$r['id']})'>Edit <i class='bi bi-pencil'></i></button>
-<button class='btn btn-danger hidden' onclick='deleteResource(\"employee_research\",{$r['id']})'>Delete <i class='bi bi-trash'></i></button>
+<button class='btn btn-danger hidden' onclick='deleteResource(\"amucta_research\",{$r['id']})'>Delete <i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewResearch({$r['id']})'>View <i class='bi bi-eye'></i></button>
 </td>
 </tr>";
@@ -47,12 +42,9 @@ class EmployeeResearch
     <table class="solobea-table">
         <thead>
             <tr>
-                <th>Employee</th>
                 <th>Title</th>               
-                <th>Type</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Active</th>
+                <th>Publication Type</th>               
+                <th>Authors</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -71,7 +63,7 @@ HTML;
                 $id = intval($params[0]);
                 $db = new Database();
 
-                $research = $db->select("SELECT r.*,e.name as employee_name FROM employee_research r left join employee e on e.id = r.employee_id WHERE r.id = {$id} LIMIT 1");
+                $research = $db->select("SELECT * FROM amucta_research where id='{$id}' limit 1");
 
                 if ($research && count($research) > 0) {
                     header('Content-Type: application/json');
@@ -103,17 +95,17 @@ HTML;
     {
         Authentication::require_roles(['admin','dupr']);
         // Sanitize inputs
-        $employee_id = intval($_POST['employee_id'] ?? 0);
+        $authors = htmlspecialchars($_POST['authors'] ?? "Anonymous");
         $title       = htmlspecialchars(trim($_POST['title'] ?? ''), ENT_QUOTES, 'UTF-8');
-        $type        = $_POST['type'] ?? 'research'; // research, publication, project
-        $description = htmlspecialchars(trim($_POST['description'] ?? ''), ENT_QUOTES, 'UTF-8');
-        $start_date  = htmlspecialchars(trim($_POST['start_date'] ?? ''), ENT_QUOTES, 'UTF-8');
-        $end_date    = htmlspecialchars(trim($_POST['end_date'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $publication_type        = $_POST['publication_type'] ?? 'Journal Article'; // research, publication, project
+        $abstract_text = htmlspecialchars(trim($_POST['abstract_text'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $publisher  = htmlspecialchars(trim($_POST['publisher'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $year    = htmlspecialchars(trim($_POST['year'] ?? ''), ENT_QUOTES, 'UTF-8');
         $link        = htmlspecialchars(trim($_POST['link'] ?? ''), ENT_QUOTES, 'UTF-8');
-        $active      = intval($_POST['active'] ?? 1);
+        $status = strtolower($_POST['status'] ?? 'complete');
 
-        if (!$employee_id || !$title) {
-            echo json_encode(['status' => "error", 'message' => "Employee and title are required"]);
+        if (!$authors || !$title) {
+            echo json_encode(['status' => "error", 'message' => "Authors and title are required"]);
             return;
         }
 
@@ -137,19 +129,19 @@ HTML;
         $db = new Database();
         $user_id = Authentication::user()->getId();
         $data = [
-            'employee_id' => $employee_id,
+            'authors' => $authors,
             'title'       => $title,
-            'type'        => $type,
-            'description' => $description,
-            'start_date'  => $start_date ?: null,
-            'end_date'    => $end_date ?: null,
+            'publication_type'        => $publication_type,
+            'abstract_text' => $abstract_text,
+            'year'  => $year ?: null,
+            'file_path'    => $filePath ?: null,
             'link'        => $link ?: null,
-            'file_path'   => $filePath,
-            'created_by'  => $user_id,
-            'active'      => $active
+            'publisher'   => $publisher,
+            'status'      => $status,
+            'user_id'     =>$user_id
         ];
 
-        if ($db->insert("employee_research", $data)) {
+        if ($db->insert("amucta_research", $data)) {
             echo json_encode(['status' => "success", 'message' => "Research added successfully"]);
         } else {
             echo json_encode(['status' => "error", 'message' => "Failed to add research"]);
@@ -162,8 +154,6 @@ HTML;
         header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
-        echo json_encode((new Database())->select("SELECT er.*, e.name AS employee_name 
-                                                   FROM employee_research er
-                                                   JOIN employee e ON e.id = er.employee_id"));
+        echo json_encode((new Database())->select("SELECT * FROM amucta_research ORDER BY year DESC, id DESC"));
     }
 }

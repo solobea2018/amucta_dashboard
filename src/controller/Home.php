@@ -32,15 +32,21 @@ class Home
         $image_setcion="";
         if (!empty($images)){
             foreach ($images as $image) {
-                $link=$image['url'];
-                $name= $image['name'];
-                $image_setcion.=<<<lk
-<div class="swiper-slide">
-                <img src="$link" alt="$name">
-            </div>
-lk;
+                $link = $image['url'];
+                $name = $image['name'] ?? '';
+                $description = $image['description'] ?? $name;
 
+                $image_setcion .= <<<HTML
+<div class="swiper-slide">
+    <img loading="lazy" src="$link" alt="$name">
+    <div class="slide-caption">
+        <strong>$name</strong>
+        <span>$description</span>
+    </div>
+</div>
+HTML;
             }
+
         }
         $loc="";
 
@@ -90,6 +96,7 @@ kl;
 $h_content
 <div class="heroo">
     <div class="hero-box box-main">  
+    <a href="/gallery" class="view-gallery-btn">View All</a>
     <div class="swiper mainSwiper">
         <div class="swiper-wrapper">
             $image_setcion

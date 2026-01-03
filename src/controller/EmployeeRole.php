@@ -36,7 +36,7 @@ class EmployeeRole
         $content = <<<HTML
 <div class="flex flex-col">
     <div class="w-full">
-        <button class="btn btn-complete" onclick="addRole()">Add Attachment</button>
+        <button class="btn btn-complete" onclick="addRole()">Add Role</button>
     </div>
     <table class="solobea-table">
         <thead>

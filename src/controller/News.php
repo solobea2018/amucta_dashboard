@@ -13,7 +13,7 @@ class News
     public function list()
     {
         Authentication::require_roles(['admin','pro','hro']);
-        $query = "SELECT * FROM news";
+        $query = "SELECT * FROM news order by id desc ";
         $newsItems = (new Database())->select($query);
         $tr = "";
 
@@ -182,7 +182,7 @@ HTML;
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
-        echo json_encode((new Database())->select("select * from news"));
+        echo json_encode((new Database())->select("select * from news order by id desc "));
     }
     public function all()
     {

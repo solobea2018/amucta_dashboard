@@ -13,7 +13,7 @@ class Attachment
     public function list()
     {
         Authentication::require_roles(['admin','pro','hro']);
-        $query = "SELECT * FROM attachments";
+        $query = "SELECT * FROM attachments order by id desc ,created_at desc ";
         $attachments = (new Database())->select($query);
         $tr = "";
 
@@ -129,7 +129,7 @@ HTML;
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
-        echo json_encode((new Database())->select("select * from attachments"));
+        echo json_encode((new Database())->select("select * from attachments order by id desc ,created_at desc "));
     }
 
     public function all()

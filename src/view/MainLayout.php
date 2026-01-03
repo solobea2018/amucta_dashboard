@@ -280,14 +280,17 @@ menu;
         <li class="dropdown-container">
           <a href="/research" class="mobile-main-link">Research »</a>
           <ul class="submenu">
-            <li><a href="/research/research">Research Overview</a></li>
-            <li><a href="/research/student_research">Student Research</a></li>
+            <li><a href="/research/research">Research Overview</a></li>           
+            <li><a href="/research/outreach">Outreach and Consultancy</a></li>
+            <li><a href="/research/publications">Publications</a></li>
             <li><a href="/research/centers">Research Centers</a></li>
+            <li><a href="/research/projects">Research Projects</a></li>                   
             <li><a href="/research/collaborations">Collaborations</a></li>                   
+            <li><a href="/research/funding">Funding Opportunities</a></li>                                                
           </ul>
         </li>       
         <li class="dropdown-container">
-          <a href="/library" class="mobile-main-link">ICT &amp; Other Services »</a>
+          <a href="/library" class="mobile-main-link">Other Services »</a>
           <ul class="submenu">
             <li><a href="/library/ict">ICT Services</a></li>  
             <li><a href="/library/index">Library</a></li>

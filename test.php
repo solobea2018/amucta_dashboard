@@ -6,10 +6,14 @@ error_reporting(E_ALL);
 require_once "vendor/autoload.php";
 
 use Solobea\Dashboard\database\Database;
-use Solobea\Dashboard\utils\Helper;
+use Solobea\Helpers\data\Sanitizer;
+use Solobea\Helpers\helper\Helper;
 
 $database = new Database();
+$nons =$database->select("select id, message from contacts ");
 
+echo Sanitizer::is_valid_message("Habari vipi hapo kuna uzima wowote shuleni");
+exit();
 header("Content-Type: application/json");
 
 $basePath = __DIR__ . '/new';

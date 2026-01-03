@@ -911,6 +911,87 @@ function editAlumni(id) {
             popHtml("Edit Alumni", form);
         });
 }
+function editImage(id) {
+    fetch(`/gallery/get/${id}`)
+        .then(r => r.json())
+        .then(data => {
+            let alumni=data.data;
+            let form = `
+            <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/gallery/add">
+                <input type="hidden" name="id" value="${alumni.id}">
+                
+                <div class="form-group">
+                    <label for="full_name">Name</label>
+                    <input type="text" name="name" value="${alumni.name}" class="form-control" required>
+                </div>
+               
+                <div class="form-group">
+                    <label for="graduation_year">Description</label>
+                    <textarea name="description" class="form-control" required>${alumni.description}</textarea>                    
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">💾 Update</button>
+                </div>
+            </form>`;
+
+            popHtml("Edit Image", form);
+        });
+}
+function createThumbNail(id) {
+    fetch('/gallery/thumbnail', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: id
+        })
+    })
+
+        .then(response => response.json())
+        .then(dataResponse => {
+            if (dataResponse.status === "success") {
+                Swal.fire("Updated!", dataResponse.message, "success");
+            } else {
+                Swal.fire("Error!", dataResponse.message || "Failed to update resource", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Update error:", error);
+            Swal.fire("Error!", "Something went wrong", "error");
+        });
+}
+function reduceQuality(id){
+    fetch('/gallery/quality', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: id
+        })
+    })
+        .then(rs=>{
+            return rs.text()
+        }).then(
+        txt=>{
+            console.log(txt)
+        }
+    )
+        /*.then(response => response.json())
+        .then(dataResponse => {
+            if (dataResponse.status === "success") {
+                Swal.fire("Updated!", dataResponse.message, "success");
+            } else {
+                Swal.fire("Error!", dataResponse.message || "Failed to update resource", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Update error:", error);
+            Swal.fire("Error!","Something went wrong", "error");
+        });*/
+}
 function deleteResource(table, id) {
     Swal.fire({
         title: 'Are you sure?',
@@ -1098,14 +1179,13 @@ function viewResearch(id) {
           <div class="popup-body">
             <div class="bg-white shadow-md rounded-xl p-6 text-sm text-gray-800 space-y-3">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div><span class="font-semibold text-gray-600">Employee:</span> ${r.employee_name || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Authors:</span> ${r.authors || "-"}</div>
                 <div><span class="font-semibold text-gray-600">Title:</span> ${r.title || "-"}</div>
-                <div><span class="font-semibold text-gray-600">Type:</span> ${r.type || "-"}</div>
-                <div><span class="font-semibold text-gray-600">Start Date:</span> ${r.start_date || "-"}</div>
-                <div><span class="font-semibold text-gray-600">End Date:</span> ${r.end_date || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Publication Type:</span> ${r.publication_type || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Publisher:</span> ${r.publisher || "-"}</div>
+                <div><span class="font-semibold text-gray-600">Year:</span> ${r.year || "-"}</div>
                 <div><span class="font-semibold text-gray-600">Link:</span> ${r.link ? `<a href="${r.link}" target="_blank" class="text-blue-600 hover:underline">View</a>` : "-"}</div>
-                <div><span class="font-semibold text-gray-600">Description:</span> ${r.description || "-"}</div>
-                <div><span class="font-semibold text-gray-600">File:</span> ${r.file_path ? `<a href="${r.file_path}" target="_blank" class="text-green-600 hover:underline">Download</a>` : "-"}</div>
+                <div><span class="font-semibold text-gray-600">Abstract:</span> ${r.abstract_text || "-"}</div>                
               </div>
             </div>
           </div>
@@ -1124,67 +1204,110 @@ function viewResearch(id) {
 }
 function addResearch() {
     var research_form = `
-    <form class="form-container" onsubmit="sendFormSweet(this,event)" action="/employee-research/add">
-      <input type="hidden" name="id" value="">
+    <form class="form-container"
+      onsubmit="sendFormSweet(this,event)"
+      action="/employee-research/add"
+      method="post"
+      enctype="multipart/form-data">
 
-      <div class="form-group">
-        <label for="employee_id">Employee</label>
-        <select id="employee_id" name="employee_id" class="form-control" required>
-          <option value="">-- Select Employee --</option>
-        </select>
-      </div>
+    <input type="hidden" name="id" value="">
 
-      <div class="form-group">
+    <div class="form-group">
+        <label for="authors">Author(s)</label>
+        <input type="text"
+               id="authors"
+               name="authors"
+               class="form-control"
+               placeholder="e.g. John Doe, Jane Smith"
+               required>
+    </div>
+
+    <div class="form-group">
         <label for="title">Title</label>
-        <input type="text" id="title" name="title" class="form-control" placeholder="Enter title" required>
-      </div>
+        <input type="text"
+               id="title"
+               name="title"
+               class="form-control"
+               placeholder="Enter publication title"
+               required>
+    </div>
 
-      <div class="form-group">
-        <label for="type">Type</label>
-        <select id="type" name="type" class="form-control" required>
-          <option value="research">Research</option>
-          <option value="publication">Publication</option>
-          <option value="project">Project</option>
+    <div class="form-group">
+        <label for="publication_type">Publication Type</label>
+        <select id="publication_type"
+                name="publication_type"
+                class="form-control"
+                required>
+            <option value="Journal Article">Journal Article</option>
+            <option value="Book Chapter">Book Chapter</option>
+            <option value="Book">Book</option>
+            <option value="Conference Paper">Conference Paper</option>
+            <option value="Manuscript">Manuscript</option>
         </select>
-      </div>
+    </div>
 
-      <div class="form-group">
-        <label for="description">Description</label>
-        <textarea id="description" name="description" class="form-control" rows="3" placeholder="Enter description"></textarea>
-      </div>
+    <div class="form-group">
+        <label for="abstract_text">Abstract / Description</label>
+        <textarea id="abstract_text"
+                  name="abstract_text"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Enter abstract or brief description"></textarea>
+    </div>
 
-      <div class="form-group">
-        <label for="start_date">Start Date</label>
-        <input type="date" id="start_date" name="start_date" class="form-control" required>
-      </div>
+    <div class="form-group">
+        <label for="publisher">Publisher / Journal</label>
+        <input type="text"
+               id="publisher"
+               name="publisher"
+               class="form-control"
+               placeholder="Journal, publisher, or institution">
+    </div>
 
-      <div class="form-group">
-        <label for="end_date">End Date</label>
-        <input type="date" id="end_date" name="end_date" class="form-control">
-      </div>
+    <div class="form-group">
+        <label for="year">Year</label>
+        <input type="text"
+               id="year"
+               name="year"
+               class="form-control"
+               placeholder="e.g. 2025">
+    </div>
 
-      <div class="form-group">
-        <label for="link">Link</label>
-        <input type="url" id="link" name="link" class="form-control" placeholder="Optional link">
-      </div>
+    <div class="form-group">
+        <label for="link">External Link</label>
+        <input type="url"
+               id="link"
+               name="link"
+               class="form-control"
+               placeholder="https://example.com (optional)">
+    </div>
 
-      <div class="form-group">
-        <label for="file">File</label>
-        <input type="file" id="file" name="file" class="form-control" accept=".pdf,.doc,.docx">
-      </div>
+    <div class="form-group">
+        <label for="file">Upload File (Optional)</label>
+        <input type="file"
+               id="file"
+               name="file"
+               class="form-control"
+               accept=".pdf,.doc,.docx">
+    </div>
 
-      <div class="form-group">
-        <label for="active">Active</label>
-        <select id="active" name="active" class="form-control">
-          <option value="1">Yes</option>
-          <option value="0">No</option>
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status"
+                name="status"
+                class="form-control">
+            <option value="complete">Complete</option>
+            <option value="manuscript">Manuscript</option>
+            <option value="onprogress">In Progress</option>
         </select>
-      </div>
+    </div>
 
-      <div class="form-group mt-3">
+    <div class="form-group mt-3">
         <button type="submit" class="btn btn-primary">💾 Save</button>
-      </div>
-    </form>
+    </div>
+
+</form>
+
     `;
     popHtml("Add Research / Publication / Project", research_form);
 
