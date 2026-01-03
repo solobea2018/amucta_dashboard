@@ -1,49 +1,62 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once "vendor/autoload.php";
 
-echo containsPhoneNumber("0629077526");
+use Solobea\Dashboard\database\Database;
+use Solobea\Dashboard\utils\Helper;
 
-echo extractAllPhoneNumbers("hadg ahfg 0629077526 jdfk")[0];
+$database = new Database();
 
+header("Content-Type: application/json");
 
-function containsPhoneNumber(string $message): bool {
-    // Find candidate substrings that look like phone numbers (digits, + and common separators)
-    if (preg_match_all('/(\+?\d[\d\-\.\s()]{5,}\d)/', $message, $matches)) {
-        foreach ($matches[0] as $candidate) {
-            // Remove non-digits and count digits
-            $digits = preg_replace('/\D+/', '', $candidate);
-            $len = strlen($digits);
-            // Accept plausible phone lengths (7 to 15 digits)
-            if ($len >= 7 && $len <= 15) {
-                return true;
-            }
-        }
-    }
-    return false;
+$basePath = __DIR__ . '/new';
+$baseUrl  = '/new/';
+
+if (!is_dir($basePath)) {
+    echo json_encode([]);
+    exit;
 }
-function extractAllPhoneNumbers(string $message, bool $normalize = false, string $default_country_code = '255'): array {
-    $found = [];
-    if (preg_match_all('/(\+?\d[\d\-\.\s()]{5,}\d)/', $message, $matches)) {
-        foreach ($matches[0] as $candidate) {
-            $digits = preg_replace('/\D+/', '', $candidate);
-            $len = strlen($digits);
-            if ($len >= 7 && $len <= 15) {
-                if ($normalize) {
-                    if (strpos(trim($candidate), '+') === 0) {
-                        $found[] = '+' . $digits;
-                    } elseif (strpos($digits, '0') === 0) {
-                        // convert leading 0 to country code (useful for local TZ numbers)
-                        $found[] = '+' . $default_country_code . substr($digits, 1);
-                    } else {
-                        // assume it's international without plus; add plus
-                        $found[] = '+' . $digits;
-                    }
-                } else {
-                    // return the original matched format (trimmed)
-                    $found[] = trim($candidate);
-                }
-            }
-        }
+
+$files = scandir($basePath);
+$links = [];
+
+foreach ($files as $file) {
+    if ($file === '.' || $file === '..') {
+        continue;
     }
-    return array_values(array_unique($found)); // unique + reindex
+
+    $fullPath = $basePath . '/' . $file;
+
+    if (!is_file($fullPath)) {
+        continue;
+    }
+
+    // Check file size greater than 600 KB
+    $sizeKB = filesize($fullPath) / 1024;
+/*
+    if ($sizeKB > 600) {
+        // Reduce quality and overwrite same file
+        Helper::reduceImageQuality(
+            $fullPath,
+            $fullPath,
+            70
+        );
+    }*/
+
+    $links[] = $baseUrl . $file;
+}
+$id=40;
+foreach ($links as $link) {
+    $name="Graduation Image";
+
+    $category="gallery";
+    $date=date("Y-m-d H:i:s");
+    $user_id=72;
+    /*if ($database->insert("images",["created_at"=>$date,"name"=>$name,"description"=>"Graduation Image","category"=>$category,"url"=>$link,"user_id"=>$user_id])){
+        echo $link." saved \n";
+    }*/
+    $id++;
 }

@@ -4,7 +4,7 @@ function goto(url) {
         window.location.href = url
     }
 }
-(function chatbot() {
+function chatbot() {
     // Only show once per session
     if (sessionStorage.getItem('chatPopupShown')) return;
 
@@ -74,76 +74,7 @@ function goto(url) {
 
     }, delay);
 
-})();
-document.addEventListener("DOMContentLoaded", () => {
-    const slider = document.getElementById("background-slider");
-    if (!(slider==null)){
-        var images = [];
-        var currentIndex = 0;
-        var preloaded = [];
-
-        // Use IntersectionObserver to only start when visible (optional optimization)
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                startSlider();
-                observer.disconnect();
-            }
-        });
-        observer.observe(slider);
-
-        function startSlider() {
-            fetch("/gallery/background?save_visitor=0")
-                .then(res => res.json())
-                .then(data => {
-                    images = data.images || [];
-                    if (images.length === 0) return;
-
-                    // Preload first few images only
-                    preloadImages(images.slice(0, 3));
-
-                    setBackground(images[0]);
-
-                    // Use setTimeout (not setInterval) to avoid overlap
-                    scheduleNext();
-                })
-                .catch(err => console.error("Failed to load images:", err));
-        }
-
-        function preloadImages(list) {
-            list.forEach(url => {
-                const img = new Image();
-                img.src = url;
-                preloaded.push(img);
-            });
-        }
-
-        function setBackground(url) {
-            if (slider) {
-                slider.style.transition = "background-image 1s ease-in-out";
-                slider.style.backgroundSize = "cover";
-                slider.style.backgroundPosition = "center";
-                slider.style.backgroundImage = `url('${url}')`;
-            }
-        }
-
-        function scheduleNext() {
-            setTimeout(() => {
-                currentIndex = (currentIndex + 1) % images.length;
-                const nextIndex = (currentIndex + 1) % images.length;
-
-                // Preload next image (if not already)
-                if (!preloaded[nextIndex]) {
-                    const img = new Image();
-                    img.src = images[nextIndex];
-                    preloaded[nextIndex] = img;
-                }
-
-                setBackground(images[currentIndex]);
-                scheduleNext();
-            }, 20000); // change every 15s
-        }
-    }
-});
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const chatIcon = document.getElementById("chat-icon");
@@ -154,79 +85,73 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatBody = document.querySelector(".chat-body");
 
     // Toggle chat window
-    chatIcon.addEventListener("click", () => {
-        chatWindow.classList.toggle("chat-closed");
-    });
-    closeBtn.addEventListener("click", () => {
-        chatWindow.classList.add("chat-closed");
-    });
+    if (chatIcon){
+        chatIcon.addEventListener("click", () => {
+            chatWindow.classList.toggle("chat-closed");
+        });
+    }
+    if (closeBtn){
+        closeBtn.addEventListener("click", () => {
+            chatWindow.classList.add("chat-closed");
+        });
+    }
 
-    sendBtn.addEventListener("click", () => {
-        const msg = input.value.trim();
-        const csrf = csrf_token.value.trim();
-        if (!msg || !csrf) return;
+    if(sendBtn){
+        sendBtn.addEventListener("click", () => {
+            const msg = input.value.trim();
+            const csrf = csrf_token.value.trim();
+            if (!msg || !csrf) return;
 
-        // Display user message
-        const userMsg = document.createElement("div");
-        userMsg.className = "chat-message user";
-        userMsg.textContent = msg;
-        chatBody.appendChild(userMsg);
+            // Display user message
+            const userMsg = document.createElement("div");
+            userMsg.className = "chat-message user";
+            userMsg.textContent = msg;
+            chatBody.appendChild(userMsg);
 
-        input.value = "";
-        chatBody.scrollTop = chatBody.scrollHeight;
+            input.value = "";
+            chatBody.scrollTop = chatBody.scrollHeight;
 
-        // Show "typing..." placeholder
-        const typingMsg = document.createElement("div");
-        typingMsg.className = "chat-message bot typing";
-        typingMsg.textContent = "";
-        chatBody.appendChild(typingMsg);
-        chatBody.scrollTop = chatBody.scrollHeight;
+            // Show "typing..." placeholder
+            const typingMsg = document.createElement("div");
+            typingMsg.className = "chat-message bot typing";
+            typingMsg.textContent = "";
+            chatBody.appendChild(typingMsg);
+            chatBody.scrollTop = chatBody.scrollHeight;
 
-        // Send to backend
-        fetch("/bot?save_visitor=0", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                message: msg,
-                csrf_token: csrf
+            // Send to backend
+            fetch("/bot?save_visitor=0", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: msg,
+                    csrf_token: csrf
+                })
             })
-        })
-            .then(res => res.json())
-            .then(data => {
-                // Keep "typing..." visible for 5s
-                setTimeout(() => {
-                    typingMsg.remove(); // remove typing indicator
+                .then(res => res.json())
+                .then(data => {
+                    // Keep "typing..." visible for 5s
+                    setTimeout(() => {
+                        typingMsg.remove(); // remove typing indicator
+                        const botMsg = document.createElement("div");
+                        botMsg.className = "chat-message bot";
+                        botMsg.textContent = data.reply || "Habari! Wahudumu wetu watakujibu hivi punde. Unaweza kutuandikia swali lako kupitia https://amucta.ac.tz/contact";
+                        chatBody.appendChild(botMsg);
+                        chatBody.scrollTop = chatBody.scrollHeight;
+                    }, 5000);
+                })
+                .catch(err => {
+                    typingMsg.remove();
                     const botMsg = document.createElement("div");
-                    botMsg.className = "chat-message bot";
-                    botMsg.textContent = data.reply || "Habari! Wahudumu wetu watakujibu hivi punde. Unaweza kutuandikia swali lako kupitia https://amucta.ac.tz/contact";
+                    botMsg.className = "chat-message bot error";
+                    botMsg.textContent = "Habari! Wahudumu wetu watakujibu hivi punde. Unaweza kutuandikia swali lako kupitia https://amucta.ac.tz/contact";
                     chatBody.appendChild(botMsg);
                     chatBody.scrollTop = chatBody.scrollHeight;
-                }, 5000);
-            })
-            .catch(err => {
-                typingMsg.remove();
-                const botMsg = document.createElement("div");
-                botMsg.className = "chat-message bot error";
-                botMsg.textContent = "Habari! Wahudumu wetu watakujibu hivi punde. Unaweza kutuandikia swali lako kupitia https://amucta.ac.tz/contact";
-                chatBody.appendChild(botMsg);
-                chatBody.scrollTop = chatBody.scrollHeight;
-            });
-    });
-
-
-});
-
-window.addEventListener('scroll', function() {
-    const header = document.getElementById('header');
-    if (window.scrollY > 100) { // Trigger after scrolling 100px
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
+                });
+        });
     }
-});
-document.addEventListener('DOMContentLoaded', function() {
+
     const mobileBtn = document.getElementById('mobileMenuBtn');
     const nav = document.getElementById('navigation-container');
     const navClose = document.getElementById('menu-close');
@@ -267,8 +192,17 @@ document.addEventListener('DOMContentLoaded', function() {
             allDropdowns.forEach(li => li.classList.remove('active'));
         }
     });
-
 });
+
+window.addEventListener('scroll', function() {
+    const header = document.getElementById('header');
+    if (window.scrollY > 100) { // Trigger after scrolling 100px
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+});
+
 
 
 

@@ -12,7 +12,7 @@ class Gallery
 {
     public function list()
     {
-        $query = "SELECT * FROM images";
+        $query = "SELECT * FROM images order by created_at desc ";
         $images = (new Database())->select($query);
         $tr = "";
 
@@ -169,7 +169,7 @@ header;
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
-        echo json_encode((new Database())->select("select * from images"));
+        echo json_encode((new Database())->select("select * from images order by created_at desc "));
     }
 
     public function background()

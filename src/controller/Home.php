@@ -19,7 +19,31 @@ class Home
         $all_times=number_format($visitorStats['totals']['all_time']);
         $today=$visitorStats['totals']['today'];
         $week=$visitorStats['totals']['this_week'];
+        $images=$db->select("SELECT *
+    FROM (
+        SELECT *
+        FROM images
+         WHERE category IN ('gallery','slides')
+         ORDER BY created_at DESC
+         LIMIT 20
+     ) AS recent_images
+     ORDER BY RAND()
+     LIMIT 5");
+        $image_setcion="";
+        if (!empty($images)){
+            foreach ($images as $image) {
+                $link=$image['url'];
+                $name= $image['name'];
+                $image_setcion.=<<<lk
+<div class="swiper-slide">
+                <img src="$link" alt="$name">
+            </div>
+lk;
+
+            }
+        }
         $loc="";
+
         foreach ($visitorStats['top_countries'] as $lo){
             $country=$lo['country'];
             $total=$lo['total'];
@@ -46,14 +70,17 @@ class Home
             }
         }
         $head=<<<kl
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="/js/home.js" defer></script>
 <link type='text/css' rel='stylesheet' href='/css/home.css'>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 {$h_style}
 kl;
         $content = <<<content
 <!-- Background container -->
-<div id="background-slider"></div>
-<div class="amucta-ads"></div>
+<!--<div id="background-slider"></div>-->
+
 <section class="section hidden flex-row justify-center">
   <div class="text-center or-title">
     <h1 class="uni-title">Archbishop Mihayo University College of Tabora</h1>
@@ -61,21 +88,31 @@ kl;
   </div>
 </section>
 $h_content
-
 <div class="heroo">
-    
-    <section class="search-box">
-    <form action="/programmes/search" method="post" class="search-form">
+    <div class="hero-box box-main">  
+    <div class="swiper mainSwiper">
+        <div class="swiper-wrapper">
+            $image_setcion
+        </div>
+
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</div>
+
+
+    <div class="hero-box box-side">
+        <form action="/programmes/search" method="post" class="search-form w-full">
         <select name="course" required>
             <option value="" disabled selected>Find your program</option>
             $prog_list
         </select>
-        <button type="submit">Search</button>
+        <button type="submit"><i class="fa fa-search"></i></button>
     </form>
-</section>
-
-    
+    </div>
 </div>
+
 $intro
 $news
 <section class="stats-section">
