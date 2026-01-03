@@ -285,67 +285,98 @@ class Helper
         imagedestroy($image);
         return $result;
     }
-    public static function generateCenteredWebpThumbnail($sourcePath, $destinationPath, $thumbSize = 300): bool
+   public static function generateCenteredWebpThumbnail(
+        string $sourcePath,
+        string $destinationPath,
+        int $thumbSize = 300,
+        int $quality = 75
+    ): bool
     {
-        $imageInfo = getimagesize($sourcePath);
-        $imageType = $imageInfo[2];
-
-        switch ($imageType) {
-            case IMAGETYPE_JPEG:
-                $sourceImage = imagecreatefromjpeg($sourcePath);
-                break;
-            case IMAGETYPE_PNG:
-                $sourceImage = imagecreatefrompng($sourcePath);
-                break;
-            case IMAGETYPE_GIF:
-                $sourceImage = imagecreatefromgif($sourcePath);
-                break;
-            default:
-                return false; // Unsupported format
-        }
-
-        $sourceWidth = imagesx($sourceImage);
-        $sourceHeight = imagesy($sourceImage);
-
-        // Calculate the size of the square to crop
-        $sideLength = min($sourceWidth, $sourceHeight);
-
-        // Calculate crop start points (centered)
-        $cropX = ($sourceWidth - $sideLength) / 2;
-        $cropY = ($sourceHeight - $sideLength) / 2;
-
-        // Crop the image to a square
-        $croppedImage = imagecrop($sourceImage, [
-            'x' => $cropX,
-            'y' => $cropY,
-            'width' => $sideLength,
-            'height' => $sideLength
-        ]);
-
-        if ($croppedImage === false) {
-            imagedestroy($sourceImage);
+        if (!file_exists($sourcePath)) {
             return false;
         }
 
-        // Resize cropped image to thumbnail size
-        $thumbImage = imagecreatetruecolor($thumbSize, $thumbSize);
+        $info = getimagesize($sourcePath);
+        if ($info === false) {
+            return false;
+        }
+
+        $mime = $info['mime'];
+
+        switch ($mime) {
+            case 'image/jpeg':
+                $srcImg = imagecreatefromjpeg($sourcePath);
+                break;
+
+            case 'image/png':
+                $srcImg = imagecreatefrompng($sourcePath);
+                imagepalettetotruecolor($srcImg);
+                imagealphablending($srcImg, false);
+                imagesavealpha($srcImg, true);
+                break;
+
+            case 'image/gif':
+                $srcImg = imagecreatefromgif($sourcePath);
+                break;
+
+            case 'image/webp':
+                $srcImg = imagecreatefromwebp($sourcePath);
+                break;
+
+            default:
+                return false;
+        }
+
+        if (!$srcImg) {
+            return false;
+        }
+
+        $srcWidth  = imagesx($srcImg);
+        $srcHeight = imagesy($srcImg);
+
+        // Determine square crop size
+        $cropSize = min($srcWidth, $srcHeight);
+
+        // Center crop coordinates
+        $srcX = (int)(($srcWidth - $cropSize) / 2);
+        $srcY = (int)(($srcHeight - $cropSize) / 2);
+
+        // Create thumbnail canvas
+        $thumbImg = imagecreatetruecolor($thumbSize, $thumbSize);
+
+        // Preserve transparency
+        imagealphablending($thumbImg, false);
+        imagesavealpha($thumbImg, true);
+        $transparent = imagecolorallocatealpha($thumbImg, 0, 0, 0, 127);
+        imagefilledrectangle($thumbImg, 0, 0, $thumbSize, $thumbSize, $transparent);
+
+        // Crop and resize
         imagecopyresampled(
-            $thumbImage,
-            $croppedImage,
-            0, 0, 0, 0,
-            $thumbSize, $thumbSize,
-            $sideLength, $sideLength
+            $thumbImg,
+            $srcImg,
+            0,
+            0,
+            $srcX,
+            $srcY,
+            $thumbSize,
+            $thumbSize,
+            $cropSize,
+            $cropSize
         );
 
+        // Ensure destination directory exists
+        $dir = dirname($destinationPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
         // Save as WebP
-        $result = imagewebp($thumbImage, $destinationPath, 90);
+        $saved = imagewebp($thumbImg, $destinationPath, $quality);
 
-        // Free memory
-        imagedestroy($sourceImage);
-        imagedestroy($croppedImage);
-        imagedestroy($thumbImage);
+        imagedestroy($srcImg);
+        imagedestroy($thumbImg);
 
-        return $result;
+        return $saved;
     }
 
     public static function is_human_ip($ip): bool

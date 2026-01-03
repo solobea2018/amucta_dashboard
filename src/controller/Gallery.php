@@ -4,7 +4,6 @@
 namespace Solobea\Dashboard\controller;
 
 
-use http\Exception;
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
@@ -337,7 +336,8 @@ HTML;
            GENERATE THUMBNAIL
            ========================= */
 
-        $generated = Helper::generateCenteredWebpThumbnail(
+
+        $generated = \Solobea\Dashboard\utils\Helper::generateCenteredWebpThumbnail(
             $fullPath,
             $thumbnailFullPath,
             300 // thumbnail size in px
@@ -358,7 +358,7 @@ HTML;
         $db->update(
             'images',
             ['thumbnail_url' => $thumbnailRelativePath],
-            "id = {$id}"
+            ['id'=>$id]
         );
 
         echo json_encode([
@@ -404,7 +404,8 @@ HTML;
                     60,
                     100
                 );
-                $after = filesize($fullPath);
+                $afterBytes = filesize($fullPath);
+                $after = number_format(round($afterBytes / 1024, 2),2);
                 if ($optimized) {
                     $db->update('images',['image_size'=>$after],['id'=>$id]);
                     $message = "Quality reduced successfully from" . $before . " to " . $after;

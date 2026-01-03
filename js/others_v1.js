@@ -948,6 +948,13 @@ function createThumbNail(id) {
             id: id
         })
     })
+        /*  .then(rs=>{
+            return rs.text()
+        }).then(
+        txt=>{
+            console.log(txt)
+        }
+    )*/
 
         .then(response => response.json())
         .then(dataResponse => {
@@ -972,14 +979,14 @@ function reduceQuality(id){
             id: id
         })
     })
-        .then(rs=>{
+       /* .then(rs=>{
             return rs.text()
         }).then(
         txt=>{
             console.log(txt)
         }
-    )
-        /*.then(response => response.json())
+    )*/
+        .then(response => response.json())
         .then(dataResponse => {
             if (dataResponse.status === "success") {
                 Swal.fire("Updated!", dataResponse.message, "success");
@@ -990,7 +997,7 @@ function reduceQuality(id){
         .catch(error => {
             console.error("Update error:", error);
             Swal.fire("Error!","Something went wrong", "error");
-        });*/
+        });
 }
 function deleteResource(table, id) {
     Swal.fire({
