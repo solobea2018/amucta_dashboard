@@ -4,17 +4,14 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 require_once "vendor/autoload.php";
+header("Content-Type: application/json");
 
 use Solobea\Dashboard\database\Database;
-use Solobea\Helpers\data\Sanitizer;
-use Solobea\Helpers\helper\Helper;
+$db=Database::get_instance();
 
-$database = new Database();
-$nons =$database->select("select id, message from contacts ");
-
-echo Sanitizer::is_valid_message("Habari vipi hapo kuna uzima wowote shuleni");
+$outreach=$db->select("SELECT id,author,activity_title from amucta_outreach ");
+echo json_encode($outreach);
 exit();
-header("Content-Type: application/json");
 
 $basePath = __DIR__ . '/new';
 $baseUrl  = '/new/';

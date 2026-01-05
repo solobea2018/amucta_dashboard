@@ -486,10 +486,12 @@ HTML;
 
         $items = "";
         foreach ($rows as $r) {
+            $author = $r['authors'] ?? "Anonymouus";
             $items .= "
         <li>
             <strong>{$r['activity_title']}</strong><br>
-            {$r['description']}<br>
+            {$r['description']}<br>           
+            <em>{$author}</em><br>
             <a href='{$r['link']}' target='_blank'>View activity</a> ({$r['year']})
         </li>";
         }
