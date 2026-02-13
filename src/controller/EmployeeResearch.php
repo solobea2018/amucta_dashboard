@@ -20,13 +20,15 @@ class EmployeeResearch
 
         if (sizeof($researches) > 0) {
             foreach ($researches as $r) {
+                $id = $r['id'];
                 $tr .= "<tr>
 <td>{$r['title']}</td>
 <td>{$r['publication_type']}</td>
 <td>{$r['authors']}</td>
 <td>
-<button class='btn btn-danger hidden' onclick='deleteResource(\"amucta_research\",{$r['id']})'>Delete <i class='bi bi-trash'></i></button>
-<button class='btn btn-primary' onclick='viewResearch({$r['id']})'>View <i class='bi bi-eye'></i></button>
+<button class='btn btn-danger hidden' onclick='deleteResource(\"amucta_research\",{$id})'><i class='bi bi-trash'></i></button>
+<button class='btn btn-primary' onclick='viewResearch({$id})'><i class='bi bi-eye'></i></button>
+<a href='/employee-research/edit/{$id}' class='btn btn-secondary'><i class='bi bi-pencil'></i></a>
 </td>
 </tr>";
             }
@@ -56,12 +58,136 @@ HTML;
         MainLayout::render($content);
     }
 
+    public function edit($params)
+    {
+        Authentication::require_roles(['admin','dupr']);
+        if (isset($params) && !empty($params)){
+            $id=intval($params[0]);
+            $research=Database::get_instance()->select_prepared("select * from amucta_research where id=?",[$id],"i");
+            if (!empty($research) && count($research)>0){
+                $research=$research[0];
+                $content= <<<FORM
+<form class="form-container max-w-md"
+      onsubmit="sendFormSweet(this,event)"
+      action="/employee-research/add"
+      method="post"
+      enctype="multipart/form-data">
+
+    <input type="hidden" name="id" value="{$research['id']}">
+
+    <div class="form-group">
+        <label for="authors">Author(s)</label>
+        <input type="text"
+               id="authors"
+               name="authors"
+               value="{$research['authors']}"
+               class="form-control"
+               placeholder="e.g. John Doe, Jane Smith"
+               required>
+    </div>
+
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text"
+               id="title"
+               name="title"
+               value="{$research['title']}"
+               class="form-control"
+               placeholder="Enter publication title"
+               required>
+    </div>
+
+    <div class="form-group">
+        <label for="publication_type">Publication Type</label>
+        <select id="publication_type"
+                name="publication_type"
+                class="form-control"
+                required>
+            <option value="Journal Article">Journal Article</option>
+            <option value="Original Research Article">Original Research Article</option>
+            <option value="Book Chapter">Book Chapter</option>
+            <option value="Book">Book</option>
+            <option value="Conference Paper">Conference Paper</option>
+            <option value="Manuscript">Manuscript</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="abstract_text">Abstract / Description</label>
+        <textarea id="abstract_text"
+                  name="abstract_text"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Enter abstract or brief description">{$research['abstract_text']}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="publisher">Publisher / Journal</label>
+        <input type="text"
+               id="publisher"
+               name="publisher"
+               value="{$research['publisher']}"
+               class="form-control"
+               placeholder="Journal, publisher, or institution">
+    </div>
+
+    <div class="form-group">
+        <label for="year">Year</label>
+        <input type="text"
+               id="year"
+               name="year"
+               value="{$research['year']}"
+               class="form-control"
+               placeholder="e.g. 2025">
+    </div>
+
+    <div class="form-group">
+        <label for="link">External Link</label>
+        <input type="url"
+               id="link"
+               name="link"
+               value="{$research['link']}"
+               class="form-control"
+               placeholder="https://example.com (optional)">
+    </div>
+
+    <div class="form-group">
+        <label for="file">Upload File (Optional)</label>
+        <input type="file"
+               id="file"
+               name="file"
+               class="form-control"
+               accept=".pdf,.doc,.docx">
+    </div>
+
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status"
+                name="status"
+                class="form-control">
+            <option value="complete">Complete</option>
+            <option value="manuscript">Manuscript</option>
+            <option value="onprogress">In Progress</option>
+        </select>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">💾 Update</button>
+    </div>
+
+</form>
+FORM;
+                MainLayout::render($content,"","Edit research");
+            }
+        }
+    }
+
     public function get_research($params)
     {
         if (isset($params) && !empty($params)) {
             try {
                 $id = intval($params[0]);
-                $db = new Database();
+                $db = Database::get_instance();
 
                 $research = $db->select("SELECT * FROM amucta_research where id='{$id}' limit 1");
 
@@ -126,7 +252,7 @@ HTML;
             }
         }
 
-        $db = new Database();
+        $db = Database::get_instance();
         $user_id = Authentication::user()->getId();
         $data = [
             'authors' => $authors,
@@ -140,8 +266,13 @@ HTML;
             'status'      => $status,
             'user_id'     =>$user_id
         ];
-
-        if ($db->insert("amucta_research", $data)) {
+        if (isset($_POST['id'])){
+            $re_id=intval($_POST['id']);
+            if ($db->update("amucta_research",$data,['id'=>$re_id])) {
+                echo json_encode(['status' => "success", 'message' => "Research updated successfully"]);
+            }
+        }
+        elseif ($db->insert("amucta_research", $data)) {
             echo json_encode(['status' => "success", 'message' => "Research added successfully"]);
         } else {
             echo json_encode(['status' => "error", 'message' => "Failed to add research"]);
@@ -154,6 +285,6 @@ HTML;
         header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
-        echo json_encode((new Database())->select("SELECT * FROM amucta_research ORDER BY year DESC, id DESC"));
+        echo json_encode((Database::get_instance())->select("SELECT * FROM amucta_research ORDER BY year DESC, id DESC"));
     }
 }

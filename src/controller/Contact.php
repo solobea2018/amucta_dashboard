@@ -153,11 +153,22 @@ HTML;
         }
     }
 
-    public function list()
+    public function list($params=null)
     {
        Authentication::require_roles(['admin','admission','hro','pro']);
-        $query = "SELECT id, full_name, email, message, read_status, create_date, title 
+        if (isset($params) &&!empty($params)){
+            if ($params[0]=="all"){
+                $query = "SELECT id, full_name, email, message, read_status, create_date, title 
               FROM contacts ORDER BY create_date DESC";
+            }else{
+                $limit=intval($params[0]);
+                $query = "SELECT id, full_name, email, message, read_status, create_date, title 
+              FROM contacts ORDER BY create_date DESC limit {$limit}";
+            }
+        }else{
+            $query = "SELECT id, full_name, email, message, read_status, create_date, title 
+              FROM contacts ORDER BY create_date DESC limit 50";
+        }
         $contacts = (new Database())->select($query);
 
         $items = "";
@@ -187,6 +198,7 @@ HTML;
             <button class="btn btn-danger" onclick="deleteResource('contacts', {$contact['id']})">Delete</button>
         </div>
     </div>
+<a href="/contact/list/all" class="text-blue-400">View All</a>
 </div>
 HTML;
             }
@@ -210,11 +222,23 @@ HTML;
         MainLayout::render($content);
     }
 
-    public function ai()
+    public function ai($params=null)
     {
+
         Authentication::require_roles(['admin','admission','hro','pro']);
-        $query = "SELECT id, name, message, reply, created_at 
+        if (isset($params) && !empty($params)){
+            if ($params[0]=="all"){
+                $query = "SELECT id, name, message, reply, created_at 
               FROM ai_chats ORDER BY created_at DESC";
+            }else{
+                $limit=intval($params[0]);
+                $query = "SELECT id, name, message, reply, created_at 
+              FROM ai_chats ORDER BY created_at DESC limit {$limit}";
+            }
+        }else{
+            $query = "SELECT id, name, message, reply, created_at 
+              FROM ai_chats ORDER BY created_at DESC limit 50";
+        }
         $chats = (new Database())->select($query);
 
         $items = "";
@@ -254,6 +278,7 @@ HTML;
 <div class="flex flex-col" style="max-width:800px; margin:0 auto;">
     <h2 style="margin-bottom:20px; color:#333;">AI Chat History</h2>
     $items
+    <a href="/contact/ai/all" class="text-blue-400">View All</a>
 </div>
 HTML;
 

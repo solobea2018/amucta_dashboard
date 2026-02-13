@@ -1217,8 +1217,6 @@ function addResearch() {
       method="post"
       enctype="multipart/form-data">
 
-    <input type="hidden" name="id" value="">
-
     <div class="form-group">
         <label for="authors">Author(s)</label>
         <input type="text"
