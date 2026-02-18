@@ -120,6 +120,7 @@ HTML;
                   rows="4"
                   placeholder="Enter abstract or brief description">{$research['abstract_text']}</textarea>
     </div>
+<<<<<<< HEAD
     <div class="form-group">
         <label for="feature_image">Feature Image</label>
         <input type="file" 
@@ -128,6 +129,8 @@ HTML;
                name="feature_image" 
                class="form-control">
       </div>
+=======
+>>>>>>> f30ea37f173d1f2ca4093bb969dde699d016fdc1
 
     <div class="form-group">
         <label for="publisher">Publisher / Journal</label>
@@ -264,7 +267,6 @@ FORM;
         if (!empty($_FILES['feature_image']['name'])) {
             $uploadDir = $_SERVER['DOCUMENT_ROOT'] . "/images/research/";
             if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-
             $tmp_name = $_FILES['feature_image']['tmp_name'];
             $ext = strtolower(pathinfo($_FILES['feature_image']['name'], PATHINFO_EXTENSION));
 
@@ -331,10 +333,12 @@ FORM;
         ];
         if (isset($_POST['id'])){
             $re_id=intval($_POST['id']);
+
             if ($feature_image_path==null){
                 $feature_image_path=$db->select_prepared("select image from amucta_research where id=? limit 1",[$re_id],'i')[0]['image']??null;
                 $data['image']=$feature_image_path;
             }
+
             if ($db->update("amucta_research",$data,['id'=>$re_id])) {
                 echo json_encode(['status' => "success", 'message' => "Research updated successfully"]);
             }
