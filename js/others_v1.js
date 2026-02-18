@@ -1217,8 +1217,6 @@ function addResearch() {
       method="post"
       enctype="multipart/form-data">
 
-    <input type="hidden" name="id" value="">
-
     <div class="form-group">
         <label for="authors">Author(s)</label>
         <input type="text"
@@ -1252,6 +1250,14 @@ function addResearch() {
             <option value="Manuscript">Manuscript</option>
         </select>
     </div>
+    <div class="form-group">
+        <label for="feature_image">Feature Image</label>
+        <input type="file" 
+               accept="image/*"
+               id="feature_image" 
+               name="feature_image" 
+               class="form-control">
+      </div>
 
     <div class="form-group">
         <label for="abstract_text">Abstract / Description</label>
@@ -1333,6 +1339,98 @@ function addResearch() {
             }
         })
         .catch(err => console.error("Error loading employees:", err));
+}
+function addOutreach() {
+    var research_form = `
+    <form class="form-container"
+      onsubmit="sendFormSweet(this,event)"
+      action="/amucta-outreach/add"
+      method="post"
+      enctype="multipart/form-data">
+
+    <div class="form-group">
+        <label for="authors">Author(s)</label>
+        <input type="text"
+               id="authors"
+               name="authors"
+               class="form-control"
+               placeholder="e.g. John Doe, Jane Smith"
+               required>
+    </div>
+
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text"
+               id="title"
+               name="title"
+               class="form-control"
+               placeholder="Enter publication title"
+               required>
+    </div>
+  
+    <div class="form-group">
+        <label for="abstract_text">Description</label>
+        <textarea id="abstract_text"
+                  name="abstract_text"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Enter brief description"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="year">Year</label>
+        <input type="text"
+               id="year"
+               name="year"
+               class="form-control"
+               placeholder="e.g. 2025">
+    </div>
+    <div class="form-group">
+        <label for="feature_image">Feature Image</label>
+        <input type="file" 
+               accept="image/*"
+               id="feature_image" 
+               name="feature_image" 
+               class="form-control">
+      </div>
+
+    <div class="form-group">
+        <label for="link">External Link</label>
+        <input type="url"
+               id="link"
+               name="link"
+               class="form-control"
+               placeholder="https://example.com (optional)">
+    </div>
+
+    <div class="form-group">
+        <label for="file">Upload File (Optional)</label>
+        <input type="file"
+               id="file"
+               name="file"
+               class="form-control"
+               accept=".pdf,.doc,.docx">
+    </div>
+
+    <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status"
+                name="status"
+                class="form-control">
+            <option value="complete">Complete</option>
+            <option value="manuscript">Manuscript</option>
+            <option value="onprogress">In Progress</option>
+        </select>
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-primary">💾 Save</button>
+    </div>
+
+</form>
+
+    `;
+    popHtml("Add Research / Publication / Project / Outreach", research_form);
 }
 function editDepartment(id) {
     fetch(`/department/department/${id}`)

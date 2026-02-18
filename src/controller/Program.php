@@ -202,6 +202,46 @@ content;
         header("Content-Type: application/json");
         echo json_encode((new Database())->select("select * from program"));
     }
+    public function snapshot()
+    {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+        header("Content-Type: application/json; charset=UTF-8");
+        header("Content-Type: application/json");
+        $programs=(new Database())->select("select p.id,p.name,l.name as level_name,short_name,intakes,fees,accreditation_year as accreditation, entry_requirements,duration,p.description
+        from program p 
+join level l on l.id=p.level_id order by l.id,p.name
+        ");
+        if (count($programs) > 0) {
+            foreach ($programs as &$program) {
+
+                $program['entry_requirements'] = html_entity_decode(
+                    htmlspecialchars_decode($program['entry_requirements'], ENT_QUOTES | ENT_HTML5),
+                    ENT_QUOTES | ENT_HTML5
+                );
+
+                $program['fees'] = html_entity_decode(
+                    htmlspecialchars_decode($program['fees'], ENT_QUOTES | ENT_HTML5),
+                    ENT_QUOTES | ENT_HTML5
+                );
+            }
+            unset($program);
+
+
+            echo json_encode(
+                [
+                    "status" => "success",
+                    "programs" => $programs
+                ],
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
+
+        }
+        else{
+            echo json_encode(["status"=>"error","message"=>"no data found"]);
+        }
+    }
     public function data($params)
     {
         header('Content-Type: application/json');

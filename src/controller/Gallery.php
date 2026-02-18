@@ -11,9 +11,18 @@ use Solobea\Helpers\helper\Helper;
 
 class Gallery
 {
-    public function list()
+    public function list($params=null)
     {
-        $query = "SELECT * FROM images order by created_at desc ";
+        if (isset($params) && !empty($params)){
+            if ($params[0]=="all"){
+                $query = "SELECT * FROM images order by created_at desc ";
+            }else{
+                $limit=intval($params[0]);
+                $query = "SELECT * FROM images order by created_at desc limit {$limit}";
+            }
+        }else{
+            $query = "SELECT * FROM images order by created_at desc limit 40";
+        }
         $images = (new Database())->select($query);
         $tr = "";
 
@@ -56,6 +65,7 @@ class Gallery
         <tbody>$tr</tbody>
     </table>
 </div>
+<a href="/gallery/list/all" class="text-blue-400">View All</a>
 HTML;
         $header=<<<header
 <style>
@@ -243,9 +253,18 @@ header;
         echo json_encode(["images"=>$slides]);
     }
 
-    public function index()
+    public function index($params=null)
     {
-        $query = "SELECT * FROM images where category= 'gallery' or category='slides' order by created_at desc";
+        if (isset($params) && !empty($params)){
+            if ($params[0]=="all"){
+                $query = "SELECT * FROM images where category= 'gallery' or category='slides' order by created_at desc";
+            }else{
+                $limit=intval($params[0]);
+                $query = "SELECT * FROM images where category= 'gallery' or category='slides' order by created_at desc limit {$limit}";
+            }
+        }else{
+            $query = "SELECT * FROM images where category= 'gallery' or category='slides' order by created_at desc limit 30";
+        }
         $images = (new Database())->select($query);
         $cards = "";
         if (sizeof($images) > 0) {
@@ -267,6 +286,7 @@ header;
 
         $content=<<<Content
 <div class="gallery-wrapper"> $cards </div>
+<a href="/gallery/index/all" class="text-blue-400">View All</a>
 Content;
 
         $header = <<<HTML

@@ -17,40 +17,12 @@ class MainLayout
         $org_logo="/logo.png";
         $title=$title??$org_name;
         $menu=self::header();
-        $menu_admin = "";
+        $admin_content = "";
         $admn_js='';
-        if (Authentication::has_role('admin')){
-            $admn_js='<script src="/js/others_v1.js" type="text/javascript"></script>';
-            $menu_admin =  MainLayout::menu();
-        }
         $csrf_token=self::generateCsrfToken();
-
-        $layout= <<<HTML
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styles_v1.css">
-    <link rel="stylesheet" href="/css/animate.css">
-    <link rel="stylesheet" href="/css/sweetalert2.css">
-    <link rel="stylesheet" href="/css/toastify.css">
-    <link rel="stylesheet" href="/css/chat.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
-    <script src="/js/amucta.js" type="text/javascript"></script>
-   $admn_js
-    <script src="/js/sweetalert2.js" type="text/javascript"></script>
-    <script src="/js/toastify.js" type="text/javascript"></script>
-    <title>$title</title>
-    <script type="text/javascript" src="/js/main_v1.js" defer></script>
-  <link rel="icon" href="$org_logo">
-  $header
-</head>
-<body>
-<!-- Header with Enhanced Branding and Improved Menu -->
-<header id="header">
-  <div class="header-top no-print">
+        $normal_user=<<<hd
+<header id='header'>
+<div class="header-top no-print">
     <span class="text-yellow-500 text-lg">Archbishop Mihayo University College of Tabora</span>
     <a href="/contact">Contact Us</a>
     <a href="https://amucta.ac.tz:2096">Emails</a>
@@ -60,17 +32,13 @@ class MainLayout
     <a href="https://library.amucta.ac.tz">Library</a>
     <a href="/alumni">Alumni</a>
   </div>
-  $menu
+$menu
 </header>
-
-<!-- Main Content Area - Placeholder for Dynamic Content -->
 <main>
-$menu_admin
   <div class="main-content">
     {$content}
   </div>
 </main>
-
 <footer class="no-print">
   <!-- Stats Section -->
   
@@ -156,6 +124,44 @@ $menu_admin
     once: true,       // whether animation should happen only once
   });
 </script>
+hd;
+
+
+        if (Authentication::has_role('admin')){
+            $admn_js='<script src="/js/others_v1.js" type="text/javascript"></script><script src="/js/admin-menu.js" type="text/javascript"></script>';
+            $normal_user="";
+            $admin_content =  MainLayout::menu($content);
+            $header.='<link rel="stylesheet" href="/css/admin-menu.css">
+';
+        }
+
+
+        $layout= <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles_v1.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/css/sweetalert2.css">
+    <link rel="stylesheet" href="/css/toastify.css">
+    <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+    <script src="/js/amucta.js" type="text/javascript"></script>
+   $admn_js
+    <script src="/js/sweetalert2.js" type="text/javascript"></script>
+    <script src="/js/toastify.js" type="text/javascript"></script>
+    <title>$title</title>
+    <script type="text/javascript" src="/js/main_v1.js" defer></script>
+  <link rel="icon" href="$org_logo">
+  $header
+</head>
+<body>
+<!-- Header with Enhanced Branding and Improved Menu -->
+  {$normal_user}
+  {$admin_content}
 
 </body>
 </html>
@@ -163,33 +169,81 @@ HTML;
         echo $layout;
 
     }
-
-    public static function menu(): string
+    public static function menu($content): string
     {
         return <<<menu
-<div class="flex flex-row flex-wrap">
-    <a href="/faculty/list" class="btn btn-amucta"><i class="bi bi-dash-circle mx-2"></i>Faculty</a>
-    <a href="/department/list" class="btn btn-amucta"><i class="bi bi-house mx-2"></i>Department/Unit</a>
-    <a href="/Level/list" class="btn btn-amucta"><i class="bi bi-graph-up mx-2"></i>Level</a>
-    <a href="/program/list" class="btn btn-amucta"><i class="bi bi-book mx-2"></i>Program</a>
-    <a href="/news/list" class="btn btn-amucta"><i class="bi bi-newspaper mx-2"></i>News</a>
-    <a href="/events/list" class="btn btn-amucta"><i class="bi bi-calendar-event mx-2"></i>Events</a>
-    <a href="/attachment/list" class="btn btn-amucta"><i class="bi bi-file mx-2"></i>Attachments</a>
-    <a href="/home-content/list" class="btn btn-amucta"><i class="bi bi-file mx-2"></i>Homepage Contents</a>
-    <a href="/employee-role/list" class="btn btn-amucta"><i class="bi bi-file mx-2"></i>Employee Role</a>
-    <a href="/employee/list" class="btn btn-amucta"><i class="bi bi-people mx-2"></i>Employee</a>
-    <a href="/employee-research/list" class="btn btn-amucta"><i class="bi bi-people mx-2"></i>Employee Research</a>
-    <a href="/users/list" class="btn btn-amucta"><i class="bi bi-people mx-2"></i>Users</a>
-    <a href="/gallery/list" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Gallery</a>
-    <a href="/visitors/dashboard" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Visitors</a>
-    <a href="/contact/list" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Contacts</a>
-    <a href="/contact/ai" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>AI chats</a>
-    <a href="/errors/list" class="btn btn-amucta"><i class="bi bi-medium mx-2"></i>Logs</a>
-    <a href="/logout" class="btn btn-amucta"><i class="bi bi-arrow-bar-left mx-2"></i>Logout</a>
-</div> 
-menu;
+<div class="admin-layout">
 
+    <!-- Sidebar -->
+    <aside id="adminMenu" class="admin-menu">
+
+        <div class="a-menu-header">
+            <span>Admin Panel</span>
+            <button id="a-closeMenu">✕</button>
+        </div>
+
+        <div class="a-menu">
+
+            <div class="a-menu-title">🎓 Academic Setup</div>
+            <div class="a-submenu">
+                <a href="/faculty/list">Faculty</a>
+                <a href="/department/list">Department / Unit</a>
+                <a href="/Level/list">Level</a>
+                <a href="/program/list">Program</a>
+            </div>
+
+            <div class="a-menu-title">📰 Content</div>
+            <div class="a-submenu">
+                <a href="/news/list">News</a>
+                <a href="/events/list">Events</a>
+                <a href="/attachment/list">Attachments</a>
+                <a href="/home-content/list">Homepage</a>
+                <a href="/gallery/list">Gallery</a>
+            </div>
+
+            <div class="a-menu-title">👥 Staff & Users</div>
+            <div class="a-submenu">
+                <a href="/employee-role/list">Employee Role</a>
+                <a href="/employee/list">Employee</a>
+                <a href="/employee-research/list">Research</a>
+                <a href="/amucta-outreach/list">Outreach</a>
+                <a href="/users/list">Users</a>
+            </div>
+
+            <div class="a-menu-title">💬 Communication</div>
+            <div class="a-submenu">
+                <a href="/visitors/dashboard">Visitors</a>
+                <a href="/contact/list">Contacts</a>
+                <a href="/contact/ai">AI Chats</a>
+            </div>
+
+            <div class="a-menu-title">⚙ System</div>
+            <div class="a-submenu">
+                <a href="/errors/list">Logs</a>
+                <a href="/logout">Logout</a>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="admin-content">
+
+        <div class="a-topbar">
+            <button id="a-openMenu">☰</button>
+            <span>Dashboard</span>
+        </div>
+
+        <div class="a-page-content">
+            $content
+        </div>
+
+    </div>
+
+</div>
+menu;
     }
+
 
     public static function header(): string
     {

@@ -10,11 +10,20 @@ use Solobea\Dashboard\view\MainLayout;
 
 class Errors
 {
-    public function list()
+    public function list($params=null)
     {
         Authentication::require_roles(['admin','developer']);
 
-        $query = "SELECT id, title, message, cause_url, create_date FROM errors ORDER BY create_date DESC";
+        if (isset($params) && !empty($params)){
+            if ($params[0]=="all"){
+                $query = "SELECT id, title, message, cause_url, create_date FROM errors ORDER BY create_date DESC";
+            }else{
+                $limit=intval($params[0]);
+                $query = "SELECT id, title, message, cause_url, create_date FROM errors ORDER BY create_date DESC limit {$limit}";
+            }
+        }else{
+            $query = "SELECT id, title, message, cause_url, create_date FROM errors ORDER BY create_date DESC limit 50";
+        }
         $errors = (new Database())->select($query);
 
         $items = "";
@@ -45,6 +54,7 @@ HTML;
     <h2 style="margin-bottom:20px; color:#333;">Error Logs</h2>
     $items
 </div>
+<a href="/errors/list/all" class="text-blue-400">View All</a>
 HTML;
 
         MainLayout::render($content);

@@ -75,6 +75,30 @@ HTML;
                 $prog_list.="<option value='$id'>{$name}</option>";
             }
         }
+        $pubs=$db->select_prepared("select image,authors,title,link from amucta_research where image is not null order by year desc limit 3",[],"");
+        $pub_html="";
+        if (!empty($pubs) && sizeof($pubs)>0){
+            foreach ($pubs as $pub) {
+                $pub_html.=<<<pub
+<div class="publication-item">
+            <img src="{$pub['image']}" alt="Publication Image">
+
+            <div class="publication-info">
+                <div class="pub-title">
+                    <a href="{$pub['link']}">{$pub['title']}</a>
+                </div>
+
+                <p class="pub-authors">
+                    {$pub['authors']}
+                </p>
+
+                <span class="pub-year">2025</span>
+            </div>
+        </div>
+pub;
+
+            }
+        }
         $head=<<<kl
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -117,6 +141,16 @@ $h_content
         </select>
         <button type="submit"><i class="fa fa-search"></i></button>
     </form>
+    <section class="recent-publications">
+
+    <h2 class="section-title">Recent Publications</h2>
+
+    <div class="publication-list">
+    $pub_html
+    </div>
+
+</section>
+
     </div>
 </div>
 

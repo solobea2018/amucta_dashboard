@@ -170,36 +170,40 @@ document.addEventListener("DOMContentLoaded", () => {
             mobileBtn.classList.remove('active');
         });
     }
-
-    const mobileMainLinks = nav.querySelectorAll('.mobile-main-link');
-    mobileMainLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const parentLi = this.parentElement;
-            const allDropdowns = nav.querySelectorAll('.dropdown-container');
-            allDropdowns.forEach(li => li.classList.remove('active'));
-            parentLi.classList.toggle('active');
+    if (nav){
+        const mobileMainLinks = nav.querySelectorAll('.mobile-main-link');
+        mobileMainLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const parentLi = this.parentElement;
+                const allDropdowns = nav.querySelectorAll('.dropdown-container');
+                allDropdowns.forEach(li => li.classList.remove('active'));
+                parentLi.classList.toggle('active');
+            });
         });
-    });
+        document.addEventListener('click', function(e) {
+            if (mobileBtn && nav && !e.target.closest('header') && !e.target.closest('.navigation-container')) {
+                nav.classList.remove('active');
+                mobileBtn.classList.remove('active');
+                // Close all submenus
+                const allDropdowns = nav.querySelectorAll('.dropdown-container');
+                allDropdowns.forEach(li => li.classList.remove('active'));
+            }
+        });
 
+    }
     // Close mobile menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (mobileBtn && nav && !e.target.closest('header') && !e.target.closest('.navigation-container')) {
-            nav.classList.remove('active');
-            mobileBtn.classList.remove('active');
-            // Close all submenus
-            const allDropdowns = nav.querySelectorAll('.dropdown-container');
-            allDropdowns.forEach(li => li.classList.remove('active'));
-        }
-    });
+
 });
 
 window.addEventListener('scroll', function() {
     const header = document.getElementById('header');
-    if (window.scrollY > 100) { // Trigger after scrolling 100px
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
+    if (header){
+        if (window.scrollY > 100) { // Trigger after scrolling 100px
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
     }
 });
 

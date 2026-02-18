@@ -10,23 +10,7 @@ use Solobea\Dashboard\database\Database;
 $db=Database::get_instance();
 
 $row=$db->execute("
-CREATE TABLE payroll (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    employee_id INT NOT NULL,
-    month VARCHAR(20) NOT NULL,
-    basic_salary DECIMAL(15,2) NOT NULL,
-    allowances DECIMAL(15,2) DEFAULT 0,
-    deductions DECIMAL(15,2) DEFAULT 0,
-    net_salary DECIMAL(15,2) NOT NULL,
-    status ENUM('Pending','Paid','Cancelled') DEFAULT 'Pending',
-    paid_date DATE DEFAULT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_payroll_employee
-        FOREIGN KEY (employee_id)
-        REFERENCES employee(id)
-        ON DELETE CASCADE
-)
+alter table amucta_research modify publication_type varchar(100);
 ");
 echo $row;
 exit();
