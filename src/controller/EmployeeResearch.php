@@ -120,7 +120,6 @@ HTML;
                   rows="4"
                   placeholder="Enter abstract or brief description">{$research['abstract_text']}</textarea>
     </div>
-<<<<<<< HEAD
     <div class="form-group">
         <label for="feature_image">Feature Image</label>
         <input type="file" 
@@ -129,8 +128,6 @@ HTML;
                name="feature_image" 
                class="form-control">
       </div>
-=======
->>>>>>> f30ea37f173d1f2ca4093bb969dde699d016fdc1
 
     <div class="form-group">
         <label for="publisher">Publisher / Journal</label>
