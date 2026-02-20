@@ -754,8 +754,11 @@ function addUser() {
         <select id="role" name="role" class="form-control" required>
           <option value="">-- Select Role --</option>
           <option value="manager">Manager</option>
-          <option value="admin">Admin</option>
-          <option value="user" selected>User</option>
+          <option value="admin" title="admin">Admin</option>
+          <option value="hro" title="human resource management officer">HRMO</option>
+          <option value="pro" title="public relation officer">PRO</option>
+          <option value="hod" title="Head of department">HOD</option>
+          <option value="user" selected title="normal user">User</option>
         </select>
       </div>
 
@@ -1747,7 +1750,42 @@ function editProgram(id) {
             popHtml("Edit Alumni", form);
         });
 }
+function zoomImage() {
 
+    let overlay = document.getElementById('imgZoomOverlay');
+
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'imgZoomOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            cursor: zoom-out;
+        `;
+
+        overlay.innerHTML = `
+            <img id="imgZoomTarget" style="
+                max-width: 90%;
+                max-height: 90%;
+                border-radius: 12px;
+                box-shadow: 0 0 25px rgba(255,255,255,.35);
+            ">
+        `;
+
+        overlay.onclick = () => overlay.remove();
+        document.body.appendChild(overlay);
+    }
+
+    const zoomed = overlay.querySelector('#imgZoomTarget');
+
+    // get clicked image automatically
+    zoomed.src = event.target.src;
+}
 
 
 

@@ -4,131 +4,126 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
+use Solobea\Dashboard\utils\Helper;
 use Solobea\Dashboard\utils\Resource;
 use Solobea\Dashboard\view\MainLayout;
+use Solobea\Helpers\helper\MobileNumberValidation;
 
 class Profile
 {
     public function index()
     {
-        
-    }
-    public function profile1($params)
-    {
-        if (!isset($params[0]) || empty($params[0])) {
-            echo Resource::getErrorPage("Invalid Request:");
-            return;
-        }
+        Authentication::requireAuthentication();
 
-        $employee_id = intval($params[0]);
-        $db = new Database();
+        $user = Authentication::user();
 
-        // Fetch employee info
-        $employee = $db->select("SELECT e.*, d.name as department_name
-                             FROM employee e
-                             LEFT JOIN department d ON e.department_id = d.id
-                             WHERE e.id = {$employee_id} LIMIT 1");
+        $name     = htmlspecialchars($user->getFullName());
+        $email    = htmlspecialchars($user->getEmail());
+        $phone    = htmlspecialchars($user->getPhoneNumber());
+        $role     = htmlspecialchars($user->getRole());
+        $username = htmlspecialchars($user->getUsername());
+        $profile  = $user->getProfileUrl();
 
-        if (!$employee || count($employee) === 0) {
-            echo Resource::getErrorPage("Employee not found");
-            return;
-        }
+        $content = <<<content
+<div class="user-profile flex justify-center">
+    <form class="card max-w-lg w-full" 
+          action="/profile/update" 
+          method="post" 
+          enctype="multipart/form-data"
+          onsubmit="sendFormSweet(this,event)">
 
-        $emp = $employee[0];
+        <div class="text-center mb-4">
+            <img onclick="zoomImage()" src="$profile" class="w-24 h-24 rounded-full mx-auto object-cover">
+        </div>
 
-        // Fetch employee roles
-        $roles = $db->select("SELECT r.role_name, r.start_date, r.end_date, d.name as department_name
-                          FROM employee_role r
-                          LEFT JOIN department d ON r.department_id = d.id                        
-                          WHERE r.employee_id = {$employee_id} AND r.active = 1
-                          ORDER BY r.start_date DESC");
+        <div class="form-group">
+            <label>Profile Image</label>
+            <input type="file" name="profile_image" class="form-control" accept="image/*">
+        </div>
 
-        // Fetch employee researches, publications, projects
-        $researches = $db->select("SELECT title, type, description, start_date, end_date, link, file_path, active
-                               FROM employee_research
-                               WHERE employee_id = {$employee_id}
-                               ORDER BY start_date DESC");
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" value="$name" class="form-control">
+        </div>
 
-        // Render HTML
-        $rolesHtml = "";
-        foreach ($roles as $role) {
-            $rolesHtml .= "<tr>
-            <td>{$role['role_name']}</td>
-            <td>{$role['department_name']}</td>
-            <td>{$role['start_date']}</td>
-            <td>{$role['end_date']}</td>
-        </tr>";
-        }
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="$email" class="form-control">
+        </div>
 
-        $researchHtml = "";
-        foreach ($researches as $r) {
-            $researchHtml .= "<tr>
-            <td>{$r['title']}</td>
-            <td>{$r['type']}</td>
-            <td>{$r['description']}</td>
-            <td>{$r['start_date']}</td>
-            <td>{$r['end_date']}</td>
-            <td>".($r['link'] ? "<a href='{$r['link']}' target='_blank'>Link</a>" : "-")."</td>
-            <td>".($r['file_path'] ? "<a href='{$r['file_path']}' target='_blank'>File</a>" : "-")."</td>
-            <td>".($r['active'] ? "Yes" : "No")."</td>
-        </tr>";
-        }
-        $profile_tag=($emp['profile'] ? "<img loading='lazy' src='{$emp['profile']}' width='100'>" : "No Image");
+        <div class="form-group">
+            <label>Phone</label>
+            <input type="text" name="phone" value="$phone" class="form-control">
+        </div>
 
-        $content = <<<HTML
-<div class="profile-container">
-    <h2>{$emp['name']}</h2>
-    <div class="w-full flex flex-row items-center justify-center">$profile_tag</div>
-    <p><strong>Title:</strong> {$emp['title']}</p>
-    <p><strong>Email:</strong> {$emp['email']}</p>
-    <p><strong>Phone:</strong> {$emp['phone']}</p>
-    <p><strong>Qualification:</strong> {$emp['qualification']}</p>
-    <p><strong>Entry Year:</strong> {$emp['entry_year']}</p>
-    <p><strong>Department:</strong> {$emp['department_name']}</p>   
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" value="$username" class="form-control" disabled>
+        </div>
 
-    <h3>Roles</h3>
-    <table class="solobea-table">
-        <thead>
-            <tr>
-                <th>Role Name</th>
-                <th>Department</th>             
-                <th>Start Date</th>
-                <th>End Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            $rolesHtml
-        </tbody>
-    </table>
+        <div class="form-group">
+            <label>Role</label>
+            <input type="text" value="$role" class="form-control" disabled>
+        </div>
 
-    <h3>Researches / Publications / Projects</h3>
-    <table class="solobea-table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Link</th>
-                <th>File</th>
-                <th>Active</th>
-            </tr>
-        </thead>
-        <tbody>
-            $researchHtml
-        </tbody>
-    </table>
+        <div class="form-group">
+            <button class="btn btn-blue w-full">Update Profile</button>
+        </div>
+    </form>
 </div>
-HTML;
-        $meta_tags=<<<mt
-<meta name='og:'
-mt;
+content;
 
-        $head="";
-        $head.=$this->profStyle();
-        MainLayout::render($content,$head,$emp['name']);
+        MainLayout::render($content, '', 'User Profile');
+    }
+    public function update()
+    {
+        Authentication::requireAuthentication();
+
+        $user = Authentication::user();
+        $user_id = $user->getId();
+
+        $name  = trim(htmlentities($_POST['name']) ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $phone = trim($_POST['phone'] ?? '');
+
+        if ($name === '' || $email === '' || !filter_var($email,FILTER_VALIDATE_EMAIL) || !MobileNumberValidation::isMobileNumber($phone)) {
+            http_response_code(400);
+            echo json_encode(['status'=>'error','message'=>'Name, Phone number and email are required']);
+            return;
+        }
+
+        $data = [
+            'full_name' => $name,
+            'phone_number'     => $phone
+        ];
+
+        /* profile image */
+        if (!empty($_FILES['profile_image']['name'])) {
+            $mime = mime_content_type($_FILES['profile_image']['tmp_name']);
+
+            if (!str_starts_with($mime, 'image/')) {
+                http_response_code(400);
+                echo json_encode(['status'=>'error','message'=>'Invalid image file']);
+                return;
+            }
+
+            $dir = 'images/';
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
+
+            $path = $dir . $user_id . '_' . time() . '_' . basename($_FILES['profile_image']['name']);
+            move_uploaded_file($_FILES['profile_image']['tmp_name'], $path);
+
+            $data['profile_url'] = '/'.$path;
+        }
+
+        if (Database::get_instance()->update('users', $data, ['id'=>$user_id])) {
+            echo json_encode(['status'=>'success','message'=>'Profile updated successfully']);
+        } else {
+            http_response_code(500);
+            echo json_encode(['status'=>'error','message'=>'Failed to update profile']);
+        }
     }
     private function profStyle(): string
     {

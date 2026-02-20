@@ -79,6 +79,9 @@ function save_visitor($ip){
     if (!Helper::is_human_ip($ip)){
         return;
     }
+    if (Authentication::has_roles(['admin','manager'])){
+        return;
+    }
     $currentUrl = $_SERVER['REQUEST_URI'];
     if (isset($_SESSION['last_url'])) {
         if ($_SESSION['last_url'] === $currentUrl) {
@@ -91,25 +94,40 @@ function save_visitor($ip){
         $response=unserialize($_SESSION['visitor_data']);
     }
     else{
-        $curl = curl_init();
+        $db=Database::get_instance();
+        $data=$db->select_prepared("select ip, ip_type, continent, country, region, city, isp from visitors where ip=? limit 1",[$ip],'s');
+        if (!empty($data) && count($data)>0){
+            $datum=$data[0];
+            $response=json_encode([
+                'ip'=>$datum['ip'],
+                'type'=>$datum['ip_type'],
+                'continent_name'=>$datum['continent'],
+                'country_name'=>$datum['country'],
+                'region_name'=>$datum['region'],
+                'city'=>$datum['city'],
+                'connection'=>['isp'=>$datum['isp']]
+            ]);
+        }else{
+            $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://api.apilayer.com/ip_to_location/$ip",
-            CURLOPT_HTTPHEADER => array(
-                "Content-Type: text/plain",
-                "apikey: tD8e24dm34V7HQbvFNB6YuZHciy8aZsp"
-            ),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET"
-        ));
-        $response = curl_exec($curl);
-        $_SESSION['visitor_data']=serialize($response);
-        curl_close($curl);
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.apilayer.com/ip_to_location/$ip",
+                CURLOPT_HTTPHEADER => array(
+                    "Content-Type: text/plain",
+                    "apikey: J0VuE1ZaMkTVKAiW5Fqsno3V6srTp3a1"
+                ),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET"
+            ));
+            $response = curl_exec($curl);
+            $_SESSION['visitor_data']=serialize($response);
+            curl_close($curl);
+        }
     }
 
     $response_array=json_decode($response,true);

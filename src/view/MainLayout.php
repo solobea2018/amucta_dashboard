@@ -171,6 +171,79 @@ HTML;
     }
     public static function menu($content): string
     {
+        $menu="";
+        if (Authentication::has_roles(['admin'])){
+            $menu=<<<menu
+            <div class="a-menu-title">Academic Setup <i class="bi bi-chevron-down"></i></div>
+            <div class="a-submenu">
+                <a href="/faculty/list">Faculty</a>
+                <a href="/department/list">Department / Unit</a>
+                <a href="/Level/list">Level</a>
+                <a href="/program/list">Program</a>
+            </div>
+
+            <div class="a-menu-title">Content <i class="bi bi-chevron-down"></i></div>
+            <div class="a-submenu">
+                <a href="/news/list">News</a>
+                <a href="/events/list">Events</a>
+                <a href="/attachment/list">Attachments</a>
+                <a href="/home-content/list">Homepage</a>
+                <a href="/gallery/list">Gallery</a>
+            </div>
+
+            <div class="a-menu-title">Staff & Users <i class="bi bi-chevron-down"></i></div>
+            <div class="a-submenu">
+                <a href="/employee-role/list">Employee Role</a>
+                <a href="/employee/list">Employee</a>
+                <a href="/employee-research/list">Research</a>
+                <a href="/amucta-outreach/list">Outreach</a>
+                <a href="/users/list">Users</a>
+            </div>
+
+            <div class="a-menu-title">System <i class="bi bi-chevron-down"></i></div>
+            <div class="a-submenu">
+                <a href="/errors/list">Logs</a>
+            </div>
+menu;
+        }
+        if (Authentication::has_roles(['hro'])){
+            $menu=<<<lkol
+            <div class="a-menu-title">Staff & Users <i class="bi bi-chevron-down"></i></div>
+            <div class="a-submenu">
+                <a href="/employee-role/list">Employee Role</a>
+                <a href="/employee/list">Employee</a>
+            </div>
+            <div class="a-menu-title">Academic Setup <i class="bi bi-chevron-down"></i></div>
+            <div class="a-submenu">
+                <a href="/faculty/list">Faculty</a>
+                <a href="/department/list">Department / Unit</a>
+            </div>
+lkol;
+
+        }
+        if (Authentication::has_roles(['hod'])){
+            $menu=<<<menu
+            <div class="a-menu-title">Academic Setup <i class="bi bi-chevron-down"></i></div>
+            <div class="a-submenu">
+                <a href="/Level/list">Level</a>
+                <a href="/program/list">Program</a>
+            </div>
+menu;
+
+    }
+        if (Authentication::has_roles(['pro'])){
+          $menu=<<<mnl
+            <div class="a-menu-title">Content <i class="bi bi-chevron-down"></i></div>
+            <div class="a-submenu">
+                <a href="/news/list">News</a>
+                <a href="/events/list">Events</a>
+                <a href="/attachment/list">Attachments</a>
+                <a href="/gallery/list">Gallery</a>
+            </div>
+mnl;
+
+
+    }
         return <<<menu
 <div class="admin-layout">
 
@@ -181,49 +254,23 @@ HTML;
             <span>Admin Panel</span>
             <button id="a-closeMenu">✕</button>
         </div>
-
         <div class="a-menu">
-
-            <div class="a-menu-title">🎓 Academic Setup</div>
-            <div class="a-submenu">
-                <a href="/faculty/list">Faculty</a>
-                <a href="/department/list">Department / Unit</a>
-                <a href="/Level/list">Level</a>
-                <a href="/program/list">Program</a>
-            </div>
-
-            <div class="a-menu-title">📰 Content</div>
-            <div class="a-submenu">
-                <a href="/news/list">News</a>
-                <a href="/events/list">Events</a>
-                <a href="/attachment/list">Attachments</a>
-                <a href="/home-content/list">Homepage</a>
-                <a href="/gallery/list">Gallery</a>
-            </div>
-
-            <div class="a-menu-title">👥 Staff & Users</div>
-            <div class="a-submenu">
-                <a href="/employee-role/list">Employee Role</a>
-                <a href="/employee/list">Employee</a>
-                <a href="/employee-research/list">Research</a>
-                <a href="/amucta-outreach/list">Outreach</a>
-                <a href="/users/list">Users</a>
-            </div>
-
-            <div class="a-menu-title">💬 Communication</div>
+            $menu           
+            <div class="a-menu-title">Communication <i class="bi bi-chevron-down"></i></div>
             <div class="a-submenu">
                 <a href="/visitors/dashboard">Visitors</a>
                 <a href="/contact/list">Contacts</a>
                 <a href="/contact/ai">AI Chats</a>
             </div>
-
-            <div class="a-menu-title">⚙ System</div>
+            <div class="a-menu-title">Profile <i class="bi bi-chevron-down"></i></div>
             <div class="a-submenu">
-                <a href="/errors/list">Logs</a>
+                <a href="/profile">Account</a>
+                <a href="/change-password">Change Password</a>
                 <a href="/logout">Logout</a>
             </div>
 
         </div>
+        
     </aside>
 
     <!-- Content Area -->

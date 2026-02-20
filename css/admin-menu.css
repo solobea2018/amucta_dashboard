@@ -43,6 +43,7 @@
 .a-submenu {
     display: none;
     background: #374151;
+    margin-left: 10px;
 }
 .a-submenu.open{
    display: block;
