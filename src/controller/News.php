@@ -22,7 +22,6 @@ class News
                 $tr .= "<tr>
 <td>{$news['name']}</td>
 <td>{$news['category']}</td>
-<td>{$news['created_at']}</td>
 <td>
 <button class='btn btn-danger' onclick='deleteResource(\"news\",{$news['id']})'>Delete <i class='bi bi-trash'></i></button>
 </td>
@@ -42,7 +41,6 @@ class News
             <tr>
                 <th>Title</th>
                 <th>Category</th>
-                <th>Created At</th>
                 <th>Actions</th>
             </tr>
         </thead>

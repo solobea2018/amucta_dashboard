@@ -13,6 +13,7 @@ class Gallery
 {
     public function list($params=null)
     {
+        Authentication::require_roles(['admin','pro','manager']);
         if (isset($params) && !empty($params)){
             if ($params[0]=="all"){
                 $query = "SELECT * FROM images order by created_at desc ";
@@ -21,7 +22,7 @@ class Gallery
                 $query = "SELECT * FROM images order by created_at desc limit {$limit}";
             }
         }else{
-            $query = "SELECT * FROM images order by created_at desc limit 40";
+            $query = "SELECT * FROM images order by created_at desc limit 20";
         }
         $images = (new Database())->select($query);
         $tr = "";
@@ -30,16 +31,45 @@ class Gallery
             foreach ($images as $img) {
                 $thumb=$img['thumbnail_url'];
                 $link=$thumb??$img['url'];
+                $has_thumb=$thumb?"Yes":"No";
+                $image_size = number_format($img['image_size']);
+                $image_form = <<<form
+<form method="post" action="/gallery/add" 
+      onsubmit="sendFormSweet(this,event)"
+      style="padding:12px;">
+
+    <input type="hidden" name="id" value="{$img['id']}">
+
+    <span style="font-weight:600;font-size:12px;">Name: </span>
+    <input type="text" name="name" value="{$img['name']}"
+           style="padding:6px;margin:4px 0 8px 0;border:1px solid #ccc;border-radius:4px;font-size:12px;"><br>
+
+    <label style="font-weight:600;font-size:12px;">Caption</label>
+    <textarea name="description"
+              style="width:100%;padding:6px;margin:4px 0 10px 0;border:1px solid #ccc;border-radius:4px;font-size:12px;resize:none;">{$img['description']}</textarea>
+
+    <button type="submit"
+            style="width:100%;padding:6px;background:#1e40af;color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;">
+        Update
+    </button>
+
+</form>
+form;
+
+
                 $tr .= "<tr>
-<td>{$img['name']}</td>
-<td>{$img['category']}</td>
-<td>{$img['image_size']}</td>
-<td><img src='{$link}' loading='lazy' alt='{$img['name']}' style='width:50px;height:50px;object-fit:cover;'></td>
+<td>{$image_form}</td>
+
 <td>
-<button class='btn btn-amucta' onclick='editImage({$img['id']})'>Edit</i></button>
+Name:       {$img['name']}<br>
+Category:   {$img['category']}<br>
+Path:       {$img['url']}<br>
+Size:       {$image_size} KB<br>
+Has Thumb:  {$has_thumb}<br>
 <button class='btn btn-amucta' onclick='createThumbNail({$img['id']})'>Create Thumbnail</i></button>
 <button class='btn btn-complete' onclick='reduceQuality({$img['id']})'>Reduce Quality</i></button>
-<button class='btn btn-danger' onclick='deleteResource(\"images\",{$img['id']})'>Delete</i></button>
+<button class='btn btn-danger' onclick='deleteResource(\"images\",{$img['id']})'>Delete</i></button><br>
+<img onclick='zoomImage()' src='{$link}' loading='lazy' alt='{$img['name']}' style='width:200px;height:200px;object-fit:cover;'>
 </td>
 </tr>";
             }
@@ -55,17 +85,14 @@ class Gallery
     <table class="solobea-table">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Image Size</th>
-                <th>Preview</th>
-                <th>Actions</th>
+                <th>Detail</th>
+                <th>Properties</th>
             </tr>
         </thead>
         <tbody>$tr</tbody>
     </table>
 </div>
-<a href="/gallery/list/all" class="text-blue-400">View All</a>
+<a href="/gallery/list/all" class="btn-view-all">View All</a>
 HTML;
         $header=<<<header
 <style>
@@ -76,13 +103,7 @@ header;
     }
     public function add()
     {
-        Authentication::require_roles(['admin','pro']);
-        $auth = new Authentication();
-        if (!$auth->is_admin()) {
-            echo json_encode(['status' => "error", 'message' => "Not Authorized"]);
-            return;
-        }
-
+        Authentication::require_roles(['admin','pro','hro']);
         $db = new Database();
         $user = (new Authentication())->get_authenticated_user();
         $user_id = $user->getId();
@@ -257,13 +278,13 @@ header;
     {
         if (isset($params) && !empty($params)){
             if ($params[0]=="all"){
-                $query = "SELECT * FROM images where category= 'gallery' or category='slides' order by created_at desc";
+                $query = "SELECT id, name, description, active, category, url,thumbnail_url FROM images where category= 'gallery' or category='slides' order by id desc";
             }else{
                 $limit=intval($params[0]);
-                $query = "SELECT * FROM images where category= 'gallery' or category='slides' order by created_at desc limit {$limit}";
+                $query = "SELECT id, name, description, active, category, url,thumbnail_url FROM images where category= 'gallery' or category='slides' order by id desc limit {$limit}";
             }
         }else{
-            $query = "SELECT * FROM images where category= 'gallery' or category='slides' order by created_at desc limit 30";
+            $query = "SELECT id, name, description, active, category, url,thumbnail_url FROM images where category= 'gallery' or category='slides' order by id desc limit 30";
         }
         $images = (new Database())->select($query);
         $cards = "";
@@ -286,7 +307,7 @@ header;
 
         $content=<<<Content
 <div class="gallery-wrapper"> $cards </div>
-<a href="/gallery/index/all" class="text-blue-400">View All</a>
+<a href="/gallery/index/all" class="btn-view-all">View All</a>
 Content;
 
         $header = <<<HTML
@@ -299,7 +320,7 @@ HTML;
 
     public function thumbnail()
     {
-        Authentication::requireAdmin();
+        Authentication::require_roles(['admin','manager','pro']);
         header("Content-Type: application/json");
 
         $input = json_decode(file_get_contents("php://input"), true);
@@ -387,10 +408,9 @@ HTML;
         ]);
     }
 
-
     public function quality()
     {
-        Authentication::requireAdmin();
+        Authentication::require_roles(['admin','manager','pro']);
         header("Content-Type: application/json");
         $input = json_decode(file_get_contents("php://input"), true);
         if (isset($input['id'])){
@@ -425,10 +445,11 @@ HTML;
                     100
                 );
                 $afterBytes = filesize($fullPath);
+                $before_bytes=number_format(round($before/1024,2),2);
                 $after = number_format(round($afterBytes / 1024, 2),2);
                 if ($optimized) {
                     $db->update('images',['image_size'=>$after],['id'=>$id]);
-                    $message = "Quality reduced successfully from" . $before . " to " . $after;
+                    $message = "Quality reduced successfully from " . $before_bytes . "KB to " . $after."KB";
                     echo json_encode([
                         "status" => "success",
                         "message" => $message

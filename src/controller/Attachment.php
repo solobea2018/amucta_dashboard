@@ -22,7 +22,6 @@ class Attachment
             foreach ($attachments as $att) {
                 $tr .= "<tr>
 <td>{$att['name']}</td>
-<td>{$att['file_url']}</td>
 <td>{$att['type']}</td>
 <td>{$att['related_to']}</td>
 <td>
@@ -43,7 +42,6 @@ class Attachment
         <thead>
             <tr>
                 <th>Name</th>
-                <th>File URL</th>
                 <th>Type</th>
                 <th>Related To</th>
                 <th>Actions</th>

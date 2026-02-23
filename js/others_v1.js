@@ -929,7 +929,7 @@ function editImage(id) {
                 </div>
                
                 <div class="form-group">
-                    <label for="graduation_year">Description</label>
+                    <label>Description</label>
                     <textarea name="description" class="form-control" required>${alumni.description}</textarea>                    
                 </div>
 
@@ -1581,7 +1581,7 @@ function resetPass(id){
         .then(response => response.json())
         .then(dataResponse => {
             if (dataResponse.status === "success") {
-                Swal.fire("Password reset to phone number", dataResponse.message, "success");
+                Swal.fire("Password reset successfully", dataResponse.message, "success");
             } else {
                 Swal.fire("Error!", dataResponse.message || "Failed to update user", "error");
             }
@@ -1785,6 +1785,63 @@ function zoomImage() {
 
     // get clicked image automatically
     zoomed.src = event.target.src;
+}
+function replyContact(email, name) {
+    Swal.fire({
+        title: 'Send Reply',
+        html:
+            `<input type="text" id="swal-subject" class="swal2-input" placeholder="Subject" value="Reply to your message">
+             <textarea id="swal-message" class="swal2-textarea" placeholder="Write your message here...">Hello ${name},</textarea>`,
+        showCancelButton: true,
+        confirmButtonText: 'Send',
+        preConfirm: () => {
+            const subject = document.getElementById('swal-subject').value;
+            const message = document.getElementById('swal-message').value;
+
+            if (!subject || !message) {
+                Swal.showValidationMessage('Subject and message are required');
+                return false;
+            }
+
+            return { subject, message };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            fetch('/contact/reply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    subject: result.value.subject,
+                    message: result.value.message
+                })
+            })
+                .then(async (res) => {
+                    const text = await res.text(); // read raw response
+
+                    try {
+                        const data = JSON.parse(text);
+
+                        if (!res.ok || data.status !== 'success') {
+                            throw new Error(data.message || 'Server error occurred');
+                        }
+
+                        return data;
+
+                    } catch (e) {
+                        throw new Error(text); // show raw server message
+                    }
+                })
+                .then(data => {
+                    Swal.fire('Sent!', 'Email sent successfully.', 'success');
+                })
+                .catch((error) => {
+                    Swal.fire('Error', error.message, 'error');
+                });
+
+        }
+    });
 }
 
 

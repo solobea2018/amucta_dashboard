@@ -20,6 +20,8 @@ class Users
 
         if (sizeof($users) > 0) {
             foreach ($users as $user) {
+                $active=$user['active']==1?0:1;
+                $user_id=$user['id'];
                 $profile = $user['profile_url'] ? "<img src='{$user['profile_url']}' style='width:50px;height:50px;border-radius:50%;object-fit:cover;' alt='profile'>" : "-";
                 $tr .= "<tr>
 <td>{$user['full_name']}</td>
@@ -27,13 +29,11 @@ class Users
 <td>{$user['email']}</td>
 <td>{$user['phone_number']}</td>
 <td>{$user['role']}</td>
-<td>" . ($user['active'] ? 'Yes' : 'No') . "</td>
-<td>" . ($user['verified'] ? 'Yes' : 'No') . "</td>
+<td><a class='text-blue-400' href='/users/active?active={$active}&user_id={$user_id}'>" . ($user['active'] ? 'Yes' : 'No') . "</a> </td>
 <td>{$profile}</td>
 <td>
-<button class='btn btn-complete' onclick='resetPass({$user['id']})'>Reset Password</button>
-<button class='btn btn-danger' onclick='updateResource(\"users\",{$user['id']},{active:0})'>Inactive</button>
-<a href='#' class='btn btn-primary'>Profile<i class='bi bi-person'></i></a>
+<button class='btn btn-complete' onclick='resetPass({$user_id})'>Reset Password</button>
+<a href='#' class='btn btn-primary'><i class='bi bi-eye'></i></a>
 </td>
 </tr>";
             }
@@ -71,7 +71,7 @@ HTML;
     }
     public function add()
     {
-        Authentication::require_roles(['admin','hro']);
+        Authentication::require_roles(['admin','hro','manager']);
         if (!isset($_POST['username'], $_POST['email'], $_POST['full_name'])) {
             http_response_code(400);
             echo "Required fields missing";
@@ -195,6 +195,50 @@ HTML;
         } else {
             http_response_code(500);
             echo "Failed to create user";
+        }
+    }
+
+    public function active()
+    {
+        Authentication::require_roles(['admin','manager']);
+        if (isset($_GET['active']) && isset($_GET['user_id'])){
+            $active=intval($_GET['active']);
+            $user_id=intval($_GET['user_id']);
+            if (Database::get_instance()->update('users',['active'=>$active],['id'=>$user_id])){
+                header("Location: /users/list");
+            }else{
+                MainLayout::render("Failed to update active status");
+            }
+        }else{
+            MainLayout::render("Failed to update active status");
+        }
+    }
+    public function reset()
+    {
+        header("Content-Type: application/json");
+        Authentication::requireAdmin();
+        $input=json_decode(file_get_contents("php://input"),true);
+        if (isset($input['id'])){
+            $user_id=intval($input['id']);
+            $db=Database::get_instance();
+            $user= $db->find_user_by_id($user_id);
+            if ($user){
+                $phone=$user->getPhoneNumber();
+                if (is_null($phone) || $phone==''){
+                    $phone='user';
+                }
+                $new_password=password_hash($phone,PASSWORD_DEFAULT);
+
+                if ($db->update("users",['password'=>$new_password],['id'=>$user_id])){
+                    echo json_encode(['status'=>'success','message'=>"User password updated to {$phone}"]);
+                }else{
+                    http_response_code(500);
+                    echo json_encode(['status'=>'error','message'=>'Server error']);
+                }
+            }else{
+                http_response_code(404);
+                echo json_encode(['status'=>'error','message'=>'User not found']);
+            }
         }
     }
 

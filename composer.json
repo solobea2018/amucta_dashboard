@@ -23,6 +23,7 @@
       "ext-gd": "*",
       "ext-fileinfo": "*",
       "ext-mbstring": "*",
+      "phpmailer/phpmailer": "^6.8",
       "ext-mysqli": "*",
       "ext-curl": "*",
       "ext-dom": "*"

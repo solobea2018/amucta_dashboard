@@ -6,6 +6,7 @@ namespace Solobea\Dashboard\controller;
 
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
+use Solobea\Dashboard\utils\Mail;
 use Solobea\Dashboard\view\MainLayout;
 use Solobea\Helpers\data\Sanitizer;
 
@@ -198,7 +199,6 @@ HTML;
             <button class="btn btn-danger" onclick="deleteResource('contacts', {$contact['id']})">Delete</button>
         </div>
     </div>
-<a href="/contact/list/all" class="text-blue-400">View All</a>
 </div>
 HTML;
             }
@@ -210,13 +210,9 @@ HTML;
 <div class="flex flex-col" style="max-width:800px; margin:0 auto;">
     <h2 style="margin-bottom:20px; color:#333;">Contact Messages</h2>
     $items
+    
+<a href="/contact/list/all" class="text-blue-400">View All</a>
 </div>
-
-<script>
-function replyContact(email, name) {
-    window.location.href = "mailto:" + email + "?subject=Reply to your message&body=Hello " + name + ",";
-}
-</script>
 HTML;
 
         MainLayout::render($content);
@@ -283,6 +279,33 @@ HTML;
 HTML;
 
         MainLayout::render($content);
+    }
+
+    public function reply()
+    {
+        Authentication::require_roles(['admin','pro','hro','admission','ict','hod']);
+        header('Content-Type: application/json');
+
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        $email = $data['email'];
+        $subject = $data['subject'];
+        $message = $data['message'];
+        try {
+            if (Mail::sendEmail($email, $subject, $message)) {
+                echo json_encode(['status' => 'success']);
+            } else {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => "Failed to send the reply"
+                ]);
+            }
+        } catch (\Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
 

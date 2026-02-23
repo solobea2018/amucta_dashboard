@@ -127,7 +127,7 @@ $menu
 hd;
 
 
-        if (Authentication::has_role('admin')){
+        if (Authentication::has_roles(['admin','pro','hro','hod','manager','user','dupr'])){
             $admn_js='<script src="/js/others_v1.js" type="text/javascript"></script><script src="/js/admin-menu.js" type="text/javascript"></script>';
             $normal_user="";
             $admin_content =  MainLayout::menu($content);
@@ -204,6 +204,10 @@ HTML;
             <div class="a-submenu">
                 <a href="/errors/list">Logs</a>
             </div>
+            <div class="a-menu-title">Visitors <i class="bi bi-people"></i></div>
+            <div class="a-submenu">
+                <a href="/visitors/dashboard">Stats</a>
+            </div>
 menu;
         }
         if (Authentication::has_roles(['hro'])){
@@ -258,11 +262,10 @@ mnl;
             $menu           
             <div class="a-menu-title">Communication <i class="bi bi-chevron-down"></i></div>
             <div class="a-submenu">
-                <a href="/visitors/dashboard">Visitors</a>
                 <a href="/contact/list">Contacts</a>
                 <a href="/contact/ai">AI Chats</a>
             </div>
-            <div class="a-menu-title">Profile <i class="bi bi-chevron-down"></i></div>
+            <div class="a-menu-title">Settings <i class="bi bi-chevron-down"></i></div>
             <div class="a-submenu">
                 <a href="/profile">Account</a>
                 <a href="/change-password">Change Password</a>

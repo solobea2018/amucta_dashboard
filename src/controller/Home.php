@@ -24,7 +24,7 @@ class Home
         SELECT *
         FROM images
          WHERE category IN ('gallery','slides')
-         ORDER BY created_at DESC
+         ORDER BY id DESC
          LIMIT 20
      ) AS recent_images
      ORDER BY RAND()

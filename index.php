@@ -1,6 +1,6 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+/*ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);*/
 error_reporting(E_ALL);
 
 use Solobea\Dashboard\authentication\Authentication;
@@ -79,7 +79,7 @@ function save_visitor($ip){
     if (!Helper::is_human_ip($ip)){
         return;
     }
-    if (Authentication::has_roles(['admin','manager'])){
+    if (Authentication::has_roles(['admin','manager','hro','pro'])){
         return;
     }
     $currentUrl = $_SERVER['REQUEST_URI'];

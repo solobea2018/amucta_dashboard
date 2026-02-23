@@ -21,7 +21,7 @@ class Login
         <h2 style="text-align:center; margin-bottom:20px;">Login</h2>
 
         <div class="form-group" style="margin-bottom:15px;">
-            <label for="username">Username or Email</label>
+            <label for="username">Username</label>
             <input type="text" id="username" name="username" class="form-control" placeholder="Enter username or email" required>
         </div>
 
