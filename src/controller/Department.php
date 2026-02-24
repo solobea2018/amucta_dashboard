@@ -12,7 +12,7 @@ class Department
 {
     public function list()
     {
-        Authentication::require_roles(['admin','hod']);
+        Authentication::require_roles(['admin','hro','hrmo']);
         $query = "SELECT d.*, f.name as faculty_name 
               FROM department d 
               LEFT JOIN faculty f ON d.faculty_id = f.id order by category,name";
@@ -57,7 +57,7 @@ HTML;
     }
     public function add()
     {
-        Authentication::require_roles(['admin','hod']);
+        Authentication::require_roles(['admin','hro','hrmo']);
 
         // Sanitize inputs
         $id = isset($_POST['id']) ? intval($_POST['id']) : 0;

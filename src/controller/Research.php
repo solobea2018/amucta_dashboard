@@ -486,7 +486,7 @@ HTML;
 
         $items = "";
         foreach ($rows as $r) {
-            $author = $r['author'] ?? "Anonymouus";
+            $author = $r['author'] ?? "Amucta";
             $items .= "
         <li>
             <strong>{$r['activity_title']}</strong><br>
