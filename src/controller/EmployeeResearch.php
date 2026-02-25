@@ -8,6 +8,7 @@ use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\utils\Resource;
 use Solobea\Dashboard\view\MainLayout;
+use Solobea\Helpers\data\Sanitizer;
 
 class EmployeeResearch
 {
@@ -23,8 +24,19 @@ class EmployeeResearch
                 $id = $r['id'];
                 $tr .= "<tr>
 <td>{$r['title']}</td>
-<td>{$r['publication_type']}</td>
-<td>{$r['authors']}</td>
+<td>
+<table class='table-borderless'>
+<tr>
+ <td>Publication type: {$r['publication_type']}</td>
+</tr>
+<tr>
+<td>Author(s): {$r['authors']} {$r['year']}</td>
+</tr>
+<tr><td>
+<button class='btn btn-blue' onclick='assignResearch({$id})'>Assign to employee</button>
+</td></tr>
+</table>
+</td>
 <td>
 <button class='btn btn-danger hidden' onclick='deleteResource(\"amucta_research\",{$id})'><i class='bi bi-trash'></i></button>
 <button class='btn btn-primary' onclick='viewResearch({$id})'><i class='bi bi-eye'></i></button>
@@ -40,13 +52,14 @@ class EmployeeResearch
 <div class="flex flex-col">
     <div class="w-full">
         <button class="btn btn-complete" onclick="addResearch()">Add Research</button>
+        <a href="/employee-research/researchers" class="btn btn-amucta">Publication Assignments</a>
+        <a href="/employee-research/research_stats" class="btn btn-amucta">Top Reseachers</a>
     </div>
     <table class="solobea-table">
         <thead>
             <tr>
                 <th>Title</th>               
-                <th>Publication Type</th>               
-                <th>Authors</th>
+                <th>Detail</th>                              
                 <th>Actions</th>
             </tr>
         </thead>
@@ -354,5 +367,150 @@ FORM;
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Content-Type: application/json; charset=UTF-8");
         echo json_encode((Database::get_instance())->select("SELECT * FROM amucta_research ORDER BY year DESC, id DESC"));
+    }
+
+    public function researchers()
+    {
+        Authentication::require_roles(['admin','dupr']);
+        $db=Database::get_instance();
+        $query="SELECT  pa.id,e.id as employee_id,e.name,er.title,er.link from employee e
+join publication_assignments pa on e.id = pa.employee_id
+join amucta_research er on er.id = pa.publication_id";
+
+        $researchers=$db->select($query);
+        if (!empty($researchers) && count($researchers)>0){
+            foreach ($researchers as $r) {
+                $id = $r['id'];
+                $link = $r['link'];
+                $title = $r['title'];
+                $tr .= "<tr>
+<td>{$r['name']}</td>
+<td>
+<table class='table-borderless max-w-md'>
+<tr>
+ <td><b>Title</b>: {$title}</td>
+</tr>
+<tr>
+<td><b>Link</b>:  <a class='text-blue-400 break-link' href='{$link}'>{$link}</a></td>
+</tr>
+</table>
+</td>
+<td>
+<button class='btn btn-danger hidden' onclick='deleteResource(\"publication_assignments\",{$id})'><i class='bi bi-trash'></i></button>
+</td>
+</tr>";
+            }
+            $content = <<<HTML
+<div class="flex flex-col">
+    <div class="w-full">
+        <button class="btn btn-complete" onclick="addResearch()">Add Research</button>
+        <a href="/employee-research/research_stats" class="btn btn-amucta">Top Reseachers</a>
+    </div>
+    <table class="solobea-table">
+        <thead>
+            <tr>
+                <th>Reseacher</th>               
+                <th>Detail</th>                              
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>$tr</tbody>
+    </table>
+</div>
+HTML;
+
+            MainLayout::render($content);
+        }else{
+            echo "No data";
+        }
+    }
+    public function research_stats()
+    {
+        Authentication::require_roles(['admin','dupr']);
+        $db=Database::get_instance();
+        $query2="
+        SELECT  
+    e.id AS employee_id,
+    e.name,
+    COUNT(pa.publication_id) AS publication_counts
+FROM employee e
+JOIN publication_assignments pa 
+    ON e.id = pa.employee_id
+JOIN amucta_research er 
+    ON er.id = pa.publication_id
+GROUP BY
+    e.id,
+    e.name
+ORDER BY publication_counts desc ;
+        ";
+        $researchers=$db->select($query2);
+        if (!empty($researchers) && count($researchers)>0){
+            foreach ($researchers as $r) {
+                $publication_counts = $r['publication_counts'];
+                $name = $r['name'];
+                $tr .= "<tr>
+<td>{$name}</td>
+<td>
+<table class='table-borderless max-w-md'>
+<tr>
+ <td><b>Publication Counts</b>: {$publication_counts}</td>
+</tr>
+</table>
+</td>
+<td>
+</td>
+</tr>";
+            }
+            $content = <<<HTML
+<div class="flex flex-col">
+    <div class="w-full">
+        <a href="/employee-research/list" class="btn btn-blue">Publications</a>
+    </div>
+    <table class="solobea-table">
+        <thead>
+            <tr>
+                <th>Reseacher</th>               
+                <th>Detail</th>                              
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>$tr</tbody>
+    </table>
+</div>
+HTML;
+
+            MainLayout::render($content);
+        }else{
+            echo "No data";
+        }
+    }
+    public function assign()
+    {
+        Authentication::require_roles(['admin','dupr']);
+        header("Content-Type: application/json");
+        if (isset($_POST['employee_id']) && isset($_POST['publication_type']) && isset($_POST['publication_id'])){
+            $publication_id=intval($_POST['publication_id']);
+            $employee_id=intval($_POST['employee_id']);
+            $publication_type=Sanitizer::sanitize($_POST['publication_type']);
+            if ($publication_type==''){
+                echo json_encode(['status'=>'error','message'=>'Invalid data']);
+                return;
+            }
+            $db=Database::get_instance();
+            if ($db->exists('publication_assignments',['employee_id'=>$employee_id,'publication_id'=>$publication_id])){
+                echo json_encode(['status'=>'error','message'=>'Already Exists']);
+                return;
+            }
+            $user_id=Authentication::user()->getId();
+            $data = ['employee_id' => $employee_id, 'publication_id' => $publication_id, 'publication_type' => $publication_type, 'created_by' => $user_id];
+            if ($db->insert('publication_assignments', $data)){
+                echo json_encode(['status'=>'success','message'=>'Research assigned to employee']);
+            }else{
+                http_response_code(500);
+                echo json_encode(['status'=>'error','message'=>'Server error']);
+            }
+        }else{
+            echo json_encode(['status'=>'error','message'=>'Invalid Data']);
+        }
     }
 }

@@ -19,17 +19,41 @@ class Employee
 
     public function list()
     {
-        $query = "SELECT * FROM employee order by name";
-        $employees = (new Database())->select($query);
+        $search = isset($_GET['q']) ? trim($_GET['q']) : "";
+
+        $db=Database::get_instance();
+        if ($search !== "") {
+            $employees = $db->select_prepared(
+                "SELECT * FROM employee
+             WHERE name LIKE ?
+                OR title LIKE ?
+                OR phone LIKE ?
+             ORDER BY name",
+                [
+                    "%$search%",
+                    "%$search%",
+                    "%$search%"
+                ]
+            );
+        } else {
+            $employees = $db->select(
+                "SELECT * FROM employee ORDER BY created_at desc limit 50"
+            );
+        }
         $tr = "";
 
         if (sizeof($employees) > 0) {
             foreach ($employees as $emp) {
                 $tr .= "<tr>
 <td><a class='text-blue-500' href='/employee/profile/{$emp['id']}'> {$emp['name']}</a></td>
-<td>{$emp['title']}</td>
-<td>{$emp['phone']}</td>
-<td><a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" . ($emp['active'] ? 'Yes' : 'No') . "</a></td>
+<td>
+<table class='table-borderless'><tr><td>Title: {$emp['title']}</td>
+<td>Phone: {$emp['phone']}</td></tr>
+<tr><td>Email: {$emp['email']}</td>
+<td>Year:  {$emp['entry_year']}<br></td></tr>
+</table>
+Is active? <a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" . ($emp['active'] ? 'Yes' : 'No') . "</a>
+</td>
 <td>
 <button class='btn btn-complete' onclick='editEmployee({$emp['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-mark-read' onclick='addEmployeeRole({$emp['id']})'>Role<i class='bi bi-pencil'></i></button>
@@ -46,13 +70,21 @@ class Employee
     <div class="w-full">
         <button class="btn btn-complete" onclick="addEmployee()">Add Employee</button>
     </div>
+    <form method="get" class="mb-4">
+        <div class="flex gap-2">
+            <input type="text"
+                   name="q"
+                   class="form-control"
+                   placeholder="Search by name, title, or phone"
+                   value="{$search}">
+            <button class="btn btn-secondary">Search</button>
+        </div>
+    </form>
     <table class="solobea-table">
         <thead>
             <tr>
                 <th>Name</th>
-                <th>Title</th>               
-                <th>Phone</th>
-                <th>Active</th>
+                <th>Detail</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -182,10 +214,12 @@ style;
                           ORDER BY r.start_date DESC");
 
         // Fetch employee researches, publications, projects
-        $researches = $db->select("SELECT title, type, description, start_date, end_date, link, file_path, active
-                               FROM employee_research
-                               WHERE employee_id = {$employee_id}
-                               ORDER BY start_date DESC");
+        $researches = $db->select("SELECT ar.title, ar.publication_type as type, year, link
+                               FROM amucta_research ar 
+join publication_assignments pa on ar.id = pa.publication_id
+join employee e on e.id = pa.employee_id
+                               WHERE e.id = {$employee_id}
+                               ORDER BY year DESC");
 
         // Render HTML
         $rolesHtml = "";
@@ -201,14 +235,12 @@ style;
         $researchHtml = "";
         foreach ($researches as $r) {
             $researchHtml .= "<tr>
-            <td>{$r['title']}</td>
-            <td>{$r['type']}</td>
-            <td>{$r['description']}</td>
-            <td>{$r['start_date']}</td>
-            <td>{$r['end_date']}</td>
-            <td>".($r['link'] ? "<a href='{$r['link']}' target='_blank'>Link</a>" : "-")."</td>
-            <td>".($r['file_path'] ? "<a href='{$r['file_path']}' target='_blank'>File</a>" : "-")."</td>
-            <td>".($r['active'] ? "Yes" : "No")."</td>
+            <td><table class='table-borderless'>
+            <tr><td>Publication type: </td><td>{$r['type']}</td></tr>
+            <tr><td>Title: </td><td>{$r['title']}</td></tr>
+            <tr><td>Link: </td><td><a href='{$r['link']}' class='text-blue-400 break-link'>{$r['link']}</a></td></tr>
+</table> </td>
+            <td>{$r['year']}</td>
         </tr>";
         }
         $profile_tag=($emp['profile'] ? "<img src='{$emp['profile']}' width='100'>" : "No Image");
@@ -243,14 +275,8 @@ style;
     <table class="solobea-table">
         <thead>
             <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Link</th>
-                <th>File</th>
-                <th>Active</th>
+                <th>Detail</th>
+                <th>Year</th>               
             </tr>
         </thead>
         <tbody>
@@ -546,6 +572,16 @@ HTML;
         header("Content-Type: application/json; charset=UTF-8");
         header("Content-Type: application/json");
         echo json_encode((new Database())->select("select * from employee order by name"));
+    }
+    public function get_simple()
+    {
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Methods: GET");
+        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+        header("Content-Type: application/json; charset=UTF-8");
+        header("Content-Type: application/json");
+        $employees = (new Database())->select("select id,name from employee order by name");
+        echo json_encode(['status'=>'success','employees'=>$employees]);
     }
     public function update()
     {

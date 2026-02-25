@@ -151,10 +151,19 @@ form div:has(button[type='submit']) {display: flex;flex-direction: row;align-ite
 .btn-view-all:active {
     transform: scale(0.98);
 }
-
+.break-link {
+    word-break: break-all;
+    overflow-wrap: anywhere;
+}
 textarea{box-sizing: border-box;padding: 0.5rem;margin-top: 0.5rem;margin-bottom: 0.5rem;border-radius: 0.25rem;width: 100%;font-size: 1.25rem;line-height: 1.75rem;resize: none;min-height: 200px;}
 /* Table */
-.solobea-table {width: 100%;border-collapse: collapse;margin-top: 15px;}  .solobea-table th, .solobea-table td {padding: 4px;border: 1px solid #ddd;text-align: left;font-size: 0.9rem;vertical-align: top;}  .solobea-table tr:nth-child(even) {background-color: #f9f9f9;}  .solobea-table tr:hover {background-color: #f1f1f1;}
+.solobea-table {width: 100%;border-collapse: collapse;margin-top: 15px;}
+.table-borderless,
+.table-borderless td,
+.table-borderless th {
+    border: none !important;
+}
+.solobea-table th, .solobea-table td {padding: 4px;border: 1px solid #ddd;text-align: left;font-size: 0.9rem;vertical-align: top;}  .solobea-table tr:nth-child(even) {background-color: #f9f9f9;}  .solobea-table tr:hover {background-color: #f1f1f1;}
 .overlay {display: none; /* Hidden by default */position: fixed;justify-content: center; /* Center horizontally */align-items: center; /* Center vertically */top: 0; /* Below the header */left: 0;width: 100%;height: 100%;background-color: rgba(0, 0, 0, 0.5);z-index: 10000;}
 .popup-overlay {position: fixed;inset: 0;background: rgba(0,0,0,0.6);display: flex;justify-content: center;align-items: center;z-index: 9998;}  /* Popup container */  .popup-editor {background: #fff;max-width: 95%;max-height: 90%;display: flex;flex-direction: column;border-radius: 12px;overflow: hidden;box-shadow: 0 5px 20px rgba(0,0,0,0.3);z-index: 9999;}  .popup-header {background: var(--amucta-blue);color: white;padding: 12px;font-weight: bold;display: flex;justify-content: space-between;align-items: center;}  .popup-header button {background: transparent;border: none;color: white;font-size: 18px;cursor: pointer;}  .popup-body {flex: 1;display: flex;flex-direction: column;overflow-y: auto;padding: 12px;}  .popup-body textarea {flex: 1;width: 100%;border: 1px solid #ddd;border-radius: 6px;padding: 10px;resize: none;font-family: monospace;}  .popup-footer {padding: 10px;text-align: right;border-top: 1px solid #ddd;}  .popup-footer button {background: #16a34a;color: white;border: none;padding: 8px 14px;border-radius: 6px;cursor: pointer;}  .popup-footer button:hover {background: #15803d;}
 .tension-question{}

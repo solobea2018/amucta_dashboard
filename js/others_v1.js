@@ -1212,6 +1212,54 @@ function viewResearch(id) {
             alert("Could not load research details.");
         });
 }
+function assignResearch(id) {
+    fetch(`/employee/get_simple/`)
+        .then(res => res.json())
+        .then(res => {
+            if (!res || res.status !== "success") {
+                Swal.fire("Error", res?.message || "Unknown server error", "error");
+                return;
+            }
+
+            var employees = res.employees;
+            const overlay = document.createElement("div");
+            overlay.className = "popup-overlay";
+
+            overlay.innerHTML = `
+        <div class="popup-editor">
+          <div class="popup-header">
+            <span>Assign Publication to Employee</span>
+            <button onclick="this.closest('.popup-overlay').remove()">✖</button>
+          </div>
+
+          <div class="popup-body">
+            <form onsubmit="sendFormSweet(this,event)" method="post" action="/employee-research/assign">
+            <input type="hidden" name="publication_id" value="${id}">
+            <input type="hidden" name="publication_type" value="research">
+            <div class="form-group">
+                <select class="form-control" name="employee_id">
+                    <option>-- Select --</option>
+                    ${employees.map(employee =>
+                                `<option value="${employee.id}">${employee.name}</option>`
+                            ).join("")}
+                </select>
+            </div>
+            <button class="btn btn-amucta">Assign</button>
+</form>
+          </div>
+
+          <div class="popup-footer">
+            <button onclick="this.closest('.popup-overlay').remove()" class="cursor-pointer">Close</button>
+          </div>
+        </div>
+      `;
+            document.body.appendChild(overlay);
+        })
+        .catch(err => {
+            console.error("Error loading research:", err);
+            alert("Could not load research details.");
+        });
+}
 function addResearch() {
     var research_form = `
     <form class="form-container"

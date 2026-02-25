@@ -243,10 +243,12 @@ style;
                           ORDER BY r.start_date DESC", [$employee_id],"i");
 
         // Fetch employee researches, publications, projects
-        $researches = $db->select_prepared("SELECT title, type, description, start_date, end_date, link, file_path, active
-                               FROM employee_research
-                               WHERE employee_id = ?
-                               ORDER BY start_date DESC", [$employee_id],"i");
+        $researches = $db->select("SELECT ar.title, ar.publication_type as type, year, link
+                               FROM amucta_research ar 
+join publication_assignments pa on ar.id = pa.publication_id
+join employee e on e.id = pa.employee_id
+                               WHERE e.id = {$employee_id}
+                               ORDER BY year DESC");
 
         // Build Roles Table
         $rolesHtml = "";
@@ -268,18 +270,16 @@ style;
         if ($researches) {
             foreach ($researches as $r) {
                 $researchHtml .= "<tr>
-                <td>{$r['title']}</td>
-                <td>{$r['type']}</td>
-                <td>{$r['description']}</td>
-                <td>{$r['start_date']}</td>
-                <td>{$r['end_date']}</td>
-                <td>".($r['link'] ? "<a href='{$r['link']}' target='_blank'>Link</a>" : "-")."</td>
-                <td>".($r['file_path'] ? "<a href='{$r['file_path']}' target='_blank'>File</a>" : "-")."</td>
-                <td>".($r['active'] ? "Yes" : "No")."</td>
-            </tr>";
+            <td><table class='table-borderless'>
+            <tr><td>Publication type: </td><td>{$r['type']}</td></tr>
+            <tr><td>Title: </td><td>{$r['title']}</td></tr>
+            <tr><td>Link: </td><td><a href='{$r['link']}' class='text-blue-400 break-link'>{$r['link']}</a></td></tr>
+</table> </td>
+            <td>{$r['year']}</td>
+        </tr>";
             }
         } else {
-            $researchHtml = "<tr><td colspan='8'>No research records found</td></tr>";
+            $researchHtml = "<tr><td colspan='2'>No research records found</td></tr>";
         }
 
         $profile_img = ($emp['profile'] ? "<img loading='lazy' src='{$emp['profile']}' width='120' style='border-radius:8px;'>" : "No Image");
@@ -344,14 +344,8 @@ mt;
     <table class="solobea-table">
         <thead>
             <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Description</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Link</th>
-                <th>File</th>
-                <th>Active</th>
+                <th>Detail</th>
+                <th>Year</th>               
             </tr>
         </thead>
         <tbody>

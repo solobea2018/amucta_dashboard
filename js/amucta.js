@@ -83,6 +83,11 @@ function sendFormSweet(form, event) {
     if (!(popup===null)) {
         popup.remove();
     }
+    document.querySelectorAll(".popup-overlay").forEach(
+        overlay=>{
+            overlay.remove();
+        }
+    );
     event.preventDefault();
 
     // Show loading alert

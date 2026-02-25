@@ -18,11 +18,9 @@ class EmployeeRole
         $tr = "";
 
         if (sizeof($attachments) > 0) {
-            $table = "attachments";
             foreach ($attachments as $att) {
                 $tr .= "<tr>
 <td>{$att['name']}</td>
-<td>{$att['created_at']}</td>
 <td>
 <button class='btn btn-complete' onclick='editRole({$att['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-danger' onclick='deleteResource(\"role_group\",{$att['id']})'>Delete <i class='bi bi-trash'></i></button>
@@ -41,8 +39,7 @@ class EmployeeRole
     <table class="solobea-table">
         <thead>
             <tr>
-                <th>Name</th>             
-                <th>Date</th>
+                <th>Name</th> 
                 <th>Actions</th>
             </tr>
         </thead>
