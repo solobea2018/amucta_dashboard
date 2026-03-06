@@ -4,6 +4,7 @@
 namespace Solobea\Dashboard\controller;
 
 
+use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\view\MainLayout;
 
@@ -11,6 +12,9 @@ class Home
 {
     public function index()
     {
+        if (Authentication::has_roles(['admin','pro','user','hrmo','hro','manager','dupr','hod'])){
+            header("Location: /dashboard");
+        }
         $query="select id, name from program order by level_id,department_id";
         $db=new Database();
         $program_count=Program::getCount();

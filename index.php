@@ -1,34 +1,162 @@
 <?php
-$url = "https://isabucoltd.com/";
+/*ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);*/
 
-// Fetch the page
-$context = stream_context_create([
-    "http" => [
-        "header" => "User-Agent: Mozilla/5.0\r\n"
-    ]
-]);
+use Solobea\Dashboard\authentication\Authentication;
+use Solobea\Dashboard\controller\Home;
+use Solobea\Dashboard\database\Database;
+use Solobea\Dashboard\model\Visitor;
+use Solobea\Dashboard\utils\Helper;
+use Solobea\Dashboard\utils\Resource;
+use Solobea\Dashboard\utils\ErrorReporter;
 
-$content = @file_get_contents($url, false, $context);
+date_default_timezone_set('Africa/Nairobi');
 
-if ($content === false) {
-    echo "Unable to load page.";
-    exit;
+session_start();
+
+require_once "vendor/autoload.php";
+
+$path = $_SERVER['PATH_INFO']??"";
+save_visitor(getIpAddress());
+$path_array = explode("/", trim($path, "/")); // Trim extra slashes
+if (!empty($path_array) && $path_array[0]!="") {
+    $raw = strtolower($path_array[0]);               // "employee-role"
+    $page = str_replace(' ', '', ucwords(str_replace('-', ' ', $raw)));
+    $full_path = "Solobea\\Dashboard\\controller\\" . $page;
+    $method=lcfirst($path_array[1]??"");
+    $params=[];
+    if (sizeof($path_array)>2){
+        $params=array_slice($path_array,2);
+    }
+
+    if (class_exists($full_path)) {
+        $controller = new $full_path();
+        if ($method!=null && method_exists($full_path,$method)){
+            if (!empty($params)){
+                $controller->$method($params);
+            }
+            else{
+                $controller->$method();
+            }
+
+        } else if(method_exists($full_path,"index")){
+            $controller->index();
+        } else{
+            //http_response_code(404);
+            echo Resource::getErrorPage("Page not found ".$method);
+        }
+    } else {
+        //http_response_code(404);
+        echo Resource::getErrorPage("Page not found ".$page);
+    }
+} else {
+    // Default route to Home
+    $home = new Home();
+    $home->index();
+}
+function getIPAddress() {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+
+    // Normalize IPv6-mapped IPv4 (e.g., ::ffff:41.59.219.11 → 41.59.219.11)
+    if (strpos($ip, '::ffff:') === 0) {
+        $ip = substr($ip, 7);
+    }
+
+    return $ip;
 }
 
-// Fix relative links (CSS, JS, images)
-$content = preg_replace_callback(
-    '/\b(href|src)\s*=\s*["\'](?!https?:\/\/|\/\/|#|mailto:|tel:)([^"\']+)["\']/i',
-    function ($matches) {
-        $url = $matches[2];
-
-        if (strpos($url, '/') === 0) {
-            return $matches[1] . '="https://isabucoltd.com' . $url . '"';
-        } else {
-            return $matches[1] . '="https://isabucoltd.com/' . $url . '"';
+function save_visitor($ip){
+    if (isset($_GET['save_visitor'])){
+        return;
+    }
+    if (!Helper::is_human_ip($ip)){
+        return;
+    }
+    if (Authentication::has_roles(['admin','manager','hro','pro'])){
+        return;
+    }
+    $currentUrl = $_SERVER['REQUEST_URI'];
+    if (isset($_SESSION['last_url'])) {
+        if ($_SESSION['last_url'] === $currentUrl) {
+            return;
         }
-    },
-    $content
-);
+    }
+    $_SESSION['last_url'] = $currentUrl;
 
-// Output page
-echo $content;
+    if(isset($_SESSION['visitor_data'])){
+        $response=unserialize($_SESSION['visitor_data']);
+    }
+    else{
+        $db=Database::get_instance();
+        $data=$db->select_prepared("select ip, ip_type, continent, country, region, city, isp from visitors where ip=? limit 1",[$ip],'s');
+        if (!empty($data) && count($data)>0){
+            $datum=$data[0];
+            $response=json_encode([
+                'ip'=>$datum['ip'],
+                'type'=>$datum['ip_type'],
+                'continent_name'=>$datum['continent'],
+                'country_name'=>$datum['country'],
+                'region_name'=>$datum['region'],
+                'city'=>$datum['city'],
+                'connection'=>['isp'=>$datum['isp']]
+            ]);
+        }else{
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.apilayer.com/ip_to_location/$ip",
+                CURLOPT_HTTPHEADER => array(
+                    "Content-Type: text/plain",
+                    "apikey: J0VuE1ZaMkTVKAiW5Fqsno3V6srTp3a1"
+                ),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET"
+            ));
+            $response = curl_exec($curl);
+            $_SESSION['visitor_data']=serialize($response);
+            curl_close($curl);
+        }
+    }
+
+    $response_array=json_decode($response,true);
+    if ($response_array && isset($response_array['message'])){
+        ErrorReporter::report("response",$response." ip: ".$ip);
+    }
+    if(!(isset($response_array['type']))){
+        //ErrorReporter::report("Saving visitor error ","IP type Unknown",$_SERVER['REQUEST_URI']);
+    }
+    else{
+        $ip=$response_array['ip'];
+        $ip_type=$response_array['type'];
+        $continent_name=$response_array['continent_name'];
+        $country_name=$response_array['country_name'];
+        $region_name=$response_array['region_name'];
+        $city_name=$response_array['city'];
+        $isp=$response_array['connection']['isp'];
+        $is_registered=false;
+        $visitor= new Visitor();
+        $visitor->setCity($city_name);
+        $visitor->setRegion($region_name);
+        $visitor->setContinent($continent_name);
+        $visitor->setCountry($country_name);
+        $visitor->setIp($ip);
+        $visitor->setIpType($ip_type);
+        $visitor->setIsp($isp);
+        $visitor->setIsRegistered($is_registered);
+        $visitor->setUrl($_SERVER['REQUEST_URI']);
+        $db=new Database();
+        $db->save_visitor($visitor);
+    }
+}
