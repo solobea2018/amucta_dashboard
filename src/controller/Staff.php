@@ -247,4 +247,164 @@ HTML;
             MainLayout::render($content, $head, $title);
         }
     }
+
+    public function all()
+    {
+        $category = "All Employees";
+        $db = new Database();
+        $stfs = $db->select("
+            SELECT e.*
+            FROM employee e  
+            where e.active =1
+            ORDER BY e.name
+        ");
+
+        // If no staff found, show toast message
+        if (!$stfs || count($stfs) === 0) {
+            $content = "<script>
+                Toastify({
+                    text: 'No employees found in this category',
+                    backgroundColor: 'linear-gradient(to right, #ff416c, #ff4b2b)',
+                    className: 'animate__animated animate__shakeX',
+                    gravity: 'top',
+                    position: 'right',
+                    duration: 4000
+                }).showToast();
+            </script>";
+        }
+        else {
+            $content = "<div class='employee-grid animate__animated animate__fadeInUp'>";
+            foreach ($stfs as $emp) {
+                $name=Helper::slugify($emp['name']);
+                $profileImg = !empty($emp['profile']) ? $emp['profile'] : "/images/default-profile.png";
+
+                $content .= "
+                <div class='employee-card' data-aos='fade-up' data-aos-duration='1000'>
+                    <div class='profile-pic'>
+                        <img loading='lazy' src='{$profileImg}' alt='{$emp['name']}'>
+                    </div>
+                    <div class='employee-info'>
+                        <h3>{$emp['name']}</h3>
+                        <p class='title'>{$emp['title']}</p>                       
+                        <a href='/profile/profile/{$emp['id']}/{$name}' class='view-profile'>View Profile</a>
+                    </div>
+                </div>";
+            }
+            $content .= "</div>";
+        }
+
+        $title = ucfirst(str_replace("-", " ", $category));
+        $pageUrl = "https://www.amucta.ac.tz/staff/all/{$category}";
+        $description = "Meet AMUCTA staff members in the {$title} category. View profiles, roles, and professional information.";
+        $image = "https://amucta.ac.tz/logo.png";
+        // CSS styling
+        $head = "
+<meta charset='UTF-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <meta name='robots' content='index, follow'>
+        <meta name='author' content='Archbishop Mihayo University College of Tabora (AMUCTA)'>
+        <meta name='description' content='{$description}'>
+        <meta name='keywords' content='AMUCTA, staff, university, education, Tanzania, {$title}, Catholic university, higher learning'>
+
+        <!-- Canonical URL -->
+        <link rel='canonical' href='{$pageUrl}'>
+
+        <!-- Open Graph / Facebook / LinkedIn -->
+        <meta property='og:title' content='{$title} | AMUCTA'>
+        <meta property='og:description' content='{$description}'>
+        <meta property='og:type' content='website'>
+        <meta property='og:url' content='{$pageUrl}'>
+        <meta property='og:image' content='{$image}'>
+        <meta property='og:site_name' content='AMUCTA'>
+
+        <!-- Twitter Card -->
+        <meta name='twitter:card' content='summary_large_image'>
+        <meta name='twitter:title' content='{$title} | AMUCTA'>
+        <meta name='twitter:description' content='{$description}'>
+        <meta name='twitter:image' content='{$image}'>
+        <meta name='twitter:site' content='@amucta'>
+
+        <!-- Favicon -->
+        <link rel='icon' type='image/png' href='/assets/images/favicon.png'>
+        <style>
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px;
+        }
+        .employee-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .employee-card:hover {
+            transform: translateY(-5px);
+        }
+        .employee-card .profile-pic {
+            height: 250px;
+            background: var(--amucta-blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .employee-card .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          
+        }
+        .employee-info {
+            padding: 5px;
+            text-align: center;
+        }
+        .employee-info h3 {
+            margin: 5px 0 5px;
+            color: var(--amucta-dark);
+        }
+        .employee-info .title {
+            font-size: 14px;
+            color: var(--amucta-dark);
+        }
+        .employee-info .role {
+            font-size: 13px;
+            color: var(--amucta-blue);
+            margin: 5px 0;
+        }
+        .employee-info .active {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;           
+            color: green;
+            margin-bottom: 10px;
+        }
+        .employee-info .inactive {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            background: darkred;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .employee-info .view-profile {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            background: var(--amucta-blue);
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+        .employee-info .view-profile:hover {
+            background: darkblue;
+        }
+        </style>
+        ";
+        MainLayout::render($content, $head, $title);
+    }
 }

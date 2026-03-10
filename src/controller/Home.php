@@ -79,30 +79,6 @@ HTML;
                 $prog_list.="<option value='$id'>{$name}</option>";
             }
         }
-        $pubs=$db->select_prepared("select image,authors,title,link from amucta_research where image is not null order by year desc limit 3",[],"");
-        $pub_html="";
-        if (!empty($pubs) && sizeof($pubs)>0){
-            foreach ($pubs as $pub) {
-                $pub_html.=<<<pub
-<div class="publication-item">
-            <img src="{$pub['image']}" alt="Publication Image">
-
-            <div class="publication-info">
-                <div class="pub-title">
-                    <a href="{$pub['link']}">{$pub['title']}</a>
-                </div>
-
-                <p class="pub-authors">
-                    {$pub['authors']}
-                </p>
-
-                <span class="pub-year">2025</span>
-            </div>
-        </div>
-pub;
-
-            }
-        }
         $head=<<<kl
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -145,15 +121,6 @@ $h_content
         </select>
         <button type="submit"><i class="fa fa-search"></i></button>
     </form>
-    <section class="recent-publications">
-
-    <h2 class="section-title">Recent Publications</h2>
-
-    <div class="publication-list">
-    $pub_html
-    </div>
-
-</section>
 
     </div>
 </div>
@@ -208,7 +175,7 @@ content;
 
     private function news(Database $database): string
     {
-        $query="select name, file_url, created_at from attachments order by id desc limit 6";
+        $query="select name, file_url, created_at from attachments where active=1 order by id desc limit 6";
         $attachments=$database->select($query);
         $attachments_list="";
         if (!empty($attachments)){
@@ -322,6 +289,30 @@ news;
 atta;
             }
         }
+        $pubs=$database->select_prepared("select image,authors,title,link from amucta_research where image is not null order by year desc limit 2",[],"");
+        $pub_html="";
+        if (!empty($pubs) && sizeof($pubs)>0){
+            foreach ($pubs as $pub) {
+                $pub_html.=<<<pub
+<div class="publication-item">
+            <img src="{$pub['image']}" alt="Publication Image">
+
+            <div class="publication-info">
+                <div class="pub-title">
+                    <a href="{$pub['link']}">{$pub['title']}</a>
+                </div>
+
+                <p class="pub-authors">
+                    {$pub['authors']}
+                </p>
+
+                <span class="pub-year">2025</span>
+            </div>
+        </div>
+pub;
+
+            }
+        }
 
         return <<<intro
 <div class="intro-section">
@@ -355,27 +346,10 @@ atta;
 
             <!-- Shortcut Links -->
             <div class="intro-col">
-                <h3 class="intro-heading">Shortcut Links</h3>
-                <ul class="shortcuts">
-                    <li>
-                        <a href="https://oas.amucta.ac.tz" class="shortcut-link">
-                            <i class="fa fa-chevron-circle-right"></i>
-                            Confirm Application
-                        </a>
-                        <a href="/assets/files/AMUCTA_JOIN_INSTRUCTION.pdf" class="shortcut-link">
-                            <i class="fa fa-chevron-circle-right"></i>
-                            Joining Instruction 2025/2026
-                        </a>
-                        <a href="https://amucta.ac.tz/assets/files/Prospectus_2022-2023.pdf" class="shortcut-link">
-                            <i class="fa fa-chevron-circle-right"></i>
-                            Prospectus
-                        </a>
-                        <a href="/assets/files/Fee_structure_2025-2026.pdf" class="shortcut-link">
-                            <i class="fa fa-chevron-circle-right"></i>
-                            Fee Structure 2025-2026
-                        </a>                      
-                    </li>
-                </ul>
+                <h3 class="intro-heading">Recent Publications</h3>
+                <div class="publication-list">
+                $pub_html
+                </div>
             </div>
 
         </div>
@@ -390,6 +364,7 @@ intro;
         SELECT content,style
         FROM homepage_intro
         WHERE deadline > NOW()
+        AND active=1
         ORDER BY created_at DESC
         LIMIT 1
     ";

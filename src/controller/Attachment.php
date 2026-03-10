@@ -20,12 +20,15 @@ class Attachment
         if (sizeof($attachments) > 0) {
             $table="attachments";
             foreach ($attachments as $att) {
+                $id = $att['id'];
+                $active = $att['active']==1?"Active":"Inactive";
                 $tr .= "<tr>
 <td>{$att['name']}</td>
 <td>{$att['type']}</td>
 <td>{$att['related_to']}</td>
 <td>
-<button class='btn btn-danger' onclick='deleteResource(\"attachments\",{$att['id']})'>Delete <i class='bi bi-trash'></i></button>
+<a class='text-blue-400' href='/attachment/active/{$id}'>{$active}</a>
+<span class='text-red-500' onclick='deleteResource(\"attachments\",{$id})'> <i class='bi bi-trash'></i></span>
 </td>
 </tr>";
             }
@@ -53,6 +56,19 @@ class Attachment
 HTML;
 
         MainLayout::render($content);
+    }
+
+    public function active($params)
+    {
+        Authentication::require_roles(['admin','pro','hro']);
+        if (isset($params) && !empty($params)){
+            $id=intval($params[0]);
+            $db=Database::get_instance();
+            $active=$db->select("select active from attachments where id={$id}")[0]['active'];
+            $active=$active==1?0:1;
+            $db->update('attachments',['active'=>$active],['id'=>$id]);
+            header("Location: /attachment/list");
+        }
     }
     public function add()
     {

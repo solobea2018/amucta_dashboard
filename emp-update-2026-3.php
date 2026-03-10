@@ -2,12 +2,14 @@
 ini_set("display_errors",1);
 error_reporting(E_ALL);
 
-header("Content-Type: application/json");
+//header("Content-Type: application/json");
 require_once "vendor/autoload.php";
-/*$query="alter table employee add fulltext(name)";
+$query="alter table employee
+    add staff_id varchar(50)";
 $db=\Solobea\Dashboard\database\Database::get_instance();
 $con=$db->getCon();
-$res=$con->query($query);*/
+$res=$con->query($query);
+exit();
 // LOAD JSON FILE
 $json = file_get_contents(__DIR__ . '/contacts.json');
 
@@ -26,6 +28,25 @@ $employees=[];
 foreach ($data as $datum) {
     $email=$datum['Email'];
     $name=$datum['Name'];
-    $employees[]=\Solobea\Dashboard\utils\EmployeeHelper::search_employee($name);
+    $employees[]=\Solobea\Dashboard\utils\EmployeeHelper::search_employee($name,$email);
 }
-echo json_encode($employees);
+foreach ($employees as $employee) {
+    $ids=$employee['ids'];
+    $email=$employee['email'];
+    $name=$employee['query'];
+    $db=\Solobea\Dashboard\database\Database::get_instance();
+    if (empty($ids)){
+        //insert new employee
+        echo "Employee .".$name." {$email} not found in database . Skipping.\n";
+        echo "\n <br>";
+        echo "\n <br>";
+        echo "\n <br>";
+    }elseif(count($ids)>1){
+        //much matches
+        //echo "Multiple matches for ".$name." email: {$email} skipping\n <br>";
+        echo "\n <br>";
+        echo "\n <br>";
+    }else{
+
+    }
+}

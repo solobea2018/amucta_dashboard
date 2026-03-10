@@ -9,8 +9,8 @@ use Solobea\Dashboard\database\Database;
 
 class EmployeeHelper
 {
-    #[ArrayShape(['query' => "", 'ids' => "array"])]
-    public static function search_employee($q): array
+    #[ArrayShape(['query' => "", 'ids' => "array", 'email' => ""])]
+    public static function search_employee($q, $email): array
     {
         $ids=[];
         $db=Database::get_instance();
@@ -29,6 +29,6 @@ class EmployeeHelper
                 }
             }
         }
-        return ['query'=>$q,'ids'=>$ids];
+        return ['query'=>$q,'ids'=>$ids,'email'=>$email];
     }
 }

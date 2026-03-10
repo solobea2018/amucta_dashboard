@@ -408,6 +408,7 @@ menu;
         <li class="dropdown-container">
           <a href="/staff" class="mobile-main-link">Staff Area »</a>
           <ul class="submenu">
+          <li><a href="/staff/all/">All Employees</a></li>
             $stf
             <li><a href="/gallery">Gallery</a></li>
           </ul>

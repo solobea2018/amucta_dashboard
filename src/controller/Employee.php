@@ -7,7 +7,9 @@ namespace Solobea\Dashboard\controller;
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\utils\Resource;
+use Solobea\Dashboard\view\Components;
 use Solobea\Dashboard\view\MainLayout;
+use Solobea\Helpers\data\Sanitizer;
 
 class Employee
 {
@@ -44,6 +46,8 @@ class Employee
 
         if (sizeof($employees) > 0) {
             foreach ($employees as $emp) {
+                $staff_id=$emp['staff_id'];
+                $id=$emp['id'];
                 $tr .= "<tr>
 <td><a class='text-blue-500' href='/employee/profile/{$emp['id']}'> {$emp['name']}</a></td>
 <td>
@@ -58,6 +62,11 @@ Is active? <a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" .
 <button class='btn btn-complete' onclick='editEmployee({$emp['id']})'>Edit <i class='bi bi-pencil'></i></button>
 <button class='btn btn-mark-read' onclick='addEmployeeRole({$emp['id']})'>Role<i class='bi bi-pencil'></i></button>
 <button class='btn btn-primary' onclick='viewEmployee({$emp['id']})'>View <i class='bi bi-eye'></i></button>
+<form class='' action='/employee/staff_id' onsubmit='sendFormSweet(this,event)'>
+<input type='text' class='form-control' name='staff_id' value='{$staff_id}' placeholder='STAF/PF/VOL.1/001'>
+<input type='hidden' name='id' value='{$id}'>
+<button type='submit' class='btn btn-amucta'>Update</button>
+</form>
 </td>
 </tr>";
             }
@@ -69,6 +78,8 @@ Is active? <a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" .
 <div class="flex flex-col">
     <div class="w-full">
         <button class="btn btn-complete" onclick="addEmployee()">Add Employee</button>
+        <a href="/employee/export" class="btn btn-primary">Export Employees</a>
+        <a href="/employee/import" class="btn btn-primary">Import Employees</a>
     </div>
     <form method="get" class="mb-4">
         <div class="flex gap-2">
@@ -94,6 +105,28 @@ Is active? <a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" .
 HTML;
 
         MainLayout::render($content);
+    }
+
+    public function staff_id()
+    {
+        Authentication::require_roles(['admin','hro','manager']);
+        if (isset($_POST['id']) && isset($_POST['staff_id'])){
+            $id=intval($_POST['id']);
+            $staff=Sanitizer::sanitize($_POST['staff_id']);
+            $db=Database::get_instance();
+            if (!$db->exists('employee',['id'=>$id])){
+                echo json_encode(['status'=>'error','message'=>'Employee not exists']);
+            }else{
+               if ($db->update('employee',['staff_id'=>$staff],['id'=>$id])){
+                   echo json_encode(['status'=>'success','message'=>'Employee staffId updated successfully']);
+               } else{
+                   http_response_code(500);
+                    echo json_encode(['status'=>'error','message'=>'Server error']);
+               }
+            }
+        }else{
+            echo json_encode(['status'=>'error','message'=>'Invalid data']);
+        }
     }
 
     private function profStyle(): string
@@ -705,6 +738,18 @@ HTML;
         } else {
             echo json_encode(['status' => "error", 'message' => "No changes made or update failed"]);
         }
+    }
+
+    public function import()
+    {
+
+    }
+
+    public function export()
+    {
+       $db=Database::get_instance();
+       $query="SELECT id, name, title, email, phone, qualification, entry_year, department_id, branch, staff_id from employee where active=1";
+       $employees=$db->select($query);
     }
 
 }
