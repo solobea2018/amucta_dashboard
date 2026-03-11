@@ -5,7 +5,8 @@ error_reporting(E_ALL);
 //header("Content-Type: application/json");
 require_once "vendor/autoload.php";
 $query="alter table employee
-    add staff_id varchar(50)";
+    add highest_qualification varchar(50
+    )";
 $db=\Solobea\Dashboard\database\Database::get_instance();
 $con=$db->getCon();
 $res=$con->query($query);

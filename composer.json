@@ -25,6 +25,7 @@
       "ext-mbstring": "*",
       "phpmailer/phpmailer": "^6.8",
       "ext-mysqli": "*",
+      "phpoffice/phpspreadsheet": "^2.0",
       "ext-curl": "*",
       "ext-dom": "*"
     }

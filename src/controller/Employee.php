@@ -4,6 +4,11 @@
 namespace Solobea\Dashboard\controller;
 
 
+use JetBrains\PhpStorm\NoReturn;
+use PhpOffice\PhpSpreadsheet\Calculation\Exception;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Solobea\Dashboard\authentication\Authentication;
 use Solobea\Dashboard\database\Database;
 use Solobea\Dashboard\utils\Resource;
@@ -39,7 +44,7 @@ class Employee
             );
         } else {
             $employees = $db->select(
-                "SELECT * FROM employee ORDER BY created_at desc limit 50"
+                "SELECT * FROM employee where active=1 ORDER BY name limit 100"
             );
         }
         $tr = "";
@@ -48,8 +53,9 @@ class Employee
             foreach ($employees as $emp) {
                 $staff_id=$emp['staff_id'];
                 $id=$emp['id'];
+                $prefix = $emp['prefix'];
                 $tr .= "<tr>
-<td><a class='text-blue-500' href='/employee/profile/{$emp['id']}'> {$emp['name']}</a></td>
+<td><a class='text-blue-500' href='/employee/profile/{$emp['id']}'>{$prefix} {$emp['name']}</a></td>
 <td>
 <table class='table-borderless'><tr><td>Title: {$emp['title']}</td>
 <td>Phone: {$emp['phone']}</td></tr>
@@ -63,7 +69,8 @@ Is active? <a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" .
 <button class='btn btn-mark-read' onclick='addEmployeeRole({$emp['id']})'>Role<i class='bi bi-pencil'></i></button>
 <button class='btn btn-primary' onclick='viewEmployee({$emp['id']})'>View <i class='bi bi-eye'></i></button>
 <form class='' action='/employee/staff_id' onsubmit='sendFormSweet(this,event)'>
-<input type='text' class='form-control' name='staff_id' value='{$staff_id}' placeholder='STAF/PF/VOL.1/001'>
+<input type='text' class='form-control' name='staff_id' value='{$staff_id}'>
+<input type='text' name='prefix' class='form-control' value='{$prefix}'>
 <input type='hidden' name='id' value='{$id}'>
 <button type='submit' class='btn btn-amucta'>Update</button>
 </form>
@@ -113,11 +120,12 @@ HTML;
         if (isset($_POST['id']) && isset($_POST['staff_id'])){
             $id=intval($_POST['id']);
             $staff=Sanitizer::sanitize($_POST['staff_id']);
+            $prefix=Sanitizer::sanitize($_POST['prefix']);
             $db=Database::get_instance();
             if (!$db->exists('employee',['id'=>$id])){
                 echo json_encode(['status'=>'error','message'=>'Employee not exists']);
             }else{
-               if ($db->update('employee',['staff_id'=>$staff],['id'=>$id])){
+               if ($db->update('employee',['staff_id'=>$staff,'prefix'=>$prefix],['id'=>$id])){
                    echo json_encode(['status'=>'success','message'=>'Employee staffId updated successfully']);
                } else{
                    http_response_code(500);
@@ -742,14 +750,214 @@ HTML;
 
     public function import()
     {
+        Authentication::require_roles(['admin','hro','manager']);
+        $db = Database::get_instance();
 
+        if (isset($_FILES['template']) && $_FILES['template']['error'] == 0) {
+
+            $file = $_FILES['template']['tmp_name'];
+
+            try {
+
+                $spreadsheet = IOFactory::load($file);
+                $sheet = $spreadsheet->getActiveSheet();
+                $rows = $sheet->toArray();
+
+                // remove header
+                unset($rows[0]);
+
+                foreach ($rows as $row) {
+
+                    list(
+                        $staff_id,
+                        $prefix,
+                        $name,
+                        $title,
+                        $email,
+                        $phone,
+                        $qualification,
+                        $entry_year,
+                        $branch,
+                        $gender
+                        ) = $row;
+
+                    if (empty($staff_id) || empty($name)) {
+                        continue;
+                    }
+
+                    if ($db->exists('employee',['staff_id'=>$staff_id])) {
+
+                        // Update
+                        $db->update('employee',
+                        ['prefix'=>$prefix,'gender'=>$gender,'title'=>$title,'email'=>$email,'phone'=>$phone,'highest_qualification'=>$qualification,'entry_year'=>$entry_year,'branch'=>$branch],['staff_id'=>$staff_id]);
+
+                    } else {
+
+                        // Insert
+                        $db->insert('employee',[
+                            'email'=>$email,
+                            'prefix'=>$prefix,
+                            'title'=>$title,
+                            'phone'=>$phone,
+                            'highest_qualification'=>$qualification,
+                            'entry_year'=>$entry_year,
+                            'branch'=>$branch,
+                            'gender'=>$gender
+                        ]);
+
+                    }
+                }
+
+                echo "<script>Swal.fire('Success','Employees imported successfully','success')</script>";
+
+            } catch (Exception $e) {
+
+                echo "<script>Swal.fire('Error','".$e->getMessage()."','error')</script>";
+
+            }
+            exit();
+        }
+
+        $content = <<<CONTENT
+<div>
+<div>
+    <a href="/employee/template" class="btn btn-blue">Download Template</a>
+</div>
+
+<form method="post" enctype="multipart/form-data" onsubmit="sendFormSweet(this,event)" action="/employee/import">
+
+<div class="form-group">
+<label>Excel file only</label>
+<input type="file" class="form-control" name="template" accept=".xlsx,.xls" required>
+</div>
+
+<div class="form-group">
+<button class="btn btn-primary">Import</button>
+</div>
+
+</form>
+</div>
+CONTENT;
+
+        $title = "Import employee";
+        $head = "";
+        MainLayout::render($content,$head,$title);
     }
 
+    #[NoReturn] public function template()
+    {
+        Authentication::require_roles(['admin','hro','manager']);
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Template headers
+        $headers = [
+            'staff_id',
+            'prefix',
+            'name',
+            'title',
+            'email',
+            'phone',
+            'highest_qualification',
+            'entry_year',
+            'branch',
+            'gender'
+        ];
+
+        // Write header row
+        $col = 'A';
+        foreach ($headers as $header) {
+            $sheet->setCellValue($col.'1', $header);
+            $sheet->getStyle($col.'1')->getFont()->setBold(true);
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+            $col++;
+        }
+
+        // Example row
+        $sheet->setCellValue('A2', 'STF001');
+        $sheet->setCellValue('B2', 'Mr.');
+        $sheet->setCellValue('C2', 'John Doe');
+        $sheet->setCellValue('D2', 'Lecturer');
+        $sheet->setCellValue('E2', 'john@example.com');
+        $sheet->setCellValue('F2', '0712345678');
+        $sheet->setCellValue('G2', 'PhD');
+        $sheet->setCellValue('H2', '2024');
+        $sheet->setCellValue('I2', '');
+        $sheet->setCellValue('J2', 'M');
+
+        // File name
+        $filename = "employee_import_template.xlsx";
+
+        // Download headers
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+
+    #[NoReturn]
     public function export()
     {
-       $db=Database::get_instance();
-       $query="SELECT id, name, title, email, phone, qualification, entry_year, department_id, branch, staff_id from employee where active=1";
-       $employees=$db->select($query);
+        $db = Database::get_instance();
+
+        $query = "SELECT id, name,gender,prefix,highest_qualification, title, email, phone, qualification, entry_year, department_id, branch, staff_id 
+              FROM employee 
+              WHERE active=1";
+
+        $employees = $db->select($query);
+
+        // Create spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header row
+        $sheet->setCellValue('A1', 'Staff ID');
+        $sheet->setCellValue('B1', 'Prefix');
+        $sheet->setCellValue('C1', 'Name');
+        $sheet->setCellValue('D1', 'Title');
+        $sheet->setCellValue('E1', 'Email');
+        $sheet->setCellValue('F1', 'Phone');
+        $sheet->setCellValue('G1', 'Qualification');
+        $sheet->setCellValue('H1', 'Entry Year');
+        $sheet->setCellValue('I1', 'Branch');
+        $sheet->setCellValue('J1', 'Gender');
+
+        // Fill data
+        $row = 2;
+        foreach ($employees as $emp) {
+            $sheet->setCellValue('A'.$row, $emp['staff_id']);
+            $sheet->setCellValue('B'.$row, $emp['prefix']);
+            $sheet->setCellValue('C'.$row, $emp['name']);
+            $sheet->setCellValue('D'.$row, $emp['title']);
+            $sheet->setCellValue('E'.$row, $emp['email']);
+            $sheet->setCellValue('F'.$row, $emp['phone']);
+            $sheet->setCellValue('G'.$row, $emp['highest_qualification']);
+            $sheet->setCellValue('H'.$row, $emp['entry_year']);
+            $sheet->setCellValue('I'.$row, $emp['branch']);
+            $sheet->setCellValue('J'.$row, $emp['gender']);
+            $row++;
+        }
+
+        // Auto size columns
+        foreach(range('A','K') as $col){
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // File name
+        $filename = "employees_" . date('Ymd_His') . ".xlsx";
+
+        // Headers for download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+
+        // Write file
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
     }
 
 }
