@@ -18,7 +18,7 @@ session_start();
 require_once "vendor/autoload.php";
 
 $path = $_SERVER['PATH_INFO']??"";
-save_visitor(getIpAddress());
+//save_visitor(getIpAddress());
 $path_array = explode("/", trim($path, "/")); // Trim extra slashes
 if (!empty($path_array) && $path_array[0]!="") {
     $raw = strtolower($path_array[0]);               // "employee-role"

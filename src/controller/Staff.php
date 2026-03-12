@@ -121,7 +121,7 @@ HTML;
                         <img loading='lazy' src='{$profileImg}' alt='{$emp['name']}'>
                     </div>
                     <div class='employee-info'>
-                        <h3>{$emp['name']}</h3>
+                        <h3>{$emp['prefix']} {$emp['name']}</h3>
                         <p class='title'>{$emp['title']}</p>
                         <p class='role'>{$emp['role_name']} | {$emp['start_date']}</p>
                         {$activeStatus}
@@ -284,7 +284,7 @@ HTML;
                         <img loading='lazy' src='{$profileImg}' alt='{$emp['name']}'>
                     </div>
                     <div class='employee-info'>
-                        <h3>{$emp['name']}</h3>
+                        <h3>{$emp['prefix']} {$emp['name']}</h3>
                         <p class='title'>{$emp['title']}</p>                       
                         <a href='/profile/profile/{$emp['id']}/{$name}' class='view-profile'>View Profile</a>
                     </div>

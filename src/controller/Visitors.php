@@ -10,6 +10,7 @@ use Solobea\Dashboard\model\Visitor;
 use Solobea\Dashboard\utils\Helper;
 use Solobea\Dashboard\view\MainLayout;
 use Solobea\Dashboard\utils\ErrorReporter;
+use Solobea\Helpers\data\Sanitizer;
 
 class Visitors
 {
@@ -318,8 +319,7 @@ HTML;
         $data = $db->select("
         SELECT id, ip, ip_type, country, city, date, isp, url, is_registered 
         FROM visitors
-        ORDER BY date DESC
-        LIMIT 200
+        ORDER BY id DESC limit 100
     ");
 
         // Summary data
@@ -426,18 +426,22 @@ CONTENT;
             if ($id!=0){
                 $db= Database::get_instance();
                 $robot_data=$db->select("
-                SELECT v.id v.ip, v.isp
+                SELECT v.id,v.url,v.ip, v.isp
 FROM visitors v
 JOIN visitors v2 ON v.url = v2.url
 WHERE v2.id = {$id};
 ");
                 if (!empty($robot_data) & count($robot_data)>0){
                     foreach ($robot_data as $robot_datum) {
-                        $db->insert('robot_ip',[
-                            'robot_name'=>$robot_datum['isp'],
-                            'ip_address'=>$robot_datum['ip']
-                        ]);
-                        $db->update('visitor',['is_robot'=>1],['id'=>$id]);
+                        $ip = $robot_datum['ip'];
+                        if (!$db->exists('robot_ip',['ip_address'=>$ip])){
+                            $db->insert('robot_ip',[
+                                'robot_name'=>$robot_datum['isp'],
+                                'ip_address'=> $ip
+                            ]);
+                        }
+                        $url=Sanitizer::sanitize($robot_datum['url']);
+                        $db->update('visitors',['is_robot'=>1],['ip'=>$ip]);
                     }
                 }
             }
