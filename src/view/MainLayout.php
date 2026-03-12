@@ -28,7 +28,7 @@ class MainLayout
     <a href="https://amucta.ac.tz:2096">Emails</a>
     <a href="/staff">Staff Portal</a>
     <a href="https://oas.amucta.ac.tz">Online Application</a>
-    <a href="https://sims.amucta.ac.tz">SIMS</a>
+    <a href="/sims">SIMS</a>
     <a href="https://library.amucta.ac.tz">Library</a>
     <a href="/alumni">Alumni</a>
   </div>
@@ -341,7 +341,7 @@ menu;
     <a href="/" class="logo"><img src="/logo.png" alt="AMUCTA Logo"></a>
     <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     <a href="/" class="logo-caption">AMUCTA</a>
-    <span class="logo-caption">⋮</span>
+    <span class="logo-caption"><a class="btn btn-amucta" href="/sims">SIMS</a></span>
     <nav class="navigation-container" id="navigation-container">
       <div class="flex flex-row justify-end w-full"><span class="menu-close" id="menu-close">✖</span></div>
       <ul class="nav-menu" id="navigation">
