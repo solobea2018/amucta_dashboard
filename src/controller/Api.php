@@ -12,8 +12,7 @@ class Api
 {
     public function delete()
     {
-        $auth = new Authentication();
-        if (!$auth->is_admin()) {
+        if (!Authentication::has_roles(['admin','pro','hro'])) {
             echo json_encode([
                 "status" => "error",
                 "message" => "Not authorized"
@@ -58,8 +57,7 @@ class Api
 
     public function update()
     {
-        $auth = new Authentication();
-        if (!$auth->is_admin()) {
+        if (!Authentication::has_roles(['admin','hro','pro'])) {
             echo json_encode([
                 "status" => "error",
                 "message" => "Not authorized"

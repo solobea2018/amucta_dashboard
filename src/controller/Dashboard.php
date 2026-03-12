@@ -12,7 +12,7 @@ class Dashboard
 {
     public function index()
     {
-        Authentication::require_roles(['admin','hro']);
+        Authentication::require_roles(['admin','hro','pro']);
 
         $db = Database::get_instance();
 
@@ -47,7 +47,7 @@ class Dashboard
     </div>
 
     <div class="dashboard-actions">
-        <a href="/#" class="btn btn-primary">Employees</a>       
+        <a href="/employee/list" class="btn btn-primary">Employees</a>       
         <a href="/#" class="btn btn-primary"><i class="fa fa-file-alt"></i> Policies</a>
         <a href="/#" class="btn btn-complete"><i class="fa fa-exclamation-triangle"></i> Incidents</a>       
     </div>

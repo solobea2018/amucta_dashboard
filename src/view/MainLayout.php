@@ -204,9 +204,10 @@ HTML;
             <div class="a-submenu">
                 <a href="/errors/list">Logs</a>
             </div>
-            <div class="a-menu-title">Visitors <i class="bi bi-people"></i></div>
+            <div class="a-menu-title">Visitors <i class="bi bi-chevron-down"></i></div>
             <div class="a-submenu">
                 <a href="/visitors/dashboard">Stats</a>
+                <a href="/visitors/list">List</a>
             </div>
 menu;
         }
@@ -259,6 +260,7 @@ mnl;
             <button id="a-closeMenu">✕</button>
         </div>
         <div class="a-menu">
+            <div class="a-menu-title"><a href="/dashboard">Dashboard</a> </div>
             $menu           
             <div class="a-menu-title">Communication <i class="bi bi-chevron-down"></i></div>
             <div class="a-submenu">

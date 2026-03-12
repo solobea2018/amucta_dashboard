@@ -26,6 +26,7 @@ class Employee
 
     public function list()
     {
+        Authentication::require_roles(['admin','hro','hod','pro','manager']);
         $search = isset($_GET['q']) ? trim($_GET['q']) : "";
 
         $db=Database::get_instance();
@@ -55,7 +56,10 @@ class Employee
                 $id=$emp['id'];
                 $prefix = $emp['prefix'];
                 $tr .= "<tr>
-<td><a class='text-blue-500' href='/employee/profile/{$emp['id']}'>{$prefix} {$emp['name']}</a></td>
+<td><a class='text-blue-500' href='/employee/profile/{$emp['id']}'>{$prefix} {$emp['name']}</a>
+<br>
+<a href='/employee/delete/{$id}' class='btn btn-delete'>Delete</a>
+</td>
 <td>
 <table class='table-borderless'><tr><td>Title: {$emp['title']}</td>
 <td>Phone: {$emp['phone']}</td></tr>
@@ -112,6 +116,21 @@ Is active? <a class='btn btn-mark-read' href='/employee/active/{$emp['id']}'>" .
 HTML;
 
         MainLayout::render($content);
+    }
+
+    public function delete($params)
+    {
+        Authentication::require_roles(['admin','hro']);
+        if (isset($params) && !empty($params)){
+            $id=intval($params[0]);
+            if ($id==0){
+
+            }else{
+                $db=Database::get_instance();
+                $db->delete('employee',['id'=>$id]);
+            }
+        }
+        header("Location: /employee/list");
     }
 
     public function staff_id()

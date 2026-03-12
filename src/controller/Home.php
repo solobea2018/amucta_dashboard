@@ -136,7 +136,7 @@ $news
           <p class="stat-label">Programs</p>
         </div>
         <div class="stat-item">
-          <div class="stat-number" style="color: #4F46E5;">2,207</div>
+          <div class="stat-number" style="color: #4F46E5;">2,2</div>
           <p class="stat-label">Students</p>
         </div>
         <div class="stat-item">

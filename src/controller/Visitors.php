@@ -309,6 +309,141 @@ HTML;
         ];
     }
 
+    public function list()
+    {
+        $title = "Recent Visitors";
+
+        // Fetch visitor records
+        $db= Database::get_instance();
+        $data = $db->select("
+        SELECT id, ip, ip_type, country, city, date, isp, url, is_registered 
+        FROM visitors
+        ORDER BY date DESC
+        LIMIT 200
+    ");
+
+        // Summary data
+        $summaryData = $db->select("
+        SELECT 
+            COUNT(*) as total_visitors,
+            COUNT(DISTINCT ip) as unique_ips,
+            SUM(is_registered) as registered_users,
+            (COUNT(*) - SUM(is_registered)) as guest_users,
+            country
+        FROM visitors
+        GROUP BY country
+        ORDER BY COUNT(*) DESC
+        LIMIT 1
+    ");
+
+        // Get top country if available
+        $topCountry = (!empty($summaryData)) ? $summaryData[0]['country'] : 'N/A';
+        $totalVisitors = (!empty($summaryData)) ? $summaryData[0]['total_visitors'] : 0;
+        $uniqueIps = (!empty($summaryData)) ? $summaryData[0]['unique_ips'] : 0;
+        $registered = (!empty($summaryData)) ? $summaryData[0]['registered_users'] : 0;
+        $guests = (!empty($summaryData)) ? $summaryData[0]['guest_users'] : 0;
+
+        // Build table head
+        $tableHead = "<tr>
+        <th>IP</th>
+        <th>Country</th>
+        <th>City</th>
+        <th>Date</th>
+        <th>ISP</th>
+        <th>URL</th>
+        <th>Actions</th>
+    </tr>";
+
+        // Table rows
+        if (!empty($data)) {
+            foreach ($data as $v) {
+                $registeredLabel = $v['is_registered'] ? "<span class='badge success'>Yes</span>" : "<span class='badge'>No</span>";
+                $date = date($v['date']);
+                $url = $v['url'];
+                $id = $v['id'];
+                $rows .= "<tr>
+                <td>{$v['ip']}</td>
+                <td>{$v['country']}</td>
+                <td>{$v['city']}</td>
+                <td>{$date}</td>
+                <td>{$v['isp']}</td>
+                <td><a href='#' class='break-link text-blue-400' onclick='previewHtml(\"{$url}\")'>{$url}</a></td>               
+                <td>
+                    <button class='btn btn-delete' data-id='{$id}'> Delete</button>
+                    <a href='/visitors/robot/{$id}' class='btn btn-blue'> Robot</a>
+                </td>
+            </tr>";
+            }
+        } else {
+            $rows = "<tr><td colspan='9'>No visitors found.</td></tr>";
+        }
+
+        // Summary HTML
+        $summaryHtml = <<<HTML
+<div class="dashboard grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold">Total Visitors</h3>
+        <p class="text-3xl text-blue-600">{$totalVisitors}</p>
+    </div>
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold">Unique IPs</h3>
+        <p class="text-3xl text-blue-600">{$uniqueIps}</p>
+    </div>
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold">Registered Users</h3>
+        <p class="text-3xl text-blue-600">{$registered}</p>
+    </div>
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold">Guests</h3>
+        <p class="text-3xl text-blue-600">{$guests}</p>
+    </div>
+    <div class="card bg-white shadow-md rounded-lg p-4">
+        <h3 class="text-lg font-bold">Top Country</h3>
+        <p class="text-3xl text-blue-600">{$topCountry}</p>
+    </div>
+</div>
+HTML;
+
+        // Final page content
+        $content = <<<CONTENT
+<div class="flex w-full flex-col">
+    <h2>{$title}</h2>
+    {$summaryHtml}
+    <table class="admin-table">
+        <thead>{$tableHead}</thead>
+        <tbody>{$rows}</tbody>
+    </table>
+</div>
+CONTENT;
+        MainLayout::render($content,"",$title);
+    }
+
+    public function robot($params)
+    {
+        Authentication::require_roles(['admin','manager']);
+        if (isset($params) && !empty($params)){
+            $id=intval($params[0]);
+            if ($id!=0){
+                $db= Database::get_instance();
+                $robot_data=$db->select("
+                SELECT v.id v.ip, v.isp
+FROM visitors v
+JOIN visitors v2 ON v.url = v2.url
+WHERE v2.id = {$id};
+");
+                if (!empty($robot_data) & count($robot_data)>0){
+                    foreach ($robot_data as $robot_datum) {
+                        $db->insert('robot_ip',[
+                            'robot_name'=>$robot_datum['isp'],
+                            'ip_address'=>$robot_datum['ip']
+                        ]);
+                        $db->update('visitor',['is_robot'=>1],['id'=>$id]);
+                    }
+                }
+            }
+        }
+        header("Location: /visitors/list");
+    }
 
 
 }

@@ -4,9 +4,8 @@ error_reporting(E_ALL);
 
 //header("Content-Type: application/json");
 require_once "vendor/autoload.php";
-$query="alter table employee
-    add highest_qualification varchar(50
-    )";
+$query="alter table visitors
+    modify is_robot bool default false";
 $db=\Solobea\Dashboard\database\Database::get_instance();
 $con=$db->getCon();
 $res=$con->query($query);
